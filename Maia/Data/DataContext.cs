@@ -15,7 +15,7 @@ namespace Maia.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
-
+        public DbSet<KidsViewAllCards> KidsViewAllCards { get; set; }
 
 
 
