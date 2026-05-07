@@ -68,5 +68,44 @@ namespace Maia.Services
                 Description = card.Description
             };
         }
+        public async Task<KidsViewAllCardsDto> UpdateAsync(int id, CreateKidsViewAllCardsDto dto)
+        {
+            var entity = await _context.KidsViewAllCards.FindAsync(id);
+
+            if (entity == null) return null;
+
+            entity.Title = dto.Title;
+            entity.ImageUrl = dto.ImageUrl;
+            entity.Price = dto.Price;
+            entity.Category = dto.Category;
+            entity.Description = dto.Description;
+
+            await _context.SaveChangesAsync();
+
+            return new KidsViewAllCardsDto
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                ImageUrl = entity.ImageUrl,
+                Price = entity.Price,
+                Category = entity.Category,
+                Description = entity.Description
+            };
+        }
+        // DELETE
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _context.KidsViewAllCards.FindAsync(id);
+
+            if (entity == null) return false;
+
+            _context.KidsViewAllCards.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
+
+
 }
+

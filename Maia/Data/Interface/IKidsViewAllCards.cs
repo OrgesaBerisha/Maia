@@ -7,5 +7,7 @@ namespace Maia.Data.Interface
         Task<IEnumerable<KidsViewAllCardsDto>> GetAllAsync();
         Task<IEnumerable<KidsViewAllCardsDto>> GetByCategoryAsync(string category);
         Task<KidsViewAllCardsDto> CreateAsync(CreateKidsViewAllCardsDto dto);
+        Task<bool> DeleteAsync(int id);
+        Task<KidsViewAllCardsDto> UpdateAsync(int id, CreateKidsViewAllCardsDto dto);
     }
 }
