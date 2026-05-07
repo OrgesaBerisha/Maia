@@ -14,6 +14,8 @@ builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IKidsViewAllCards, KidsViewAllCardsService>();
+
 var app = builder.Build();
 
 // ✅ ENABLE SWAGGER
