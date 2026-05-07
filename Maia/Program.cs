@@ -1,3 +1,5 @@
+﻿using Maia.Data.Interface;
+using Maia.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddControllers();
 // 🔥 Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IKidsViewAllCards, KidsViewAllCardsService>();
 
 var app = builder.Build();
 
