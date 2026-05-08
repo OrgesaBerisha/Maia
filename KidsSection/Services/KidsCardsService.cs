@@ -1,26 +1,27 @@
-﻿using Maia.Data;
-using Maia.Data.DTO;
-using Maia.Data.Interface;
-using Maia.Models;
+﻿using KidsSection.Data;
+using KidsSection.Data.DTO;
+using KidsSection.Data.Interface;
+using KidsSection.Models;
 using Microsoft.EntityFrameworkCore;
 
-
-namespace Maia.Services
+namespace KidsSection.Services
 {
-    public class KidsViewAllCardsService : IKidsViewAllCards
+    public class KidsCardsService : IKidsCards
     {
         private readonly DataContext _context;
 
-        public KidsViewAllCardsService(DataContext context)
+        public KidsCardsService(DataContext context)
         {
             _context = context;
         }
-        //GET ALL
-        public async Task<IEnumerable<KidsViewAllCardsDto>> GetAllAsync()
+
+        // GET ALL
+        public async Task<IEnumerable<KidsCardsDto>> GetAllAsync()
         {
-            return await _context.KidsViewAllCards
-                .Select(p => new KidsViewAllCardsDto
+            return await _context.KidsCards
+                .Select(p => new KidsCardsDto
                 {
+                    Id = p.Id,
                     Title = p.Title,
                     ImageUrl = p.ImageUrl,
                     Price = p.Price,
@@ -29,13 +30,15 @@ namespace Maia.Services
                 })
                 .ToListAsync();
         }
-        //GET BY ID
-        public async Task<IEnumerable<KidsViewAllCardsDto>> GetByCategoryAsync(int categoryId)
+
+        // GET BY CATEGORY
+        public async Task<IEnumerable<KidsCardsDto>> GetByCategoryAsync(int categoryId)
         {
-            return await _context.KidsViewAllCards
+            return await _context.KidsCards
                 .Where(p => p.KidsCategoryId == categoryId)
-                .Select(p => new KidsViewAllCardsDto
+                .Select(p => new KidsCardsDto
                 {
+                    Id = p.Id,
                     Title = p.Title,
                     ImageUrl = p.ImageUrl,
                     Price = p.Price,
@@ -44,10 +47,11 @@ namespace Maia.Services
                 })
                 .ToListAsync();
         }
-        //CREATE
-        public async Task<KidsViewAllCardsDto> CreateAsync(CreateKidsViewAllCardsDto dto)
+
+        // CREATE
+        public async Task<KidsCardsDto> CreateAsync(CreateKidsCardsDto dto)
         {
-            var card = new KidsViewAllCards
+            var card = new KidsCards
             {
                 Title = dto.Title,
                 ImageUrl = dto.ImageUrl,
@@ -56,11 +60,12 @@ namespace Maia.Services
                 Description = dto.Description
             };
 
-            _context.KidsViewAllCards.Add(card);
+            _context.KidsCards.Add(card);
             await _context.SaveChangesAsync();
 
-            return new KidsViewAllCardsDto
+            return new KidsCardsDto
             {
+                Id = card.Id,
                 Title = card.Title,
                 ImageUrl = card.ImageUrl,
                 Price = card.Price,
@@ -68,10 +73,11 @@ namespace Maia.Services
                 Description = card.Description
             };
         }
-        //UPDATE
-        public async Task<KidsViewAllCardsDto> UpdateAsync(int id, CreateKidsViewAllCardsDto dto)
+
+        // UPDATE
+        public async Task<KidsCardsDto> UpdateAsync(int id, CreateKidsCardsDto dto)
         {
-            var entity = await _context.KidsViewAllCards.FindAsync(id);
+            var entity = await _context.KidsCards.FindAsync(id);
 
             if (entity == null) return null;
 
@@ -83,7 +89,7 @@ namespace Maia.Services
 
             await _context.SaveChangesAsync();
 
-            return new KidsViewAllCardsDto
+            return new KidsCardsDto
             {
                 Id = entity.Id,
                 Title = entity.Title,
@@ -93,20 +99,18 @@ namespace Maia.Services
                 Description = entity.Description
             };
         }
+
         // DELETE
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _context.KidsViewAllCards.FindAsync(id);
+            var entity = await _context.KidsCards.FindAsync(id);
 
             if (entity == null) return false;
 
-            _context.KidsViewAllCards.Remove(entity);
+            _context.KidsCards.Remove(entity);
             await _context.SaveChangesAsync();
 
             return true;
         }
     }
-
-
 }
-

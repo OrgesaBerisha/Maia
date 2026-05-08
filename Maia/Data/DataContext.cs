@@ -17,8 +17,7 @@ namespace Maia.Data
 
         public DbSet<CardsWomen> CardsWoman{ get; set; }
         public DbSet<KidsViewAllCards> KidsViewAllCards { get; set; }
-
-
+        public DbSet<KidsCategory> KidsCategories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

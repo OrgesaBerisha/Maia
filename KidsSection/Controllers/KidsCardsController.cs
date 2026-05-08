@@ -1,16 +1,16 @@
-﻿using Maia.Data.DTO;
-using Maia.Data.Interface;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using KidsSection.Data.Interface;
+using KidsSection.Data.DTO;
 
-namespace Maia.Controllers
+namespace KidsSection.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KidsViewAllCardsController : ControllerBase
+    public class KidsCardsController : ControllerBase
     {
-        private readonly IKidsViewAllCards _service;
+        private readonly IKidsCards _service;
 
-        public KidsViewAllCardsController(IKidsViewAllCards service)
+        public KidsCardsController(IKidsCards service)
         {
             _service = service;
         }
@@ -28,7 +28,7 @@ namespace Maia.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateKidsViewAllCardsDto dto)
+        public async Task<IActionResult> Create(CreateKidsCardsDto dto)
         {
             var result = await _service.CreateAsync(dto);
             return Ok(result);
@@ -46,7 +46,7 @@ namespace Maia.Controllers
         }
         // UPDATE (PUT)
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] CreateKidsViewAllCardsDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] CreateKidsCardsDto dto)
         {
             var result = await _service.UpdateAsync(id, dto);
 
