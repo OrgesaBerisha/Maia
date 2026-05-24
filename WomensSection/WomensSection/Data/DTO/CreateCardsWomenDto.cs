@@ -7,6 +7,6 @@
         public decimal Price { get; set; }
         public string Description { get; set; } = string.Empty;
 
-        public int WomanCategoryId { get; set; } // 👈 KJO DUHET
+        public int WomanCategoryId { get; set; } 
     }
 }

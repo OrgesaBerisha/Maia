@@ -27,11 +27,35 @@ namespace Maia.Controllers
             return Ok(await _service.GetByCategoryAsync(category));
         }
 
-        // 👇 WOMEN PAGE (ZARA STYLE ENTRY POINT)
+        // 👇 WOMEN PAGE
         [HttpGet("women")]
         public async Task<IActionResult> GetWomen()
         {
             return Ok(await _service.GetAllAsync());
+        }
+
+
+        // 🚀 FILTER + SORT + PAGINATION (FINAL VERSION)
+        [HttpGet("browse")]
+        public async Task<IActionResult> Browse(
+          [FromQuery] string? search,
+          [FromQuery] int? categoryId,
+          [FromQuery] decimal? minPrice,
+          [FromQuery] decimal? maxPrice,
+          [FromQuery] string? sortBy,
+          [FromQuery] int page = 1,
+          [FromQuery] int pageSize = 10)
+        {
+            var result = await _service.BrowseAsync(
+                search,
+                categoryId,
+                minPrice,
+                maxPrice,
+                sortBy,
+                page,
+                pageSize);
+
+            return Ok(result);
         }
 
         [HttpPost]

@@ -13,5 +13,15 @@ namespace Maia.Data.Interface
         Task<bool> DeleteAsync(int id);
 
         Task<CardsWomenDto?> UpdateAsync(int id, CreateCardsWomenDto dto);
+
+        // 🔥 FINAL: ZARA STYLE BROWSE (SEARCH + FILTER + SORT + PAGINATION)
+        Task<IEnumerable<CardsWomenDto>> BrowseAsync(
+            string? search,
+            int? categoryId,
+            decimal? minPrice,
+            decimal? maxPrice,
+            string? sortBy,
+            int page,
+            int pageSize);
     }
 }
