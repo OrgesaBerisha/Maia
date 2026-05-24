@@ -14,14 +14,14 @@ namespace Maia.Data.Interface
 
         Task<CardsWomenDto?> UpdateAsync(int id, CreateCardsWomenDto dto);
 
-        // 🔥 FINAL: ZARA STYLE BROWSE (SEARCH + FILTER + SORT + PAGINATION)
-        Task<IEnumerable<CardsWomenDto>> BrowseAsync(
-            string? search,
-            int? categoryId,
-            decimal? minPrice,
-            decimal? maxPrice,
-            string? sortBy,
-            int page,
-            int pageSize);
+        // (SEARCH + FILTER + SORT + PAGINATION)
+        Task<PagedResult<CardsWomenDto>> BrowseAsync(
+      string? search,
+      int? categoryId,
+      decimal? minPrice,
+      decimal? maxPrice,
+      string? sortBy,
+      int page,
+      int pageSize);
     }
 }

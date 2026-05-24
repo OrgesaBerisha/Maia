@@ -34,8 +34,7 @@ namespace Maia.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
-
-        // 🚀 FILTER + SORT + PAGINATION (FINAL VERSION)
+        // 🚀 FILTER + SORT + PAGINATION
         [HttpGet("browse")]
         public async Task<IActionResult> Browse(
           [FromQuery] string? search,
@@ -58,12 +57,17 @@ namespace Maia.Controllers
             return Ok(result);
         }
 
+        // ✅ CREATE (VALIDATION SHTUAR)
         [HttpPost]
         public async Task<IActionResult> Create(CreateCardsWomenDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             return Ok(await _service.CreateAsync(dto));
         }
 
+        // ✅ DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -75,9 +79,13 @@ namespace Maia.Controllers
             return NoContent();
         }
 
+        // ✅ UPDATE (VALIDATION SHTUAR)
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CreateCardsWomenDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var updated = await _service.UpdateAsync(id, dto);
 
             if (updated == null)

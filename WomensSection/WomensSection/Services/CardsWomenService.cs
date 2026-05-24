@@ -69,7 +69,7 @@ public class CardsWomenService : ICardsWomenService
             Title = product.Title,
             ImageUrl = product.ImageUrl,
             Price = product.Price,
-            Category = null
+            Category = product.WomanCategory?.Name
         };
     }
 
@@ -109,47 +109,32 @@ public class CardsWomenService : ICardsWomenService
             Title = product.Title,
             ImageUrl = product.ImageUrl,
             Price = product.Price,
-            Category = null
+            Category = product.WomanCategory?.Name
         };
     }
 
-    // 🔎 SEARCH (SHTUAR)
-    public async Task<IEnumerable<CardsWomenDto>> SearchAsync(string search)
+    // 🚀 BROWSE FINAL (SEARCH + FILTER + SORT + PAGINATION)
+    public async Task<PagedResult<CardsWomenDto>> BrowseAsync(
+        string? search,
+        int? categoryId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        string? sortBy,
+        int page,
+        int pageSize)
     {
         var query = _context.CardsWoman
             .Include(x => x.WomanCategory)
             .AsQueryable();
 
+        // 🔎 SEARCH
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(x =>
                 EF.Functions.Like(x.Title, $"%{search}%"));
         }
 
-        return await query.Select(x => new CardsWomenDto
-        {
-            Id = x.Id,
-            Title = x.Title,
-            ImageUrl = x.ImageUrl,
-            Price = x.Price,
-            Category = x.WomanCategory.Name
-        }).ToListAsync();
-    }
-
-    // FILTER + SORT (UPDATED)
-    public async Task<IEnumerable<CardsWomenDto>> FilterAsync(
-      int? categoryId,
-      decimal? minPrice,
-      decimal? maxPrice,
-      string? sortBy,
-      int page,
-      int pageSize)
-    {
-        var query = _context.CardsWoman
-            .Include(x => x.WomanCategory)
-            .AsQueryable();
-
-        // FILTER
+        // 🎯 FILTER
         if (categoryId.HasValue)
             query = query.Where(x => x.WomanCategoryId == categoryId.Value);
 
@@ -159,28 +144,8 @@ public class CardsWomenService : ICardsWomenService
         if (maxPrice.HasValue)
             query = query.Where(x => x.Price <= maxPrice.Value);
 
-        // SORT
-        query = ApplySorting(query, sortBy);
-
-        // 📄 PAGINATION (SHTUAR)
-        query = query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize);
-
-        return await query.Select(x => new CardsWomenDto
-        {
-            Id = x.Id,
-            Title = x.Title,
-            ImageUrl = x.ImageUrl,
-            Price = x.Price,
-            Category = x.WomanCategory.Name
-        }).ToListAsync();
-    }
-
-    // 🔃 SORT HELPER
-    private IQueryable<CardsWomen> ApplySorting(IQueryable<CardsWomen> query, string? sortBy)
-    {
-        return sortBy?.ToLower() switch
+        // 🔃 SORT
+        query = sortBy?.ToLower() switch
         {
             "price_asc" => query.OrderBy(x => x.Price),
             "price_desc" => query.OrderByDescending(x => x.Price),
@@ -188,6 +153,31 @@ public class CardsWomenService : ICardsWomenService
             "a_z" => query.OrderBy(x => x.Title),
             "z_a" => query.OrderByDescending(x => x.Title),
             _ => query.OrderBy(x => x.Id)
+        };
+
+        // 📊 TOTAL ITEMS
+        var totalItems = await query.CountAsync();
+
+        // 📄 PAGINATION
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(x => new CardsWomenDto
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ImageUrl = x.ImageUrl,
+                Price = x.Price,
+                Category = x.WomanCategory.Name
+            })
+            .ToListAsync();
+
+        return new PagedResult<CardsWomenDto>
+        {
+            Items = items,
+            TotalItems = totalItems,
+            Page = page,
+            PageSize = pageSize
         };
     }
 }
