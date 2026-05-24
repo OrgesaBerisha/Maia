@@ -9,7 +9,6 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 
 builder.Services.AddControllers();
 
-// 👇 KJO ËSHTË SHUMË E RËNDËSISHME
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
 
 builder.Services.AddEndpointsApiExplorer();
