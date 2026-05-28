@@ -1,11 +1,17 @@
 using Maia.Data.Interface;
 using Maia.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// DbContext (FIXED - ignore PendingModelChangesWarning)
 builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w =>
+               w.Ignore(RelationalEventId.PendingModelChangesWarning)
+           )
+);
 
 builder.Services.AddControllers();
 

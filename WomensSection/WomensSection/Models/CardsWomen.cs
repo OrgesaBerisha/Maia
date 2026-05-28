@@ -13,10 +13,15 @@ namespace Maia.Models
 
         public decimal Price { get; set; }
 
-        // 👇 FK (lidhje me tabelën WomanCategory)
         public int WomanCategoryId { get; set; }
-        public WomanCategory WomanCategory { get; set; }
+
+        // (IMPORTANT për HasData stability)
+        public WomanCategory? WomanCategory { get; set; }
 
         public string Description { get; set; } = string.Empty;
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
     }
 }
