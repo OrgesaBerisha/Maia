@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KidsSection.Models
+public class KidsCategory
 {
-    public class KidsCategory
-    {
-        [Key]
-        public int Id { get; set; }
+    [Key]
+    public int Id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-        public ICollection<KidsCards>? KidsProducts { get; set; }
-    }
+    public ICollection<KidsCards>? KidsCards { get; set; }
 }

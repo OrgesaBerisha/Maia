@@ -12,7 +12,7 @@ namespace KidsSection.Data
         }
         public DbSet<KidsCards> KidsCards { get; set; }
         public DbSet<KidsCategory> KidsCategories { get; set; }
-
+        public DbSet<KidsProductType> KidsProductTypes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
         }

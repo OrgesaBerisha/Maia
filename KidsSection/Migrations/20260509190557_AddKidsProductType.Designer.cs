@@ -3,6 +3,7 @@ using KidsSection.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KidsSection.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260509190557_AddKidsProductType")]
+    partial class AddKidsProductType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,7 @@ namespace KidsSection.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("KidsCards", b =>
+            modelBuilder.Entity("KidsSection.Models.KidsCards", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +43,7 @@ namespace KidsSection.Migrations
                     b.Property<int>("KidsCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("KidsProductTypeId")
+                    b.Property<int?>("KidsProductTypeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -59,7 +62,7 @@ namespace KidsSection.Migrations
                     b.ToTable("KidsCards");
                 });
 
-            modelBuilder.Entity("KidsCategory", b =>
+            modelBuilder.Entity("KidsSection.Models.KidsCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,33 +96,26 @@ namespace KidsSection.Migrations
                     b.ToTable("KidsProductTypes");
                 });
 
-            modelBuilder.Entity("KidsCards", b =>
+            modelBuilder.Entity("KidsSection.Models.KidsCards", b =>
                 {
-                    b.HasOne("KidsCategory", "KidsCategory")
-                        .WithMany("KidsCards")
+                    b.HasOne("KidsSection.Models.KidsCategory", "KidsCategory")
+                        .WithMany("KidsProducts")
                         .HasForeignKey("KidsCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("KidsSection.Models.KidsProductType", "KidsProductType")
-                        .WithMany("KidsCards")
-                        .HasForeignKey("KidsProductTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("KidsProductTypeId");
 
                     b.Navigation("KidsCategory");
 
                     b.Navigation("KidsProductType");
                 });
 
-            modelBuilder.Entity("KidsCategory", b =>
+            modelBuilder.Entity("KidsSection.Models.KidsCategory", b =>
                 {
-                    b.Navigation("KidsCards");
-                });
-
-            modelBuilder.Entity("KidsSection.Models.KidsProductType", b =>
-                {
-                    b.Navigation("KidsCards");
+                    b.Navigation("KidsProducts");
                 });
 #pragma warning restore 612, 618
         }

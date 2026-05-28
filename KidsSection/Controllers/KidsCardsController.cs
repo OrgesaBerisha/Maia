@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KidsSection.Data.DTO;
 using KidsSection.Data.Interface;
-using KidsSection.Data.DTO;
+using KidsSection.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KidsSection.Controllers
 {
@@ -28,7 +29,7 @@ namespace KidsSection.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateKidsCardsDto dto)
+        public async Task<IActionResult> Create([FromForm] CreateKidsCardsDto dto)
         {
             var result = await _service.CreateAsync(dto);
             return Ok(result);
@@ -55,6 +56,26 @@ namespace KidsSection.Controllers
 
             return Ok(result);
         }
+        //SEARCH
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string name)
+        {
+            var result = await _service.SearchAsync(name);
+            return Ok(result);
+        }
 
+        [HttpGet("filter")]
+        public async Task<IActionResult> Filter(string? name, int? categoryId, decimal? min, decimal? max)
+        {
+            return Ok(await _service.FilterAsync(name, categoryId, min, max));
+        }
+
+ 
+
+        [HttpGet("sort")]
+        public async Task<IActionResult> Sort(SortOptions sortBy)
+    {
+        return Ok(await _service.SortAsync(sortBy));
     }
+}
 }
