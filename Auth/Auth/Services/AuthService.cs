@@ -17,7 +17,7 @@ namespace Auth.Services
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
 
-        public AuthServices(DataContext context, IConfiguration configuration)
+        public AuthService(DataContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
@@ -46,7 +46,6 @@ namespace Auth.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-
                 RoleID = defaultRole.RoleID,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
@@ -74,6 +73,7 @@ namespace Auth.Services
                 throw new ArgumentException("Incorrect password.");
 
             string refreshToken = GenerateRefreshToken();
+
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
@@ -110,11 +110,11 @@ namespace Auth.Services
                 throw new Exception("Role not found for user.");
 
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-            new Claim(ClaimTypes.Role, role.RoleType)
-        };
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+                new Claim(ClaimTypes.Role, role.RoleType)
+            };
 
             var secret = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(secret))
@@ -140,8 +140,8 @@ namespace Auth.Services
                 return null;
 
             var handler = new JwtSecurityTokenHandler();
-            JwtSecurityToken token;
 
+            JwtSecurityToken token;
             try
             {
                 token = handler.ReadJwtToken(jwt);
@@ -179,10 +179,12 @@ namespace Auth.Services
                 return (null, null);
 
             string newRefreshToken = GenerateRefreshToken();
+
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             var newAccessToken = await CreateToken(user);
+
             await _context.SaveChangesAsync();
 
             return (newAccessToken, newRefreshToken);
