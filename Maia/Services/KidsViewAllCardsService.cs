@@ -15,7 +15,7 @@ namespace Maia.Services
         {
             _context = context;
         }
-
+        //GET ALL
         public async Task<IEnumerable<KidsViewAllCardsDto>> GetAllAsync()
         {
             return await _context.KidsViewAllCards
@@ -24,27 +24,27 @@ namespace Maia.Services
                     Title = p.Title,
                     ImageUrl = p.ImageUrl,
                     Price = p.Price,
-                    Category = p.Category,
+                    KidsCategoryId = p.KidsCategoryId,
                     Description = p.Description
                 })
                 .ToListAsync();
         }
-
-        public async Task<IEnumerable<KidsViewAllCardsDto>> GetByCategoryAsync(string category)
+        //GET BY ID
+        public async Task<IEnumerable<KidsViewAllCardsDto>> GetByCategoryAsync(int categoryId)
         {
             return await _context.KidsViewAllCards
-                .Where(p => p.Category == category)
+                .Where(p => p.KidsCategoryId == categoryId)
                 .Select(p => new KidsViewAllCardsDto
                 {
                     Title = p.Title,
                     ImageUrl = p.ImageUrl,
                     Price = p.Price,
-                    Category = p.Category,
+                    KidsCategoryId = p.KidsCategoryId,
                     Description = p.Description
                 })
                 .ToListAsync();
         }
-
+        //CREATE
         public async Task<KidsViewAllCardsDto> CreateAsync(CreateKidsViewAllCardsDto dto)
         {
             var card = new KidsViewAllCards
@@ -52,7 +52,7 @@ namespace Maia.Services
                 Title = dto.Title,
                 ImageUrl = dto.ImageUrl,
                 Price = dto.Price,
-                Category = dto.Category,
+                KidsCategoryId = dto.KidsCategoryId,
                 Description = dto.Description
             };
 
@@ -64,10 +64,11 @@ namespace Maia.Services
                 Title = card.Title,
                 ImageUrl = card.ImageUrl,
                 Price = card.Price,
-                Category = card.Category,
+                KidsCategoryId = card.KidsCategoryId,
                 Description = card.Description
             };
         }
+        //UPDATE
         public async Task<KidsViewAllCardsDto> UpdateAsync(int id, CreateKidsViewAllCardsDto dto)
         {
             var entity = await _context.KidsViewAllCards.FindAsync(id);
@@ -77,7 +78,7 @@ namespace Maia.Services
             entity.Title = dto.Title;
             entity.ImageUrl = dto.ImageUrl;
             entity.Price = dto.Price;
-            entity.Category = dto.Category;
+            entity.KidsCategoryId = dto.KidsCategoryId;
             entity.Description = dto.Description;
 
             await _context.SaveChangesAsync();
@@ -88,7 +89,7 @@ namespace Maia.Services
                 Title = entity.Title,
                 ImageUrl = entity.ImageUrl,
                 Price = entity.Price,
-                Category = entity.Category,
+                KidsCategoryId = entity.KidsCategoryId,
                 Description = entity.Description
             };
         }

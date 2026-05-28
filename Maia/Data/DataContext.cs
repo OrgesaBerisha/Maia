@@ -42,6 +42,8 @@ namespace Maia.Data
 
             modelBuilder.Entity<WomanCategory>()
                 .ToTable("WomanCategories");
+        public DbSet<KidsCategory> KidsCategories { get; set; }
+
 
             modelBuilder.Entity<KidsViewAllCards>()
                 .ToTable("KidsViewAllCards");

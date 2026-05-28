@@ -3,6 +3,7 @@ using Maia.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Maia.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260507141351_AddKidsCategoryTable")]
+    partial class AddKidsCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,6 +32,10 @@ namespace Maia.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -44,18 +51,11 @@ namespace Maia.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("WomanCategoryId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("WomanCategoryId");
-
-                    b.ToTable("CardsWomen", (string)null);
                     b.ToTable("CardsWoman");
                 });
 
-            modelBuilder.Entity("Maia.Models.KidsViewAllCards", b =>
             modelBuilder.Entity("Maia.Models.KidsCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -101,7 +101,6 @@ namespace Maia.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("KidsViewAllCards", (string)null);
                     b.HasIndex("KidsCategoryId");
 
                     b.ToTable("KidsViewAllCards");
@@ -177,34 +176,6 @@ namespace Maia.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
-                });
-
-            modelBuilder.Entity("Maia.Models.WomanCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("WomanCategories", (string)null);
-                });
-
-            modelBuilder.Entity("Maia.Models.CardsWomen", b =>
-                {
-                    b.HasOne("Maia.Models.WomanCategory", "WomanCategory")
-                        .WithMany()
-                        .HasForeignKey("WomanCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("WomanCategory");
                 });
 
             modelBuilder.Entity("Maia.Models.KidsViewAllCards", b =>
