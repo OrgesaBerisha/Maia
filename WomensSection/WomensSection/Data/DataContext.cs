@@ -13,6 +13,13 @@ namespace Maia.Data
         public DbSet<CardsWomen> CardsWoman { get; set; }
         public DbSet<WomanCategory> WomanCategories { get; set; }
 
+        // ORDERS
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<WishlistItem> WishlistItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,11 +30,35 @@ namespace Maia.Data
             modelBuilder.Entity<WomanCategory>()
                 .ToTable("WomanCategories");
 
+            modelBuilder.Entity<Order>()
+                .ToTable("Orders");
+
+            modelBuilder.Entity<OrderItem>()
+                .ToTable("OrderItems");
+
             modelBuilder.Entity<CardsWomen>()
                 .HasOne(c => c.WomanCategory)
                 .WithMany()
                 .HasForeignKey(c => c.WomanCategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithOne(i => i.Order)
+                .HasForeignKey(i => i.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Cart>()
+                .HasMany(c => c.CartItems)
+                .WithOne(ci => ci.Cart)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Wishlist>()
+                .HasMany(w => w.WishlistItems)
+                .WithOne(wi => wi.Wishlist)
+                .HasForeignKey(wi => wi.WishlistId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CardsWomen>()
                 .Property(x => x.Price)
@@ -37,7 +68,7 @@ namespace Maia.Data
                 .Property(x => x.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
 
-            // ⚠️ FIX KRYESOR: mos përdor objekte “të pa stabilizuara”
+            // FIX seed stability
             var seedDate = new DateTime(2026, 1, 1);
 
             modelBuilder.Entity<WomanCategory>().HasData(
