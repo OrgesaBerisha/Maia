@@ -16,7 +16,7 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
-
+builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

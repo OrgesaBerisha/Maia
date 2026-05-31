@@ -13,6 +13,6 @@ public class Order
 
     public decimal TotalPrice { get; set; }
 
-    // 👇 relation
+    //  relation
     public List<OrderItem> OrderItems { get; set; } = new();
 }
