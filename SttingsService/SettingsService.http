@@ -1,0 +1,6 @@
+@SttingsService_HostAddress = http://localhost:5271
+
+GET {{SttingsService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
