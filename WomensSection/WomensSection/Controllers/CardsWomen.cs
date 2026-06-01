@@ -27,19 +27,47 @@ namespace Maia.Controllers
             return Ok(await _service.GetByCategoryAsync(category));
         }
 
-        // 👇 WOMEN PAGE (ZARA STYLE ENTRY POINT)
+        // 👇 WOMEN PAGE
         [HttpGet("women")]
         public async Task<IActionResult> GetWomen()
         {
             return Ok(await _service.GetAllAsync());
         }
 
+        // 🚀 FILTER + SORT + PAGINATION
+        [HttpGet("browse")]
+        public async Task<IActionResult> Browse(
+          [FromQuery] string? search,
+          [FromQuery] int? categoryId,
+          [FromQuery] decimal? minPrice,
+          [FromQuery] decimal? maxPrice,
+          [FromQuery] string? sortBy,
+          [FromQuery] int page = 1,
+          [FromQuery] int pageSize = 10)
+        {
+            var result = await _service.BrowseAsync(
+                search,
+                categoryId,
+                minPrice,
+                maxPrice,
+                sortBy,
+                page,
+                pageSize);
+
+            return Ok(result);
+        }
+
+        // ✅ CREATE (VALIDATION SHTUAR)
         [HttpPost]
         public async Task<IActionResult> Create(CreateCardsWomenDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             return Ok(await _service.CreateAsync(dto));
         }
 
+        // ✅ DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -51,9 +79,13 @@ namespace Maia.Controllers
             return NoContent();
         }
 
+        // ✅ UPDATE (VALIDATION SHTUAR)
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, CreateCardsWomenDto dto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var updated = await _service.UpdateAsync(id, dto);
 
             if (updated == null)

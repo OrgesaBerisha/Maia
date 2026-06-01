@@ -13,5 +13,15 @@ namespace Maia.Data.Interface
         Task<bool> DeleteAsync(int id);
 
         Task<CardsWomenDto?> UpdateAsync(int id, CreateCardsWomenDto dto);
+
+        // (SEARCH + FILTER + SORT + PAGINATION)
+        Task<PagedResult<CardsWomenDto>> BrowseAsync(
+      string? search,
+      int? categoryId,
+      decimal? minPrice,
+      decimal? maxPrice,
+      string? sortBy,
+      int page,
+      int pageSize);
     }
 }
