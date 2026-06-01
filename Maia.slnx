@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Maia/Maia.csproj" />
+  <Project Path="NotificationService/NotificationService.csproj" />
 </Solution>
