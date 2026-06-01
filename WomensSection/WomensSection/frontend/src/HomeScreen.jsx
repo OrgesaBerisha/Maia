@@ -44,7 +44,7 @@ function HomeScreen() {
 
       {/* Center branding row — click anywhere to enter the shop */}
       <Link to="/shop" className="home-content" aria-label="Enter shop">
-        <span className="home-tagline">// ME SLIDER QITA MAIA</span>
+        <span className="home-tagline">MENU</span>
         <span className="home-brand">MAIA</span>
       </Link>
     </div>
