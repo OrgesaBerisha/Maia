@@ -25,6 +25,7 @@
   inset: 0;
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   padding: 40px 80px 0;
 }
 
@@ -152,36 +153,3 @@
   font-size: 14px;
 }
 
-/* ── Bottom Nav ── */
-.bottom-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 18px 80px;
-  border-top: 1px solid #e8e0d8;
-  background: #ffffff;
-  position: sticky;
-  bottom: 0;
-}
-
-.nav-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  color: #1a1208;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  transition: opacity 0.2s;
-  border-radius: 4px;
-}
-
-.nav-icon:hover {
-  opacity: 0.5;
-}
-
-.nav-icon.active {
-  color: #1a1208;
-}

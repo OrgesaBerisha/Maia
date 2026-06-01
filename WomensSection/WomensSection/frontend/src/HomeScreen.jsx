@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import BottomNav from './BottomNav.jsx';
 import './HomeScreen.css';
 
 function HomeScreen() {
@@ -42,11 +43,27 @@ function HomeScreen() {
         />
       </svg>
 
-      {/* Center branding row — click anywhere to enter the shop */}
-      <Link to="/shop" className="home-content" aria-label="Enter shop">
-        <span className="home-tagline">MENU</span>
-        <span className="home-brand">MAIA</span>
+      {/* Animated marquee */}
+      <Link to="/shop" className="marquee-link" aria-label="Enter shop">
+        <div className="marquee-viewport">
+          <div className="marquee-track">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="marquee-word">
+                MAIA <span className="marquee-sep">·</span>
+              </span>
+            ))}
+          </div>
+          <div className="marquee-track" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <span key={i} className="marquee-word">
+                MAIA <span className="marquee-sep">·</span>
+              </span>
+            ))}
+          </div>
+        </div>
       </Link>
+
+      <BottomNav />
     </div>
   );
 }

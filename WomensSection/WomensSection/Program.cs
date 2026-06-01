@@ -15,6 +15,19 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins(
+                "http://localhost:5173",
+                "https://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5182"
+              )
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
@@ -31,6 +44,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
