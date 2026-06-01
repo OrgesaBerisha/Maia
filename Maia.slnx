@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="FileUploadService/FileUploadService.csproj" />
   <Project Path="Maia/Maia.csproj" />
   <Project Path="NotificationService/NotificationService.csproj" />
 </Solution>
