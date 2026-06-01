@@ -8,9 +8,10 @@ namespace Maia.Models
         public int Id { get; set; }
 
         public int CartId { get; set; }
-        public Cart Cart { get; set; }
+        public Cart Cart { get; set; } = null!;
 
         public int ProductId { get; set; }
+        public CardsWomen Product { get; set; } = null!;  // ← SHTUAR navigation
 
         public int Quantity { get; set; }
     }

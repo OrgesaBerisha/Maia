@@ -15,32 +15,41 @@ namespace Maia.Services
             _context = context;
         }
 
-        public async Task AddAsync(AddToWishlistDto dto)
+        public async Task AddAsync(int userId, AddToWishlistDto dto)
         {
             var wishlist = await _context.Wishlists
                 .Include(x => x.WishlistItems)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
             if (wishlist == null)
             {
-                wishlist = new Wishlist();
+                wishlist = new Wishlist { UserId = userId };
                 _context.Wishlists.Add(wishlist);
                 await _context.SaveChangesAsync();
             }
 
-            var item = new WishlistItem
-            {
-                WishlistId = wishlist.Id,
-                ProductId = dto.ProductId
-            };
+            // Mos shto dy herë të njëjtin produkt
+            var alreadyAdded = wishlist.WishlistItems
+                .Any(x => x.ProductId == dto.ProductId);
 
-            _context.WishlistItems.Add(item);
-            await _context.SaveChangesAsync();
+            if (!alreadyAdded)
+            {
+                _context.WishlistItems.Add(new WishlistItem
+                {
+                    WishlistId = wishlist.Id,
+                    ProductId = dto.ProductId
+                });
+
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public async Task RemoveAsync(int id)
+        public async Task RemoveAsync(int userId, int id)
         {
-            var item = await _context.WishlistItems.FindAsync(id);
+            // Sigurohu që WishlistItem i takon këtij useri
+            var item = await _context.WishlistItems
+                .Include(x => x.Wishlist)
+                .FirstOrDefaultAsync(x => x.Id == id && x.Wishlist.UserId == userId);
 
             if (item != null)
             {
@@ -49,11 +58,26 @@ namespace Maia.Services
             }
         }
 
-        public async Task<object> GetAsync()
+        public async Task<object> GetAsync(int userId)
         {
-            return await _context.Wishlists
+            var wishlist = await _context.Wishlists
                 .Include(x => x.WishlistItems)
-                .FirstOrDefaultAsync();
+                    .ThenInclude(x => x.Product)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (wishlist == null)
+                return new { items = Array.Empty<object>() };
+
+            var items = wishlist.WishlistItems.Select(i => new
+            {
+                i.Id,
+                i.ProductId,
+                ProductName = i.Product?.Title,
+                ProductImage = i.Product?.ImageUrl,
+                Price = i.Product?.Price
+            });
+
+            return new { WishlistId = wishlist.Id, Items = items };
         }
     }
 }

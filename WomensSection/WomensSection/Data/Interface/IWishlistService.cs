@@ -4,8 +4,8 @@ namespace Maia.Data.Interface
 {
     public interface IWishlistService
     {
-        Task AddAsync(AddToWishlistDto dto);
-        Task RemoveAsync(int id);
-        Task<object> GetAsync();
+        Task AddAsync(int userId, AddToWishlistDto dto);
+        Task RemoveAsync(int userId, int id);
+        Task<object> GetAsync(int userId);
     }
 }
