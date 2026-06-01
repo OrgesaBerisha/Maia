@@ -68,9 +68,9 @@ function BottomNav() {
         <IconBag />
         {bag.length > 0 && <span className="nav-bag-badge">{bag.length}</span>}
       </Link>
-      <button className="nav-icon" title="Account">
+      <Link to="/profile" className={`nav-icon${pathname === '/profile' ? ' nav-icon--active' : ''}`} title="Account">
         <IconUser />
-      </button>
+      </Link>
     </nav>
   );
 }

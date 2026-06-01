@@ -209,6 +209,10 @@
   text-transform: uppercase;
   align-self: flex-end;
   transition: background 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bag-checkout-btn:hover {

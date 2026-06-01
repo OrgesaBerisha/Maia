@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from './CartContext.jsx';
 import BottomNav from './BottomNav.jsx';
 import SiteLogo from './SiteLogo.jsx';
@@ -109,7 +110,7 @@ function BagPage() {
                     <span className="bag-total-label">TOTAL</span>
                     <span className="bag-total-value">{bagTotal.toFixed(2)} EUR</span>
                   </div>
-                  <button className="bag-checkout-btn">PROCEED TO CHECKOUT</button>
+                  <Link to="/checkout" className="bag-checkout-btn">PROCEED TO CHECKOUT</Link>
                 </div>
               </>
             )}
