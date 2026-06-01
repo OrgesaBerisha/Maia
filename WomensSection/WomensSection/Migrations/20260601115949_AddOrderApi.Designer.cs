@@ -4,6 +4,7 @@ using Maia.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WomensSection.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260601115949_AddOrderApi")]
+    partial class AddOrderApi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,9 +120,6 @@ namespace WomensSection.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Carts");
@@ -146,8 +146,6 @@ namespace WomensSection.Migrations
 
                     b.HasIndex("CartId");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("CartItems");
                 });
 
@@ -162,11 +160,12 @@ namespace WomensSection.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -197,8 +196,6 @@ namespace WomensSection.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductId");
-
                     b.ToTable("OrderItems", (string)null);
                 });
 
@@ -212,9 +209,6 @@ namespace WomensSection.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -236,8 +230,6 @@ namespace WomensSection.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("WishlistId");
 
@@ -270,25 +262,25 @@ namespace WomensSection.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 1, 18, 23, 1, 587, DateTimeKind.Utc).AddTicks(4920),
+                            CreatedAt = new DateTime(2026, 6, 1, 11, 59, 48, 259, DateTimeKind.Utc).AddTicks(5495),
                             Name = "Dresses"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 1, 18, 23, 1, 587, DateTimeKind.Utc).AddTicks(5347),
+                            CreatedAt = new DateTime(2026, 6, 1, 11, 59, 48, 259, DateTimeKind.Utc).AddTicks(6207),
                             Name = "Shoes"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 1, 18, 23, 1, 587, DateTimeKind.Utc).AddTicks(5348),
+                            CreatedAt = new DateTime(2026, 6, 1, 11, 59, 48, 259, DateTimeKind.Utc).AddTicks(6208),
                             Name = "Jackets"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 1, 18, 23, 1, 587, DateTimeKind.Utc).AddTicks(5349),
+                            CreatedAt = new DateTime(2026, 6, 1, 11, 59, 48, 259, DateTimeKind.Utc).AddTicks(6209),
                             Name = "Bags"
                         });
                 });
@@ -312,15 +304,7 @@ namespace WomensSection.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Maia.Models.CardsWomen", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Cart");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Maia.Models.OrderItem", b =>
@@ -331,32 +315,16 @@ namespace WomensSection.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Maia.Models.CardsWomen", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Order");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Maia.Models.WishlistItem", b =>
                 {
-                    b.HasOne("Maia.Models.CardsWomen", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Maia.Models.Wishlist", "Wishlist")
                         .WithMany("WishlistItems")
                         .HasForeignKey("WishlistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
 
                     b.Navigation("Wishlist");
                 });
