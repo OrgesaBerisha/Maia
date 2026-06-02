@@ -1,23 +1,14 @@
 ﻿using Auth.Models;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
-        {
-        }
+        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        //public DbSet<UserRole> UserRoles { get; set; }
-
-
-
-
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,13 +16,13 @@ namespace Auth.Data
                 .HasOne(u => u.Role)
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleID)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict); // FIXED: was Cascade — deleting a role would delete all users
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
 
             base.OnModelCreating(modelBuilder);
         }
-
-
-
     }
 }
