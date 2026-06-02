@@ -79,10 +79,10 @@ namespace Maia.Data
             );
 
             modelBuilder.Entity<CardsWomen>().HasData(
-                new CardsWomen { Id = 1, Title = "Summer Dress",  ImageUrl = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", Price = 25,  Description = "Light summer dress",  WomanCategoryId = 1, CreatedAt = seedDate },
+                new CardsWomen { Id = 1, Title = "Summer Dress",   ImageUrl = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", Price = 25,  Description = "Light summer dress",    WomanCategoryId = 1, CreatedAt = seedDate },
                 new CardsWomen { Id = 2, Title = "White Sneakers", ImageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80", Price = 80,  Description = "Classic white sneakers", WomanCategoryId = 2, CreatedAt = seedDate },
-                new CardsWomen { Id = 3, Title = "Winter Jacket",  ImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80", Price = 120, Description = "Warm winter jacket",   WomanCategoryId = 3, CreatedAt = seedDate },
-                new CardsWomen { Id = 4, Title = "Leather Bag",    ImageUrl = "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80", Price = 200, Description = "Premium leather bag",  WomanCategoryId = 4, CreatedAt = seedDate }
+                new CardsWomen { Id = 3, Title = "Winter Jacket",  ImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80", Price = 120, Description = "Warm winter jacket",    WomanCategoryId = 3, CreatedAt = seedDate },
+                new CardsWomen { Id = 4, Title = "Leather Bag",    ImageUrl = "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80", Price = 200, Description = "Premium leather bag",   WomanCategoryId = 4, CreatedAt = seedDate }
             );
         }
     }
