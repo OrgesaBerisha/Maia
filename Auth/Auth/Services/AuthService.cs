@@ -2,13 +2,13 @@
 using Auth.Data.DTO;
 using Auth.Data.Interface;
 using Auth.Models;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Mapster;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.Services
 {
@@ -30,13 +30,11 @@ namespace Auth.Services
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (existing != null)
-                throw new Exception("User already exists");
+                throw new Exception("User already exists.");
 
             var role = await _context.Roles
-                .FirstOrDefaultAsync(r => r.RoleType == Roles.Customer);
-
-            if (role == null)
-                throw new Exception("Default role missing");
+                .FirstOrDefaultAsync(r => r.RoleType == Roles.Customer)
+                ?? throw new Exception("Default customer role is missing. Please seed the database.");
 
             CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
@@ -58,54 +56,55 @@ namespace Auth.Services
             return user.Adapt<UserDTO>();
         }
 
-        // ================= LOGIN (FIXED) =================
+        // ================= LOGIN =================
         public async Task<AuthResponseDTO> Login(UserLoginDTO request)
         {
             var user = await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-            if (user == null)
-                throw new Exception("User not found");
+            // Use a generic message — don't reveal whether email or password was wrong
+            if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+                throw new Exception("Invalid email or password.");
 
             if (!user.IsActive)
-                throw new Exception("User disabled");
-
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-                throw new Exception("Wrong password");
+                throw new Exception("This account has been disabled.");
 
             var refreshToken = GenerateRefreshToken();
 
-            user.RefreshToken = refreshToken;
+            // FIXED: store the hash of the refresh token, not the raw value
+            user.RefreshTokenHash = HashToken(refreshToken);
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
             await _context.SaveChangesAsync();
 
-            var accessToken = await CreateToken(user);
+            var accessToken = CreateToken(user);
 
             return new AuthResponseDTO
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken
+                RefreshToken = refreshToken  // Return raw token to client; DB stores hash
             };
         }
 
-        // ================= CREATE TOKEN =================
-        public async Task<string> CreateToken(User user)
+        // ================= CREATE TOKEN (private — not on interface) =================
+        private string CreateToken(User user)
         {
-            var role = await _context.Roles.FindAsync(user.RoleID);
+            // user.Role is already loaded via .Include() in Login and RotateRefreshToken
+            if (user.Role == null)
+                throw new Exception("User role not loaded.");
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.NameIdentifier, user.UserID.ToString()),
-                new Claim(ClaimTypes.Role, role.RoleType)
+                new Claim(ClaimTypes.Role, user.Role.RoleType)
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
-            );
+            var keyString = _configuration["Jwt:Key"]
+                ?? throw new Exception("JWT key is not configured.");
 
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
@@ -122,112 +121,118 @@ namespace Auth.Services
         }
 
         // ================= REFRESH TOKEN =================
-        public async Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken)
+        public async Task<AuthResponseDTO?> RotateRefreshToken(string oldRefreshToken)
         {
+            var hashedOld = HashToken(oldRefreshToken);
+
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.RefreshToken == oldRefreshToken);
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.RefreshTokenHash == hashedOld);
 
             if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
-                return (null, null);
+                return null;
 
-            var newRefresh = GenerateRefreshToken();
+            var newRefreshToken = GenerateRefreshToken();
 
-            user.RefreshToken = newRefresh;
+            user.RefreshTokenHash = HashToken(newRefreshToken);
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
-            var newAccess = await CreateToken(user);
+            var newAccessToken = CreateToken(user);
 
             await _context.SaveChangesAsync();
 
-            return (newAccess, newRefresh);
+            return new AuthResponseDTO
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            };
         }
 
         // ================= LOGOUT =================
         public async Task Logout(string refreshToken)
         {
+            var hashed = HashToken(refreshToken);
+
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+                .FirstOrDefaultAsync(u => u.RefreshTokenHash == hashed);
 
             if (user == null) return;
 
-            user.RefreshToken = null;
+            user.RefreshTokenHash = null;
             user.RefreshTokenExpiry = null;
 
             await _context.SaveChangesAsync();
         }
 
-        // ================= JWT PARSE =================
-        public async Task<UserDTO> GetUserFromJwt(string jwt)
+        // ================= GET USER FROM JWT =================
+        public async Task<UserDTO?> GetUserFromJwt(string jwt)
         {
-            var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(jwt);
+            // FIXED: properly validate the token instead of blindly reading it
+            var keyString = _configuration["Jwt:Key"]
+                ?? throw new Exception("JWT key is not configured.");
 
-            var userId = token.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
 
-            if (userId == null) return null;
+            try
+            {
+                tokenHandler.ValidateToken(jwt, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateIssuer = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
 
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserID == int.Parse(userId));
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userIdClaim = jwtToken.Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            return user?.Adapt<UserDTO>();
+                if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+                    return null;
+
+                var user = await _context.Users
+                    .Include(u => u.Role)
+                    .FirstOrDefaultAsync(u => u.UserID == userId);
+
+                return user?.Adapt<UserDTO>();
+            }
+            catch
+            {
+                return null; // Token is invalid or expired
+            }
         }
 
         // ================= HELPERS =================
-        private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
+        private static void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
             using var hmac = new HMACSHA512();
             salt = hmac.Key;
             hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
-        private bool VerifyPasswordHash(string password, byte[] hash, byte[] salt)
+        private static bool VerifyPasswordHash(string password, byte[] hash, byte[] salt)
         {
             using var hmac = new HMACSHA512(salt);
             var computed = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             return computed.SequenceEqual(hash);
         }
 
-        private string GenerateRefreshToken()
+        private static string GenerateRefreshToken()
         {
             var bytes = new byte[64];
             RandomNumberGenerator.Fill(bytes);
             return Convert.ToBase64String(bytes);
         }
-        //private readonly DataContext _context;
-        //private readonly IJwtService _jwt;
-        //public AuthService(DataContext context, IJwtService jwt)
-        //{
-        //    _context = context;
-        //    _jwt = jwt;
-        //}
 
-        //public async Task<string> Register(RegisterDto dto)
-        //{
-        //    var user = new User
-        //    {
-        //        FirstName = dto.FirstName,
-        //        LastName = dto.LastName,
-        //        Email = dto.Email,
-        //        PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
-        //    };
-
-        //    _context.Users.Add(user);
-        //    await _context.SaveChangesAsync();
-
-        //    return _jwt.GenerateToken(user);
-        //}
-
-        //public async Task<string> Login(LoginDto dto)
-        //{
-        //    var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == dto.Email);
-
-        //    if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-        //        throw new Exception("Invalid credentials");
-
-        //    return _jwt.GenerateToken(user);
-        //}
-
+        private static string HashToken(string token)
+        {
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+            return Convert.ToBase64String(bytes);
+        }
     }
 }
