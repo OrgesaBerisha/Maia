@@ -10,26 +10,26 @@ namespace Auth.Models
         public int UserID { get; set; }
 
         [Required]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [Required]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [Required]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
-        public byte[] PasswordHash { get; set; }
+        public required byte[] PasswordHash { get; set; }
 
         [Required]
-        public byte[] PasswordSalt { get; set; }
+        public required byte[] PasswordSalt { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         public int RoleID { get; set; }
 
-        public Role Role { get; set; }
+        public Role? Role { get; set; }
 
         // Stored as a hash, not plain text
         public string? RefreshTokenHash { get; set; }

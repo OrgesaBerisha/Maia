@@ -37,10 +37,16 @@ namespace Auth.Controllers
             {
                 var tokens = await _service.Login(request);
 
-                // Store tokens in HttpOnly cookies (not exposed in body for security)
                 AppendAuthCookies(tokens.AccessToken, tokens.RefreshToken);
 
-                return Ok(new { isLoggedIn = true });
+                return Ok(new
+                {
+                    isLoggedIn = true,
+                    role = tokens.Role,
+                    email = tokens.Email,
+                    firstName = tokens.FirstName,
+                    lastName = tokens.LastName
+                });
             }
             catch (Exception ex)
             {

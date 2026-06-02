@@ -10,9 +10,9 @@ namespace Auth.Models
         public int RoleID { get; set; }
 
         [Required]
-        public string RoleType { get; set; }
+        public required string RoleType { get; set; }
 
-        public ICollection<User> Users { get; set; }
+        public ICollection<User> Users { get; set; } = new List<User>();
     }
 
     public static class Roles

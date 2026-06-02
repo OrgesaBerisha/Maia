@@ -59,7 +59,7 @@ namespace Auth.Services
                     LastName = u.LastName,
                     Email = u.Email,
                     CreatedAt = u.CreatedAt,
-                    RoleType = u.Role.RoleType,
+                    RoleType = u.Role != null ? u.Role.RoleType : null,
                     IsActive = u.IsActive,
                     DisabledAt = u.DisabledAt
                 })
