@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useCart } from './CartContext.jsx'
 import { useAuth } from './AuthContext.jsx'
+import NotificationBell from './NotificationBell.jsx'
 import './BottomNav.css'
 
 function IconHome() {
@@ -70,6 +71,7 @@ function BottomNav() {
         <IconBag />
         {bag.length > 0 && <span className="nav-bag-badge">{bag.length}</span>}
       </Link>
+      <NotificationBell />
       <Link
         to={isLoggedIn ? '/profile' : '/login'}
         className={`nav-icon${(pathname === '/profile' || pathname === '/login') ? ' nav-icon--active' : ''}`}
