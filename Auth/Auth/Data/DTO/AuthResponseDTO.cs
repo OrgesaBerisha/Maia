@@ -1,4 +1,5 @@
-﻿namespace Auth.Data.DTO
+﻿
+namespace Auth.Data.DTO
 {
     public class AuthResponseDTO
     {
