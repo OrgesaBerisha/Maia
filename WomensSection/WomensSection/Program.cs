@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DbContext (FIXED - ignore PendingModelChangesWarning)
+// DbContext
 builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w =>
@@ -15,6 +15,7 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 
 builder.Services.AddControllers();
 
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -28,10 +29,12 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+// Services
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -44,11 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowFrontend");
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

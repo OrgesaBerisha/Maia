@@ -6,15 +6,16 @@ import './ShopPage.css';
 const SECTIONS = ['WOMAN', 'MAN', 'KIDS'];
 
 const CATEGORIES = {
-  WOMAN: ['VIEW ALL', 'JACKETS', 'BLAZERS', 'T-SHIRTS', 'DRESSES', 'TOPS', 'SHIRTS', 'JEANS', 'SKIRTS', 'LEATHER', 'SHORTS'],
-  MAN:   ['VIEW ALL', 'JACKETS', 'BLAZERS', 'T-SHIRTS', 'TROUSERS', 'SHIRTS', 'JEANS', 'SHORTS', 'LEATHER', 'SUITS'],
-  KIDS:  ['VIEW ALL', 'T-SHIRTS', 'DRESSES', 'TOPS', 'JEANS', 'SHORTS', 'OUTERWEAR'],
+  WOMAN: ['VIEW ALL', 'DRESSES','T-SHIRTS','SHIRTS','JEANS', 'SKIRTS'],
+  MAN:   ['VIEW ALL', 'JACKETS', 'BLAZERS', 'T-SHIRTS','SHIRTS', 'JEANS'],
+  KIDS:  ['VIEW ALL', 'T-SHIRTS', 'DRESSES', 'TOPS', 'JEANS', 'SHORTS'],
 };
 
 const FOOTER_CATS = {
   left:  ['SHOES |', 'ACCESSORIES'],
   right: ['SHOES', 'BAGS', 'JEWELLERY'],
 };
+
 
 function ShopPage() {
   const [activeSection, setActiveSection] = useState('WOMAN');

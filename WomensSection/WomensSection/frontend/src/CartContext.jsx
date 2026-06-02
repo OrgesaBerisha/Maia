@@ -1,58 +1,102 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import api from './api/axios.js';
 
 const CartContext = createContext(null);
 
-const DEMO_BAG = [
-  { id: 101, name: 'BLACK TOP',  size: 'S',        price: '20 EUR', category: 'WOMAN', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=300&q=80' },
-  { id: 102, name: 'WHITE TOP',  size: 'XS',       price: '20 EUR', category: 'WOMAN', image: 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=300&q=80' },
-  { id: 103, name: 'BROWN BAG',  size: 'ONE SIZE', price: '30 EUR', category: 'WOMAN', image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=300&q=80' },
-];
-
-function load(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
+function mapItem(i) {
+  return {
+    cartItemId: i.id,
+    id:         i.productId,
+    name:       i.productName?.toUpperCase() ?? '',
+    price:      `${i.price} EUR`,
+    image:      i.productImage ?? '',
+    quantity:   i.quantity,
+    size:       i.size ?? 'ONE SIZE',
+  };
 }
 
 export function CartProvider({ children }) {
-  const [bag,       setBag]       = useState(() => load('maia_bag',  DEMO_BAG));
-  const [favorites, setFavorites] = useState(() => load('maia_favs', []));
+  const [bag,       setBag]       = useState([]);
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('maia_favs') ?? '[]'); } catch { return []; }
+  });
 
-  useEffect(() => { localStorage.setItem('maia_bag',  JSON.stringify(bag)); },       [bag]);
-  useEffect(() => { localStorage.setItem('maia_favs', JSON.stringify(favorites)); }, [favorites]);
+  /* ── Fetch cart from backend ── */
+  const fetchCart = useCallback(async () => {
+    try {
+      const { data } = await api.get('/Cart');
+      setBag((data.items ?? []).map(mapItem));
+    } catch {
+      setBag([]);
+    }
+  }, []);
 
-  const addToBag = (item) => {
-    setBag(prev => {
-      const exists = prev.find(i => i.id === item.id && i.size === item.size);
-      return exists ? prev : [...prev, item];
-    });
+  useEffect(() => { fetchCart(); }, [fetchCart]);
+
+  /* persist favorites locally */
+  useEffect(() => {
+    localStorage.setItem('maia_favs', JSON.stringify(favorites));
+  }, [favorites]);
+
+  /* ── Cart API actions ── */
+  const addToBag = async (item) => {
+    try {
+      await api.post('/Cart', { productId: item.id, quantity: 1 });
+      await fetchCart();
+    } catch {
+      /* fallback: add locally so UI doesn't break */
+      setBag(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item]);
+    }
   };
 
-  const removeFromBag = (id, size) =>
+  const removeFromBag = async (id, size, cartItemId) => {
+    const idToRemove = cartItemId ?? bag.find(i => i.id === id && i.size === size)?.cartItemId;
+    if (idToRemove) {
+      try {
+        await api.delete(`/Cart/${idToRemove}`);
+      } catch { /* continue */ }
+    }
     setBag(prev => prev.filter(i => !(i.id === id && i.size === size)));
+  };
 
-  const saveForLater = (id, size) => {
+  const saveForLater = async (id, size, cartItemId) => {
     const item = bag.find(i => i.id === id && i.size === size);
     if (!item) return;
-    removeFromBag(id, size);
+    await removeFromBag(id, size, cartItemId);
     setFavorites(prev => prev.find(i => i.id === id && i.size === size) ? prev : [...prev, item]);
   };
 
-  const removeFromFavorites = (id, size) =>
-    setFavorites(prev => prev.filter(i => !(i.id === id && i.size === size)));
+  /* ── Wishlist API actions ── */
+  const addToWishlist = async (item) => {
+    try {
+      await api.post('/Wishlist', { productId: item.id });
+    } catch { /* continue */ }
+    setFavorites(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item]);
+  };
 
-  const moveToCart = (id, size) => {
+  const removeFromFavorites = async (id, size) => {
+    const item = favorites.find(i => i.id === id && i.size === size);
+    if (item?.wishlistItemId) {
+      try { await api.delete(`/Wishlist/${item.wishlistItemId}`); } catch { /* continue */ }
+    }
+    setFavorites(prev => prev.filter(i => !(i.id === id && i.size === size)));
+  };
+
+  const moveToCart = async (id, size) => {
     const item = favorites.find(i => i.id === id && i.size === size);
     if (!item) return;
-    removeFromFavorites(id, size);
-    setBag(prev => prev.find(i => i.id === id && i.size === size) ? prev : [...prev, item]);
+    await removeFromFavorites(id, size);
+    await addToBag(item);
   };
 
   return (
-    <CartContext.Provider value={{ bag, favorites, addToBag, removeFromBag, saveForLater, removeFromFavorites, moveToCart }}>
+    <CartContext.Provider value={{
+      bag, favorites,
+      addToBag, removeFromBag,
+      saveForLater, addToWishlist,
+      removeFromFavorites, moveToCart,
+      fetchCart,
+    }}>
       {children}
     </CartContext.Provider>
   );

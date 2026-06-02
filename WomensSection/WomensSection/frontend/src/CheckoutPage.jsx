@@ -74,15 +74,17 @@ function CheckoutPage() {
     try {
       await api.post('/Order', {
         customerName: form.fullName,
-        items: bag.map(item => ({ productId: item.id, quantity: 1 })),
+        items: bag.map(item => ({ productId: item.id, quantity: item.quantity ?? 1 })),
       });
-    } catch {
-      /* 401 expected until auth is implemented — order still confirms UI-side */
+    } catch (err) {
+      console.error('Order API error:', err?.response?.data ?? err.message);
     }
 
     const ref = `MAIA-${Date.now().toString().slice(-6)}`;
     setOrderRef(ref);
-    bag.forEach(item => removeFromBag(item.id, item.size));
+    for (const item of bag) {
+      await removeFromBag(item.id, item.size, item.cartItemId);
+    }
     setConfirmed(true);
     setSubmit(false);
   };
