@@ -6,17 +6,10 @@ namespace Auth.Data.Interface
     public interface IAuthService
     {
         Task<UserDTO> Register(UserRegisterDTO request);
-
         Task<AuthResponseDTO> Login(UserLoginDTO request);
-
-        Task<string> CreateToken(User user);
-
-        Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken);
-
+        Task<AuthResponseDTO?> RotateRefreshToken(string oldRefreshToken);
         Task Logout(string refreshToken);
-
-        Task<UserDTO> GetUserFromJwt(string jwt);
-        //Task<string> Register(RegisterDto dto);
-        //Task<string> Login(LoginDto dto);
+        Task<UserDTO?> GetUserFromJwt(string jwt);
+        // CreateToken removed — it's an internal implementation detail
     }
 }
