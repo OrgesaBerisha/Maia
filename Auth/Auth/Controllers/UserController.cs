@@ -1,12 +1,14 @@
 ﻿using Auth.Data.DTO;
 using Auth.Data.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Auth.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
+    [Authorize] // All user management requires authentication
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
@@ -16,50 +18,42 @@ namespace Auth.Controllers
             _service = service;
         }
 
-        [HttpGet("UserMe")]
-        //[Authorize]
+        [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
             var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            return Ok(new { Email = email });
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            return Ok(new { Email = email, Role = role });
         }
 
-        [HttpGet("GetUser")]
-        //  [Authorize(Roles = "Admin")]
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,SalesManager")]
         public async Task<IActionResult> GetUser(int id)
         {
-            try
-            {
-                var user = await _service.GetUser(id);
-
-                if (user == null)
-                    return NotFound("User not found.");
-
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var user = await _service.GetUser(id);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+            return Ok(user);
         }
 
-        [HttpGet("GetAllUsers")]
-        //  [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
-            try
-            {
-                var users = await _service.GetAllUsers();
-                return Ok(users);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var users = await _service.GetAllUsers();
+            return Ok(users);
         }
 
-        [HttpDelete("deleteUser")]
-        //   [Authorize(Roles = "Admin")]
+        [HttpGet("customers")]
+        [Authorize(Roles = "Admin,SalesManager,WomenManager,MenManager")]
+        public async Task<IActionResult> GetAllCustomers()
+        {
+            var customers = await _service.GetAllCustomers();
+            return Ok(customers);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             try
@@ -69,73 +63,52 @@ namespace Auth.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(new { message = ex.Message });
             }
         }
 
-        [HttpPut("updateUser")]
-        //  [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserRegisterDTO request)
         {
             try
             {
                 var updated = await _service.UpdateUser(id, request);
-
                 if (updated == null)
-                    return NotFound("User not found.");
-
+                    return NotFound(new { message = "User not found." });
                 return Ok(updated);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-        [HttpGet("GetAllStudents")]
-        // [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllCustomers()
-        {
-            try
-            {
-                var customers = await _service.GetAllCustomers();
-
-                if (customers == null || !customers.Any())
-                    return NotFound("No customers found.");
-
-                return Ok(customers);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while retrieving customers.");
-            }
-        }
-
-        [HttpPut("updateUserRole")]
-        // [Authorize(Roles = "Admin")]
+        [HttpPut("role")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUserRole([FromBody] UpdateUserRoleDTO request)
         {
-            if (request == null)
-                return BadRequest("Invalid request.");
-
             try
             {
-                var updatedUser = await _service.UpdateUserRole(request.UserID, request.NewRoleID);
-
-                if (updatedUser == null)
-                    return NotFound("User or role not found.");
-
-                return Ok(updatedUser);
+                var updated = await _service.UpdateUserRole(request.UserID, request.NewRoleID);
+                if (updated == null)
+                    return NotFound(new { message = "User not found." });
+                return Ok(updated);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-
-
-
-
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SetUserStatus(int id, [FromBody] bool isActive)
+        {
+            var updated = await _service.SetUserActiveStatus(id, isActive);
+            if (updated == null)
+                return NotFound(new { message = "User not found." });
+            return Ok(updated);
+        }
     }
 }

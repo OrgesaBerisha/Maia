@@ -1,8 +1,8 @@
 ﻿using Auth.Data;
 using Auth.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 namespace Auth
 {
@@ -13,201 +13,68 @@ namespace Auth
             // =========================
             // ROLES
             // =========================
-
             if (!await context.Roles.AnyAsync())
             {
                 var roles = new List<Role>
                 {
-                    new Role
-                    {
-                        RoleType = Roles.Admin
-                    },
-
-                    new Role
-                    {
-                        RoleType = Roles.SalesManager
-                    },
-
-                    new Role
-                    {
-                        RoleType = Roles.WomenManager
-                    },
-
-                    new Role
-                    {
-                        RoleType = Roles.MenManager
-                    },
-
-                    new Role
-                    {
-                        RoleType = Roles.Customer
-                    }
+                    new Role { RoleType = Roles.Admin },
+                    new Role { RoleType = Roles.SalesManager },
+                    new Role { RoleType = Roles.WomenManager },
+                    new Role { RoleType = Roles.MenManager },
+                    new Role { RoleType = Roles.Customer }
                 };
 
                 await context.Roles.AddRangeAsync(roles);
-
                 await context.SaveChangesAsync();
             }
 
             // =========================
-            // ADMIN
+            // SEED USERS
             // =========================
-
-            if (!await context.Users.AnyAsync(u => u.Email == "admin@admin.com"))
-            {
-                CreatePasswordHash(
-                    "Admin123!",
-                    out byte[] adminHash,
-                    out byte[] adminSalt
-                );
-
-                var adminRole = await context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleType == Roles.Admin)
-                     ?? throw new Exception("Admin role missing");
-
-                var admin = new User
-                {
-                    FirstName = "Super",
-                    LastName = "Admin",
-                    Email = "admin@admin.com",
-
-                    PasswordHash = adminHash,
-                    PasswordSalt = adminSalt,
-
-                    RoleID = adminRole.RoleID,
-
-                    CreatedAt = DateTime.UtcNow,
-
-                    IsActive = true
-                };
-
-                await context.Users.AddAsync(admin);
-
-                await context.SaveChangesAsync();
-            }
-
-            // =========================
-            // SALES MANAGER
-            // =========================
-
-            if (!await context.Users.AnyAsync(u => u.Email == "sales@manager.com"))
-            {
-                CreatePasswordHash(
-                    "Sales123!",
-                    out byte[] salesHash,
-                    out byte[] salesSalt
-                );
-
-                var salesRole = await context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleType == Roles.SalesManager);
-
-                var salesManager = new User
-                {
-                    FirstName = "Sales",
-                    LastName = "Manager",
-                    Email = "sales@manager.com",
-
-                    PasswordHash = salesHash,
-                    PasswordSalt = salesSalt,
-
-                    RoleID = salesRole.RoleID,
-
-                    CreatedAt = DateTime.UtcNow,
-
-                    IsActive = true
-                };
-
-                await context.Users.AddAsync(salesManager);
-
-                await context.SaveChangesAsync();
-            }
-
-            // =========================
-            // WOMEN MANAGER
-            // =========================
-
-            if (!await context.Users.AnyAsync(u => u.Email == "women@manager.com"))
-            {
-                CreatePasswordHash(
-                    "Women123!",
-                    out byte[] womenHash,
-                    out byte[] womenSalt
-                );
-
-                var womenRole = await context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleType == Roles.WomenManager);
-
-                var womenManager = new User
-                {
-                    FirstName = "Women",
-                    LastName = "Manager",
-                    Email = "women@manager.com",
-
-                    PasswordHash = womenHash,
-                    PasswordSalt = womenSalt,
-
-                    RoleID = womenRole.RoleID,
-
-                    CreatedAt = DateTime.UtcNow,
-
-                    IsActive = true
-                };
-
-                await context.Users.AddAsync(womenManager);
-
-                await context.SaveChangesAsync();
-            }
-
-            // =========================
-            // MEN MANAGER
-            // =========================
-
-            if (!await context.Users.AnyAsync(u => u.Email == "men@manager.com"))
-            {
-                CreatePasswordHash(
-                    "Men123!",
-                    out byte[] menHash,
-                    out byte[] menSalt
-                );
-
-                var menRole = await context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleType == Roles.MenManager);
-
-                var menManager = new User
-                {
-                    FirstName = "Men",
-                    LastName = "Manager",
-                    Email = "men@manager.com",
-
-                    PasswordHash = menHash,
-                    PasswordSalt = menSalt,
-
-                    RoleID = menRole.RoleID,
-
-                    CreatedAt = DateTime.UtcNow,
-
-                    IsActive = true
-                };
-
-                await context.Users.AddAsync(menManager);
-
-                await context.SaveChangesAsync();
-            }
+            await SeedUser(context, "admin@admin.com", "Super", "Admin", "Admin123!", Roles.Admin);
+            await SeedUser(context, "sales@manager.com", "Sales", "Manager", "Sales123!", Roles.SalesManager);
+            await SeedUser(context, "women@manager.com", "Women", "Manager", "Women123!", Roles.WomenManager);
+            await SeedUser(context, "men@manager.com", "Men", "Manager", "Men123!", Roles.MenManager);
         }
 
-        private static void CreatePasswordHash(
+        // FIXED: null-guard on role lookup for all seeded users, not just admin
+        private static async Task SeedUser(
+            DataContext context,
+            string email,
+            string firstName,
+            string lastName,
             string password,
-            out byte[] hash,
-            out byte[] salt
-        )
+            string roleType)
+        {
+            if (await context.Users.AnyAsync(u => u.Email == email))
+                return;
+
+            var role = await context.Roles.FirstOrDefaultAsync(r => r.RoleType == roleType)
+                ?? throw new Exception($"Role '{roleType}' not found during seeding.");
+
+            CreatePasswordHash(password, out byte[] hash, out byte[] salt);
+
+            var user = new User
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                PasswordHash = hash,
+                PasswordSalt = salt,
+                RoleID = role.RoleID,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+        }
+
+        private static void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
             using var hmac = new HMACSHA512();
-
             salt = hmac.Key;
-
-            hash = hmac.ComputeHash(
-                Encoding.UTF8.GetBytes(password)
-            );
+            hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 }
