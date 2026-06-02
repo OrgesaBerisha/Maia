@@ -19,7 +19,7 @@ namespace Maia.Data.Repository
         public async Task<IEnumerable<CardsWomen>> GetByCategoryAsync(string category) =>
             await _context.CardsWoman
                 .Include(x => x.WomanCategory)
-                .Where(x => x.WomanCategory.Name == category)
+                .Where(x => x.WomanCategory != null && x.WomanCategory.Name == category)
                 .ToListAsync();
 
         public async Task<CardsWomen?> GetByIdAsync(int id) =>
