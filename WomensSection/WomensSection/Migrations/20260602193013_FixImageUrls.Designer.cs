@@ -4,6 +4,7 @@ using Maia.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WomensSection.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260602193013_FixImageUrls")]
+    partial class FixImageUrls
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,7 +72,7 @@ namespace WomensSection.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Light summer dress",
-                            ImageUrl = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
+                            ImageUrl = "https://picsum.photos/seed/dress/400/500",
                             Price = 25m,
                             Title = "Summer Dress",
                             WomanCategoryId = 1
@@ -78,18 +81,18 @@ namespace WomensSection.Migrations
                         {
                             Id = 2,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Classic white sneakers",
-                            ImageUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80",
+                            Description = "Sport shoes",
+                            ImageUrl = "https://picsum.photos/seed/shoes/400/500",
                             Price = 80m,
-                            Title = "White Sneakers",
+                            Title = "Nike Shoes",
                             WomanCategoryId = 2
                         },
                         new
                         {
                             Id = 3,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Warm winter jacket",
-                            ImageUrl = "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&q=80",
+                            Description = "Warm jacket",
+                            ImageUrl = "https://picsum.photos/seed/jacket/400/500",
                             Price = 120m,
                             Title = "Winter Jacket",
                             WomanCategoryId = 3
@@ -98,10 +101,10 @@ namespace WomensSection.Migrations
                         {
                             Id = 4,
                             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Premium leather bag",
-                            ImageUrl = "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80",
+                            Description = "Fashion bag",
+                            ImageUrl = "https://picsum.photos/seed/bag/400/500",
                             Price = 200m,
-                            Title = "Leather Bag",
+                            Title = "Luxury Bag",
                             WomanCategoryId = 4
                         });
                 });
@@ -270,25 +273,25 @@ namespace WomensSection.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 6, 2, 19, 46, 2, 459, DateTimeKind.Utc).AddTicks(7553),
+                            CreatedAt = new DateTime(2026, 6, 2, 19, 30, 12, 599, DateTimeKind.Utc).AddTicks(1989),
                             Name = "Dresses"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 6, 2, 19, 46, 2, 459, DateTimeKind.Utc).AddTicks(8062),
+                            CreatedAt = new DateTime(2026, 6, 2, 19, 30, 12, 599, DateTimeKind.Utc).AddTicks(2727),
                             Name = "Shoes"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2026, 6, 2, 19, 46, 2, 459, DateTimeKind.Utc).AddTicks(8064),
+                            CreatedAt = new DateTime(2026, 6, 2, 19, 30, 12, 599, DateTimeKind.Utc).AddTicks(2728),
                             Name = "Jackets"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2026, 6, 2, 19, 46, 2, 459, DateTimeKind.Utc).AddTicks(8065),
+                            CreatedAt = new DateTime(2026, 6, 2, 19, 30, 12, 599, DateTimeKind.Utc).AddTicks(2729),
                             Name = "Bags"
                         });
                 });

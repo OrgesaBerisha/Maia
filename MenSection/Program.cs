@@ -21,6 +21,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IMenCards, MenCardsService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
 var app = builder.Build();
 
 // ? ENABLE SWAGGER
@@ -31,6 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 //app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
 
 app.MapControllers();
