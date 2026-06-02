@@ -1,9 +1,9 @@
-﻿using Auth.Models;
+﻿//using Auth.Models;
 
-namespace Auth.Data.Interface
-{
-    public interface IJwtService
-    {
-        string GenerateToken(User user);
-    }
-}
+//namespace Auth.Data.Interface
+//{
+//    public interface IJwtService
+//    {
+//        string GenerateToken(User user);
+//    }
+//}

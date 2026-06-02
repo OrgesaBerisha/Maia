@@ -62,7 +62,8 @@ namespace Auth
                 );
 
                 var adminRole = await context.Roles
-                    .FirstOrDefaultAsync(r => r.RoleType == Roles.Admin);
+                    .FirstOrDefaultAsync(r => r.RoleType == Roles.Admin)
+                     ?? throw new Exception("Admin role missing");
 
                 var admin = new User
                 {

@@ -23,19 +23,20 @@ namespace Auth.Services
             _configuration = configuration;
         }
 
+        // ================= REGISTER =================
         public async Task<UserDTO> Register(UserRegisterDTO request)
         {
             var existing = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (existing != null)
-                throw new ArgumentException("User with this email already exists.");
+                throw new Exception("User already exists");
 
-            var defaultRole = await _context.Roles
+            var role = await _context.Roles
                 .FirstOrDefaultAsync(r => r.RoleType == Roles.Customer);
 
-            if (defaultRole == null)
-                throw new Exception("Default role 'Customer' not found.");
+            if (role == null)
+                throw new Exception("Default role missing");
 
             CreatePasswordHash(request.Password, out byte[] hash, out byte[] salt);
 
@@ -46,7 +47,7 @@ namespace Auth.Services
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                RoleID = defaultRole.RoleID,
+                RoleID = role.RoleID,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
@@ -57,22 +58,23 @@ namespace Auth.Services
             return user.Adapt<UserDTO>();
         }
 
-        public async Task<string> Login(UserLoginDTO request)
+        // ================= LOGIN (FIXED) =================
+        public async Task<AuthResponseDTO> Login(UserLoginDTO request)
         {
             var user = await _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
-                throw new ArgumentException("User not found.");
+                throw new Exception("User not found");
 
             if (!user.IsActive)
-                throw new ArgumentException("User account is disabled.");
+                throw new Exception("User disabled");
 
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-                throw new ArgumentException("Incorrect password.");
+                throw new Exception("Wrong password");
 
-            string refreshToken = GenerateRefreshToken();
+            var refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
@@ -81,33 +83,17 @@ namespace Auth.Services
 
             var accessToken = await CreateToken(user);
 
-            return $"{accessToken}|||{refreshToken}";
+            return new AuthResponseDTO
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken
+            };
         }
 
-        public async Task Logout(string refreshToken)
-        {
-            if (string.IsNullOrEmpty(refreshToken))
-                return;
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
-
-            if (user == null)
-                return;
-
-            user.RefreshToken = null;
-            user.RefreshTokenExpiry = null;
-
-            await _context.SaveChangesAsync();
-        }
-
+        // ================= CREATE TOKEN =================
         public async Task<string> CreateToken(User user)
         {
-            var role = await _context.Roles
-                .FirstOrDefaultAsync(r => r.RoleID == user.RoleID);
-
-            if (role == null)
-                throw new Exception("Role not found for user.");
+            var role = await _context.Roles.FindAsync(user.RoleID);
 
             var claims = new List<Claim>
             {
@@ -116,57 +102,26 @@ namespace Auth.Services
                 new Claim(ClaimTypes.Role, role.RoleType)
             };
 
-            var secret = _configuration["Jwt:Key"];
-            if (string.IsNullOrEmpty(secret))
-                throw new Exception("JWT secret key missing.");
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
+            );
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(30),
+                expires: DateTime.UtcNow.AddMinutes(
+                    Convert.ToDouble(_configuration["Jwt:ExpireMinutes"])
+                ),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<UserDTO> GetUserFromJwt(string jwt)
-        {
-            if (string.IsNullOrWhiteSpace(jwt))
-                return null;
-
-            var handler = new JwtSecurityTokenHandler();
-
-            JwtSecurityToken token;
-            try
-            {
-                token = handler.ReadJwtToken(jwt);
-            }
-            catch
-            {
-                return null;
-            }
-
-            var userIdClaim = token.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
-                return null;
-
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserID == userId);
-
-            if (user == null || !user.IsActive)
-                return null;
-
-            return user.Adapt<UserDTO>();
-        }
-
+        // ================= REFRESH TOKEN =================
         public async Task<(string accessToken, string refreshToken)> RotateRefreshToken(string oldRefreshToken)
         {
             var user = await _context.Users
@@ -175,21 +130,51 @@ namespace Auth.Services
             if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
                 return (null, null);
 
-            if (!user.IsActive)
-                return (null, null);
+            var newRefresh = GenerateRefreshToken();
 
-            string newRefreshToken = GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
+            user.RefreshToken = newRefresh;
             user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
-            var newAccessToken = await CreateToken(user);
+            var newAccess = await CreateToken(user);
 
             await _context.SaveChangesAsync();
 
-            return (newAccessToken, newRefreshToken);
+            return (newAccess, newRefresh);
         }
 
+        // ================= LOGOUT =================
+        public async Task Logout(string refreshToken)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+            if (user == null) return;
+
+            user.RefreshToken = null;
+            user.RefreshTokenExpiry = null;
+
+            await _context.SaveChangesAsync();
+        }
+
+        // ================= JWT PARSE =================
+        public async Task<UserDTO> GetUserFromJwt(string jwt)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+
+            var userId = token.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null) return null;
+
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserID == int.Parse(userId));
+
+            return user?.Adapt<UserDTO>();
+        }
+
+        // ================= HELPERS =================
         private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
             using var hmac = new HMACSHA512();
