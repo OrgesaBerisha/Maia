@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from './CartContext.jsx';
+import { useAuth } from './AuthContext.jsx';
 import './BottomNav.css';
 
 function IconHome() {
@@ -52,6 +53,7 @@ function IconUser() {
 function BottomNav() {
   const { pathname } = useLocation();
   const { bag } = useCart();
+  const { isLoggedIn } = useAuth();
 
   return (
     <nav className="bottom-nav">
@@ -68,7 +70,11 @@ function BottomNav() {
         <IconBag />
         {bag.length > 0 && <span className="nav-bag-badge">{bag.length}</span>}
       </Link>
-      <Link to="/profile" className={`nav-icon${pathname === '/profile' ? ' nav-icon--active' : ''}`} title="Account">
+      <Link
+        to={isLoggedIn ? '/profile' : '/login'}
+        className={`nav-icon${(pathname === '/profile' || pathname === '/login') ? ' nav-icon--active' : ''}`}
+        title="Account"
+      >
         <IconUser />
       </Link>
     </nav>

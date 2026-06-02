@@ -1,7 +1,12 @@
 using Maia.Data.Interface;
+using Maia.Data.Repository;
+using Maia.Data.Repository.Interface;
 using Maia.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,25 +20,60 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 
 builder.Services.AddControllers();
 
-// CORS
+// CORS — allow credentials so cookies from Auth project are sent
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
         policy.WithOrigins(
                 "http://localhost:5173",
                 "https://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5182"
+                "http://localhost:5174"
               )
               .AllowAnyHeader()
-              .AllowAnyMethod());
+              .AllowAnyMethod()
+              .AllowCredentials());
 });
+
+// JWT — validates the cookie set by the Auth project
+var jwtKey = builder.Configuration["Jwt:Key"]!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        // Read token from the "jwt" cookie set by the Auth project
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                ctx.Token = ctx.Request.Cookies["jwt"];
+                return Task.CompletedTask;
+            }
+        };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+            ValidAudience            = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew                = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// Repositories
+builder.Services.AddScoped<ICardsWomenRepository, CardsWomenRepository>();
+builder.Services.AddScoped<ICartRepository,        CartRepository>();
+builder.Services.AddScoped<IWishlistRepository,    WishlistRepository>();
+builder.Services.AddScoped<IOrderRepository,       OrderRepository>();
 
 // Services
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IWishlistService, WishlistService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<ICartService,       CartService>();
+builder.Services.AddScoped<IWishlistService,   WishlistService>();
+builder.Services.AddScoped<IOrderService,      OrderService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,9 +88,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
