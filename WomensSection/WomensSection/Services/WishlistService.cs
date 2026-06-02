@@ -1,70 +1,44 @@
-﻿using Maia.Data;
-using Maia.Data.DTO;
+﻿using Maia.Data.DTO;
 using Maia.Data.Interface;
+using Maia.Data.Repository.Interface;
 using Maia.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Maia.Services
 {
     public class WishlistService : IWishlistService
     {
-        private readonly DataContext _context;
+        private readonly IWishlistRepository _repo;
 
-        public WishlistService(DataContext context)
+        public WishlistService(IWishlistRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public async Task AddAsync(int userId, AddToWishlistDto dto)
         {
-            var wishlist = await _context.Wishlists
-                .Include(x => x.WishlistItems)
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+            var wishlist = await _repo.GetByUserIdAsync(userId)
+                        ?? await _repo.CreateAsync(userId);
 
-            if (wishlist == null)
+            if (!await _repo.ItemExistsAsync(wishlist.Id, dto.ProductId))
             {
-                wishlist = new Wishlist { UserId = userId };
-                _context.Wishlists.Add(wishlist);
-                await _context.SaveChangesAsync();
-            }
-
-            // Mos shto dy herë të njëjtin produkt
-            var alreadyAdded = wishlist.WishlistItems
-                .Any(x => x.ProductId == dto.ProductId);
-
-            if (!alreadyAdded)
-            {
-                _context.WishlistItems.Add(new WishlistItem
+                await _repo.AddItemAsync(new WishlistItem
                 {
                     WishlistId = wishlist.Id,
-                    ProductId = dto.ProductId
+                    ProductId  = dto.ProductId
                 });
-
-                await _context.SaveChangesAsync();
             }
         }
 
         public async Task RemoveAsync(int userId, int id)
         {
-            // Sigurohu që WishlistItem i takon këtij useri
-            var item = await _context.WishlistItems
-                .Include(x => x.Wishlist)
-                .FirstOrDefaultAsync(x => x.Id == id && x.Wishlist.UserId == userId);
-
+            var item = await _repo.GetItemByIdAsync(id, userId);
             if (item != null)
-            {
-                _context.WishlistItems.Remove(item);
-                await _context.SaveChangesAsync();
-            }
+                await _repo.RemoveItemAsync(item);
         }
 
         public async Task<object> GetAsync(int userId)
         {
-            var wishlist = await _context.Wishlists
-                .Include(x => x.WishlistItems)
-                    .ThenInclude(x => x.Product)
-                .FirstOrDefaultAsync(x => x.UserId == userId);
-
+            var wishlist = await _repo.GetByUserIdAsync(userId);
             if (wishlist == null)
                 return new { items = Array.Empty<object>() };
 
@@ -72,9 +46,9 @@ namespace Maia.Services
             {
                 i.Id,
                 i.ProductId,
-                ProductName = i.Product?.Title,
+                ProductName  = i.Product?.Title,
                 ProductImage = i.Product?.ImageUrl,
-                Price = i.Product?.Price
+                Price        = i.Product?.Price
             });
 
             return new { WishlistId = wishlist.Id, Items = items };
