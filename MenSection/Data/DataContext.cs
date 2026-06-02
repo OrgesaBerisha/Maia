@@ -36,7 +36,12 @@ namespace MenSection.Data
                 new MenCards { Id = 7,  Title = "Oxford Shirt",        ImageUrl = "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80",  Price = 45,  Description = "Smart Oxford shirt",            MenCategoryId = 4 },
                 new MenCards { Id = 8,  Title = "Flannel Shirt",       ImageUrl = "https://images.unsplash.com/photo-1589310243389-96a5483213a8?w=400&q=80",  Price = 38,  Description = "Casual flannel shirt",          MenCategoryId = 4 },
                 new MenCards { Id = 9,  Title = "Bomber Jacket",       ImageUrl = "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=400&q=80",  Price = 110, Description = "Stylish bomber jacket",         MenCategoryId = 2 },
-                new MenCards { Id = 10, Title = "Linen Shirt",         ImageUrl = "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80",  Price = 42,  Description = "Light summer linen shirt",      MenCategoryId = 4 }
+                new MenCards { Id = 10, Title = "Linen Shirt",         ImageUrl = "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=400&q=80",  Price = 42,  Description = "Light summer linen shirt",      MenCategoryId = 4 },
+                new MenCards { Id = 11, Title = "White Polo Shirt",   ImageUrl = "https://images.unsplash.com/photo-1618354691373-d851c5c827a4?w=400&q=80",  Price = 30,  Description = "Classic white polo shirt",      MenCategoryId = 1 },
+                new MenCards { Id = 12, Title = "Casual Chinos",      ImageUrl = "https://images.unsplash.com/photo-1473966968600-fa4cebea7cf0?w=400&q=80",  Price = 65,  Description = "Comfortable casual chinos",     MenCategoryId = 3 },
+                new MenCards { Id = 13, Title = "Puffer Jacket",      ImageUrl = "https://images.unsplash.com/photo-1544966503-7b654b25498d?w=400&q=80",  Price = 130, Description = "Warm puffer jacket",            MenCategoryId = 2 },
+                new MenCards { Id = 14, Title = "Striped Shirt",      ImageUrl = "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&q=80",  Price = 48,  Description = "Casual striped shirt",          MenCategoryId = 4 },
+                new MenCards { Id = 15, Title = "Dark Wash Jeans",    ImageUrl = "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=400&q=80",  Price = 70,  Description = "Modern dark wash jeans",        MenCategoryId = 3 }
             );
         }
     }

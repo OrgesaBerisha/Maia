@@ -38,8 +38,7 @@ function SearchPage() {
         page:     1,
         pageSize: 50,
       };
-      if (query.trim())             params.search     = query.trim();
-      if (section !== 'ALL')        params.categoryId = section;   // adjust if backend uses string
+      if (query.trim()) params.search = query.trim();
 
       const { data } = await api.get('/CardsWomen/browse', { params });
       const items = (data.items ?? []).map(mapProduct);

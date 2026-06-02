@@ -29,13 +29,13 @@ namespace Auth.Migrations
                 table: "Roles",
                 newName: "RoleID");
 
-            migrationBuilder.AlterColumn<byte[]>(
+            migrationBuilder.DropColumn(name: "PasswordHash", table: "Users");
+            migrationBuilder.AddColumn<byte[]>(
                 name: "PasswordHash",
                 table: "Users",
                 type: "varbinary(max)",
                 nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
+                defaultValue: new byte[0]);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
