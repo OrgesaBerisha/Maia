@@ -49,4 +49,16 @@ public class NotificationsController : ControllerBase
             .ToListAsync();
         return Ok(list);
     }
+
+    // POST api/notifications/send — internal endpoint to send notifications
+    [HttpPost("send")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Send([FromBody] Notification n)
+    {
+        n.CreatedAt = DateTime.UtcNow;
+        n.IsRead = false;
+        _db.Notifications.Add(n);
+        await _db.SaveChangesAsync();
+        return Ok(n);
+    }
 }
