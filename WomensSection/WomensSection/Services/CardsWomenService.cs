@@ -1,183 +1,84 @@
-﻿using Maia.Data;
-using Maia.Data.DTO;
+﻿using Maia.Data.DTO;
 using Maia.Data.Interface;
-using Microsoft.EntityFrameworkCore;
+using Maia.Data.Repository.Interface;
 using Maia.Models;
 
 namespace Maia.Services;
 
 public class CardsWomenService : ICardsWomenService
 {
-    private readonly DataContext _context;
+    private readonly ICardsWomenRepository _repo;
 
-    public CardsWomenService(DataContext context)
+    public CardsWomenService(ICardsWomenRepository repo)
     {
-        _context = context;
+        _repo = repo;
     }
 
-    // GET ALL
     public async Task<IEnumerable<CardsWomenDto>> GetAllAsync()
     {
-        return await _context.CardsWoman
-            .Include(x => x.WomanCategory)
-            .Select(x => new CardsWomenDto
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ImageUrl = x.ImageUrl,
-                Price = x.Price,
-                Category = x.WomanCategory.Name
-            })
-            .ToListAsync();
+        var products = await _repo.GetAllAsync();
+        return products.Select(ToDto);
     }
 
-    // GET BY CATEGORY
     public async Task<IEnumerable<CardsWomenDto>> GetByCategoryAsync(string category)
     {
-        return await _context.CardsWoman
-            .Include(x => x.WomanCategory)
-            .Where(x => x.WomanCategory.Name == category)
-            .Select(x => new CardsWomenDto
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ImageUrl = x.ImageUrl,
-                Price = x.Price,
-                Category = x.WomanCategory.Name
-            })
-            .ToListAsync();
+        var products = await _repo.GetByCategoryAsync(category);
+        return products.Select(ToDto);
     }
 
-    // CREATE
     public async Task<CardsWomenDto> CreateAsync(CreateCardsWomenDto dto)
     {
         var product = new CardsWomen
         {
-            Title = dto.Title,
-            ImageUrl = dto.ImageUrl,
-            Price = dto.Price,
-            Description = dto.Description,
+            Title           = dto.Title,
+            ImageUrl        = dto.ImageUrl,
+            Price           = dto.Price,
+            Description     = dto.Description,
             WomanCategoryId = dto.WomanCategoryId
         };
-
-        _context.CardsWoman.Add(product);
-        await _context.SaveChangesAsync();
-
-        return new CardsWomenDto
-        {
-            Id = product.Id,
-            Title = product.Title,
-            ImageUrl = product.ImageUrl,
-            Price = product.Price,
-            Category = product.WomanCategory?.Name
-        };
+        var created = await _repo.AddAsync(product);
+        return ToDto(created);
     }
 
-    // DELETE
-    public async Task<bool> DeleteAsync(int id)
-    {
-        var product = await _context.CardsWoman.FindAsync(id);
+    public async Task<bool> DeleteAsync(int id) =>
+        await _repo.DeleteAsync(id);
 
-        if (product == null)
-            return false;
-
-        _context.CardsWoman.Remove(product);
-        await _context.SaveChangesAsync();
-
-        return true;
-    }
-
-    // UPDATE
     public async Task<CardsWomenDto?> UpdateAsync(int id, CreateCardsWomenDto dto)
     {
-        var product = await _context.CardsWoman.FindAsync(id);
-
-        if (product == null)
-            return null;
-
-        product.Title = dto.Title;
-        product.ImageUrl = dto.ImageUrl;
-        product.Price = dto.Price;
-        product.Description = dto.Description;
-        product.WomanCategoryId = dto.WomanCategoryId;
-
-        await _context.SaveChangesAsync();
-
-        return new CardsWomenDto
+        var updated = new CardsWomen
         {
-            Id = product.Id,
-            Title = product.Title,
-            ImageUrl = product.ImageUrl,
-            Price = product.Price,
-            Category = product.WomanCategory?.Name
+            Title           = dto.Title,
+            ImageUrl        = dto.ImageUrl,
+            Price           = dto.Price,
+            Description     = dto.Description,
+            WomanCategoryId = dto.WomanCategoryId
         };
+        var result = await _repo.UpdateAsync(id, updated);
+        return result == null ? null : ToDto(result);
     }
 
-    // 🚀 BROWSE FINAL (SEARCH + FILTER + SORT + PAGINATION)
     public async Task<PagedResult<CardsWomenDto>> BrowseAsync(
-        string? search,
-        int? categoryId,
-        decimal? minPrice,
-        decimal? maxPrice,
-        string? sortBy,
-        int page,
-        int pageSize)
+        string? search, int? categoryId, decimal? minPrice,
+        decimal? maxPrice, string? sortBy, int page, int pageSize)
     {
-        var query = _context.CardsWoman
-            .Include(x => x.WomanCategory)
-            .AsQueryable();
-
-        // 🔎 SEARCH
-        if (!string.IsNullOrWhiteSpace(search))
-        {
-            query = query.Where(x =>
-                EF.Functions.Like(x.Title, $"%{search}%"));
-        }
-
-        // 🎯 FILTER
-        if (categoryId.HasValue)
-            query = query.Where(x => x.WomanCategoryId == categoryId.Value);
-
-        if (minPrice.HasValue)
-            query = query.Where(x => x.Price >= minPrice.Value);
-
-        if (maxPrice.HasValue)
-            query = query.Where(x => x.Price <= maxPrice.Value);
-
-        // 🔃 SORT
-        query = sortBy?.ToLower() switch
-        {
-            "price_asc" => query.OrderBy(x => x.Price),
-            "price_desc" => query.OrderByDescending(x => x.Price),
-            "newest" => query.OrderByDescending(x => x.Id),
-            "a_z" => query.OrderBy(x => x.Title),
-            "z_a" => query.OrderByDescending(x => x.Title),
-            _ => query.OrderBy(x => x.Id)
-        };
-
-        // 📊 TOTAL ITEMS
-        var totalItems = await query.CountAsync();
-
-        // 📄 PAGINATION
-        var items = await query
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(x => new CardsWomenDto
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ImageUrl = x.ImageUrl,
-                Price = x.Price,
-                Category = x.WomanCategory.Name
-            })
-            .ToListAsync();
+        var (items, total) = await _repo.BrowseAsync(
+            search, categoryId, minPrice, maxPrice, sortBy, page, pageSize);
 
         return new PagedResult<CardsWomenDto>
         {
-            Items = items,
-            TotalItems = totalItems,
-            Page = page,
-            PageSize = pageSize
+            Items      = items.Select(ToDto),
+            TotalItems = total,
+            Page       = page,
+            PageSize   = pageSize
         };
     }
+
+    private static CardsWomenDto ToDto(CardsWomen x) => new()
+    {
+        Id       = x.Id,
+        Title    = x.Title,
+        ImageUrl = x.ImageUrl,
+        Price    = x.Price,
+        Category = x.WomanCategory?.Name ?? string.Empty
+    };
 }

@@ -1,75 +1,63 @@
-﻿using Maia.Data;
-using Maia.Data.DTO;
+﻿using Maia.Data.DTO;
 using Maia.Data.Interface;
+using Maia.Data.Repository.Interface;
 using Maia.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Maia.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly DataContext _context;
+        private readonly IOrderRepository _repo;
 
-        public OrderService(DataContext context)
+        public OrderService(IOrderRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         public async Task CreateOrderAsync(int userId, CreateOrderDto dto)
         {
             var order = new Order
             {
-                UserId = userId,
+                UserId    = userId,
                 CreatedAt = DateTime.UtcNow
             };
 
             decimal total = 0;
-
             foreach (var item in dto.Items)
             {
-                var product = await _context.CardsWoman.FindAsync(item.ProductId);
+                var product = await _repo.GetProductAsync(item.ProductId);
                 if (product == null) continue;
 
                 order.OrderItems.Add(new OrderItem
                 {
                     ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    Price = product.Price
+                    Quantity  = item.Quantity,
+                    Price     = product.Price
                 });
-
                 total += product.Price * item.Quantity;
             }
 
             order.TotalPrice = total;
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            await _repo.AddOrderAsync(order);
         }
 
         public async Task<object> GetOrdersAsync(int userId)
         {
-            var orders = await _context.Orders
-                .Include(o => o.OrderItems)
-                    .ThenInclude(i => i.Product)
-                .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.CreatedAt)
-                .Select(o => new
+            var orders = await _repo.GetByUserIdAsync(userId);
+            return orders.Select(o => new
+            {
+                o.Id,
+                o.TotalPrice,
+                o.CreatedAt,
+                Items = o.OrderItems.Select(i => new
                 {
-                    o.Id,
-                    o.TotalPrice,
-                    o.CreatedAt,
-                    Items = o.OrderItems.Select(i => new
-                    {
-                        i.ProductId,
-                        ProductName = i.Product.Title,
-                        i.Quantity,
-                        i.Price,
-                        Subtotal = i.Price * i.Quantity
-                    })
+                    i.ProductId,
+                    ProductName = i.Product?.Title,
+                    i.Quantity,
+                    i.Price,
+                    Subtotal    = i.Price * i.Quantity
                 })
-                .ToListAsync();
-
-            return orders;
+            });
         }
     }
 }
