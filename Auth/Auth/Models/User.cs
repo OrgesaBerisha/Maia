@@ -9,23 +9,35 @@ namespace Auth.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserID { get; set; }
 
+        [Required]
         public string FirstName { get; set; }
+
+        [Required]
         public string LastName { get; set; }
 
-        public string Email { get; set; }
         [Required]
-        [MinLength(6)]
-        public byte[]? PasswordHash { get; set; }
+        public string Email { get; set; }
+
+        [Required]
+        public byte[] PasswordHash { get; set; }
 
         [Required]
         public byte[] PasswordSalt { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Required]
         public int RoleID { get; set; }
+
         public Role Role { get; set; }
-        public string? RefreshToken { get; set; }
+
+        // Stored as a hash, not plain text
+        public string? RefreshTokenHash { get; set; }
+
         public DateTime? RefreshTokenExpiry { get; set; }
+
         public bool IsActive { get; set; } = true;
+
         public DateTime? DisabledAt { get; set; }
     }
 }
