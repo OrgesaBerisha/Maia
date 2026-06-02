@@ -1,14 +1,11 @@
-﻿using System.Security.Claims;
 using Maia.Data.DTO;
 using Maia.Data.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Maia.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CartController : ControllerBase
     {
         private readonly ICartService _service;
@@ -18,8 +15,8 @@ namespace Maia.Controllers
             _service = service;
         }
 
-        private int GetUserId() =>
-            int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        // TODO: replace with real userId from JWT once auth is integrated by the team
+        private int GetUserId() => 1;
 
         [HttpPost]
         public async Task<IActionResult> Add(AddToCartDto dto)

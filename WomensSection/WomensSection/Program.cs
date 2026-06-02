@@ -1,13 +1,11 @@
 using Maia.Data.Interface;
-using Maia.Data.Repository;
-using Maia.Data.Repository.Interface;
 using Maia.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DbContext (FIXED - ignore PendingModelChangesWarning)
+// DbContext
 builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
            .ConfigureWarnings(w =>
@@ -17,12 +15,6 @@ builder.Services.AddDbContext<Maia.Data.DataContext>(options =>
 
 builder.Services.AddControllers();
 
-<<<<<<< Updated upstream
-builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
-builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<IWishlistService, WishlistService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-=======
 // CORS
 builder.Services.AddCors(options =>
 {
@@ -37,19 +29,12 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// Repositories
-builder.Services.AddScoped<ICardsWomenRepository, CardsWomenRepository>();
-builder.Services.AddScoped<ICartRepository,        CartRepository>();
-builder.Services.AddScoped<IWishlistRepository,    WishlistRepository>();
-builder.Services.AddScoped<IOrderRepository,       OrderRepository>();
-
 // Services
 builder.Services.AddScoped<ICardsWomenService, CardsWomenService>();
-builder.Services.AddScoped<ICartService,       CartService>();
-builder.Services.AddScoped<IWishlistService,   WishlistService>();
-builder.Services.AddScoped<IOrderService,      OrderService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
->>>>>>> Stashed changes
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -62,6 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
