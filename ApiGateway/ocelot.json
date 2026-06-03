@@ -63,6 +63,14 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5293 } ],
       "SwaggerKey": "maia"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/orders/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5200 } ],
+      "SwaggerKey": "orders"
     }
   ],
   "SwaggerEndPoints": [
@@ -143,6 +151,16 @@
           "Name": "Maia Main API",
           "Version": "v1",
           "Url": "http://localhost:5293/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "orders",
+      "Config": [
+        {
+          "Name": "Order Service",
+          "Version": "v1",
+          "Url": "http://localhost:5200/swagger/v1/swagger.json"
         }
       ]
     }
