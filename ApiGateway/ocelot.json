@@ -1,0 +1,153 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5000 } ],
+      "SwaggerKey": "auth"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/women/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5182 } ],
+      "SwaggerKey": "women"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/men/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5018 } ],
+      "SwaggerKey": "men"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/kids/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5062 } ],
+      "SwaggerKey": "kids"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/notifications/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5151 } ],
+      "SwaggerKey": "notifications"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/files/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5270 } ],
+      "SwaggerKey": "files"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/settings/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5187 } ],
+      "SwaggerKey": "settings"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/maia/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5293 } ],
+      "SwaggerKey": "maia"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "auth",
+      "Config": [
+        {
+          "Name": "Auth Service",
+          "Version": "v1",
+          "Url": "http://localhost:5000/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "women",
+      "Config": [
+        {
+          "Name": "Womens Section",
+          "Version": "v1",
+          "Url": "http://localhost:5182/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "men",
+      "Config": [
+        {
+          "Name": "Men Section",
+          "Version": "v1",
+          "Url": "http://localhost:5018/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "kids",
+      "Config": [
+        {
+          "Name": "Kids Section",
+          "Version": "v1",
+          "Url": "http://localhost:5062/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "notifications",
+      "Config": [
+        {
+          "Name": "Notification Service",
+          "Version": "v1",
+          "Url": "http://localhost:5151/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "files",
+      "Config": [
+        {
+          "Name": "File Upload Service",
+          "Version": "v1",
+          "Url": "http://localhost:5270/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "settings",
+      "Config": [
+        {
+          "Name": "Settings Service",
+          "Version": "v1",
+          "Url": "http://localhost:5187/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "maia",
+      "Config": [
+        {
+          "Name": "Maia Main API",
+          "Version": "v1",
+          "Url": "http://localhost:5293/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5100"
+  }
+}
