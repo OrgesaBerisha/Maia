@@ -30,9 +30,11 @@ export default defineConfig({
 
       // Women section
       '/api/CardsWomen': { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/Cart':       { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/Order':      { target: 'http://localhost:5182', changeOrigin: true, secure: false },
       '/api/Wishlist':   { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+
+      // Order Service — centralized cart + orders
+      '/api/Cart':  { target: 'http://localhost:5200', changeOrigin: true, secure: false },
+      '/api/Order': { target: 'http://localhost:5200', changeOrigin: true, secure: false },
 
       // Notification service
       '/api/notifications': { target: 'http://localhost:5151', changeOrigin: true, secure: false },
