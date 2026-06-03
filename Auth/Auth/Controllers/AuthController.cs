@@ -192,11 +192,9 @@ namespace Auth.Controllers
             if (resetToken == null)
                 return BadRequest(new { message = "Linku është i pavlefshëm ose ka skaduar." });
 
-            var salt = BCrypt.Net.BCrypt.GenerateSalt();
-            var hash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword, salt);
-
-            resetToken.User.PasswordHash = System.Text.Encoding.UTF8.GetBytes(hash);
-            resetToken.User.PasswordSalt = System.Text.Encoding.UTF8.GetBytes(salt);
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            resetToken.User.PasswordSalt = hmac.Key;
+            resetToken.User.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(dto.NewPassword));
             resetToken.IsUsed = true;
 
             await _context.SaveChangesAsync();
