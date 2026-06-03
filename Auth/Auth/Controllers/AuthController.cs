@@ -172,13 +172,13 @@ namespace Auth.Controllers
             try
             {
                 await _email.SendAsync(user.Email, "Resetimi i fjalëkalimit — MAIA", body);
+                return Ok(new { message = "Email u dërgua. Kontrollo kutinë tënde." });
             }
             catch
             {
-                return StatusCode(500, new { message = "Gabim gjatë dërgimit të email-it. Kontrollo konfigurimin e email-it." });
+                // Development fallback: return the link directly
+                return Ok(new { message = $"Email config mungon. Përdor këtë link direkt: {resetLink}" });
             }
-
-            return Ok(new { message = "Nëse email ekziston, do të marrësh link resetimi." });
         }
 
         [HttpPost("reset-password")]
