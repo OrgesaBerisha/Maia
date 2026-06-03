@@ -17,7 +17,7 @@ namespace Maia.Services
             new Claim(ClaimTypes.Email, user.Email)
         };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_key"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MaiaSecretKey_2026_SuperSecure_MinLength32Chars!"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
