@@ -21,14 +21,13 @@ namespace Maia.Data
 
         // 👇 KIDS
         public DbSet<KidsViewAllCards> KidsViewAllCards { get; set; }
+        public DbSet<KidsCategory> KidsCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-          
             // 👇 WOMEN RELATION (ZARA STYLE)
-      
             modelBuilder.Entity<CardsWomen>()
                 .HasOne(c => c.WomanCategory)
                 .WithMany()
@@ -36,14 +35,11 @@ namespace Maia.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // 👇 OPTIONAL: CLEAN TABLE NAMES
-           
             modelBuilder.Entity<CardsWomen>()
                 .ToTable("CardsWomen");
 
             modelBuilder.Entity<WomanCategory>()
                 .ToTable("WomanCategories");
-        public DbSet<KidsCategory> KidsCategories { get; set; }
-
 
             modelBuilder.Entity<KidsViewAllCards>()
                 .ToTable("KidsViewAllCards");
