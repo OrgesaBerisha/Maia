@@ -13,6 +13,10 @@ namespace KidsSection.Data
         public DbSet<KidsCards> KidsCards { get; set; }
         public DbSet<KidsCategory> KidsCategories { get; set; }
         public DbSet<KidsProductType> KidsProductTypes { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<KidsCards>()
