@@ -9,18 +9,36 @@ export function AuthProvider({ children }) {
     catch { return null; }
   });
 
+  const saveUser = (info) => {
+    setUser(info);
+    localStorage.setItem('maia_user', JSON.stringify(info));
+  };
+
   const login = useCallback(async (email, password) => {
     const { data } = await authApi.post('/auth/login', { email, password });
-    // cookie is set automatically by the Auth server (HttpOnly)
-    // store basic user info locally for UI
-    const userInfo = { email, isLoggedIn: data.isLoggedIn };
-    setUser(userInfo);
-    localStorage.setItem('maia_user', JSON.stringify(userInfo));
+
+    // Merr të dhënat e plota të userit pas login
+    try {
+      const { data: profile } = await authApi.get('/auth/me');
+      saveUser({
+        email,
+        firstName: profile.firstName ?? '',
+        lastName:  profile.lastName  ?? '',
+        isLoggedIn: true,
+      });
+    } catch {
+      saveUser({ email, firstName: '', lastName: '', isLoggedIn: true });
+    }
+
     return data;
   }, []);
 
   const register = useCallback(async (firstName, lastName, email, password) => {
     const { data } = await authApi.post('/auth/register', { firstName, lastName, email, password });
+
+    // Ruaj të dhënat direkt pas regjistrimit
+    saveUser({ email, firstName, lastName, isLoggedIn: true });
+
     return data;
   }, []);
 

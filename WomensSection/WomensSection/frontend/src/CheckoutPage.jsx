@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext.jsx';
+import { useAuth } from './AuthContext.jsx';
 import BottomNav from './BottomNav.jsx';
 import SiteLogo from './SiteLogo.jsx';
 import { orderApi } from './api/axios.js';
@@ -38,9 +39,14 @@ function Field({ label, name, type = 'text', value, onChange, required }) {
 
 function CheckoutPage() {
   const { bag, removeFromBag } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm]         = useState(EMPTY_FORM);
+  const [form, setForm] = useState({
+    ...EMPTY_FORM,
+    fullName: user ? `${user.firstName} ${user.lastName}`.trim() : '',
+    email:    user?.email ?? '',
+  });
   const [errors, setErrors]     = useState({});
   const [submitting, setSubmit] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
