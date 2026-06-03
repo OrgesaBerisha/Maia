@@ -87,6 +87,15 @@
 .profile-menu-item:hover { opacity: 0.5; }
 .profile-menu-item:hover::after { width: 100%; }
 
+.profile-logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  color: #9b2020;
+}
+
 .profile-images { position: relative; height: 520px; }
 
 .profile-img {
