@@ -15,6 +15,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 // FIXED: register against interfaces, not concrete types
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

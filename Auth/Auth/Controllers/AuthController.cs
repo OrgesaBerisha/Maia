@@ -1,7 +1,11 @@
 ﻿using Auth.Data.DTO;
 using Auth.Data.Interface;
+using Auth.Data;
+using Auth.Models;
+using Auth.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Controllers
 {
@@ -10,9 +14,13 @@ namespace Auth.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _service;
+        private readonly DataContext _context;
+        private readonly IEmailService _email;
 
-        public AuthController(IAuthService service)
+        public AuthController(IAuthService service, DataContext context, IEmailService email)
         {
+            _context = context;
+            _email = email;
             _service = service;
         }
 
@@ -131,6 +139,69 @@ namespace Auth.Controllers
                 SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(7)
             });
+        }
+
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null)
+                return Ok(new { message = "Nëse email ekziston, do të marrësh link resetimi." });
+
+            var token = Guid.NewGuid().ToString("N");
+
+            _context.PasswordResetTokens.Add(new PasswordResetToken
+            {
+                UserID = user.UserID,
+                Token = token,
+                ExpiresAt = DateTime.UtcNow.AddHours(1)
+            });
+            await _context.SaveChangesAsync();
+
+            var resetLink = $"http://localhost:5173/reset-password?token={token}";
+            var body = $@"
+                <h2>Resetimi i fjalëkalimit — MAIA</h2>
+                <p>Kliko linkun më poshtë për të resetuar fjalëkalimin tënd:</p>
+                <a href='{resetLink}' style='background:#1a1208;color:#fff;padding:12px 24px;text-decoration:none;'>
+                    RESETO FJALËKALIMIN
+                </a>
+                <p>Linku skadon pas 1 ore.</p>
+                <p>Nëse nuk e ke kërkuar ti këtë, inoro këtë email.</p>";
+
+            try
+            {
+                await _email.SendAsync(user.Email, "Resetimi i fjalëkalimit — MAIA", body);
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Gabim gjatë dërgimit të email-it. Kontrollo konfigurimin e email-it." });
+            }
+
+            return Ok(new { message = "Nëse email ekziston, do të marrësh link resetimi." });
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var resetToken = await _context.PasswordResetTokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Token == dto.Token && !t.IsUsed && t.ExpiresAt > DateTime.UtcNow);
+
+            if (resetToken == null)
+                return BadRequest(new { message = "Linku është i pavlefshëm ose ka skaduar." });
+
+            var salt = BCrypt.Net.BCrypt.GenerateSalt();
+            var hash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword, salt);
+
+            resetToken.User.PasswordHash = System.Text.Encoding.UTF8.GetBytes(hash);
+            resetToken.User.PasswordSalt = System.Text.Encoding.UTF8.GetBytes(salt);
+            resetToken.IsUsed = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Fjalëkalimi u ndryshua me sukses." });
         }
     }
 }

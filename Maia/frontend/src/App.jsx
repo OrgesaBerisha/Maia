@@ -10,8 +10,10 @@ const SearchPage   = lazy(() => import('./SearchPage.jsx'))
 const BagPage      = lazy(() => import('./BagPage.jsx'))
 const ProfilePage  = lazy(() => import('./ProfilePage.jsx'))
 const CheckoutPage = lazy(() => import('./CheckoutPage.jsx'))
-const LoginPage    = lazy(() => import('./LoginPage.jsx'))
-const RegisterPage = lazy(() => import('./RegisterPage.jsx'))
+const LoginPage           = lazy(() => import('./LoginPage.jsx'))
+const RegisterPage        = lazy(() => import('./RegisterPage.jsx'))
+const ForgotPasswordPage  = lazy(() => import('./ForgotPasswordPage.jsx'))
+const ResetPasswordPage   = lazy(() => import('./ResetPasswordPage.jsx'))
 
 function App() {
   return (
@@ -27,8 +29,10 @@ function App() {
                 <Route path="/bag"      element={<BagPage />} />
                 <Route path="/profile"  element={<ProfilePage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/login"    element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/login"           element={<LoginPage />} />
+                <Route path="/register"        element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password"  element={<ResetPasswordPage />} />
               </Routes>
             </Suspense>
           </BrowserRouter>
