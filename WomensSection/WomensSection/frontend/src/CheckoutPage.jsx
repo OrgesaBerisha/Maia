@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from './CartContext.jsx';
 import BottomNav from './BottomNav.jsx';
 import SiteLogo from './SiteLogo.jsx';
-import api from './api/axios.js';
+import { orderApi } from './api/axios.js';
 import './CheckoutPage.css';
 
 const SHIPPING_COST = 4.99;
@@ -72,9 +72,8 @@ function CheckoutPage() {
 
     setSubmit(true);
     try {
-      await api.post('/Order', {
-        customerName: form.fullName,
-        items: bag.map(item => ({ productId: item.id, quantity: item.quantity ?? 1 })),
+      await orderApi.post('/Order', {
+        shippingAddress: `${form.address}, ${form.city}, ${form.postalCode}, ${form.country}`,
       });
     } catch (err) {
       console.error('Order API error:', err?.response?.data ?? err.message);
