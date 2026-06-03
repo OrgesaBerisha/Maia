@@ -1,6 +1,7 @@
 ﻿// Controllers/NotificationsController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -10,8 +11,13 @@ using System.Security.Claims;
 public class NotificationsController : ControllerBase
 {
     private readonly NotificationDbContext _db;
+    private readonly IHubContext<NotificationHub> _hub;
 
-    public NotificationsController(NotificationDbContext db) => _db = db;
+    public NotificationsController(NotificationDbContext db, IHubContext<NotificationHub> hub)
+    {
+        _db = db;
+        _hub = hub;
+    }
 
     // GET api/notifications  — current user's notifications
     [HttpGet]
@@ -50,7 +56,7 @@ public class NotificationsController : ControllerBase
         return Ok(list);
     }
 
-    // POST api/notifications/send — internal endpoint to send notifications
+    // POST api/notifications/send — send notification + push via SignalR
     [HttpPost("send")]
     [AllowAnonymous]
     public async Task<IActionResult> Send([FromBody] Notification n)
@@ -59,6 +65,12 @@ public class NotificationsController : ControllerBase
         n.IsRead = false;
         _db.Notifications.Add(n);
         await _db.SaveChangesAsync();
+
+        // Push real-time to the specific user via SignalR
+        if (!string.IsNullOrEmpty(n.UserId))
+            await _hub.Clients.Group($"user-{n.UserId}")
+                      .SendAsync("ReceiveNotification", n);
+
         return Ok(n);
     }
 }

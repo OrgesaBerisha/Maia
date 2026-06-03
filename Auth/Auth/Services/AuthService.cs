@@ -2,7 +2,6 @@
 using Auth.Data.DTO;
 using Auth.Data.Interface;
 using Auth.Models;
-using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -53,7 +52,16 @@ namespace Auth.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return user.Adapt<UserDTO>();
+            return new UserDTO
+            {
+                UserID = user.UserID,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                CreatedAt = user.CreatedAt,
+                RoleType = null,
+                IsActive = user.IsActive
+            };
         }
 
         // ================= LOGIN =================
@@ -83,7 +91,11 @@ namespace Auth.Services
             return new AuthResponseDTO
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken  // Return raw token to client; DB stores hash
+                RefreshToken = refreshToken,
+                Role = user.Role?.RoleType,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
             };
         }
 
@@ -199,7 +211,19 @@ namespace Auth.Services
                     .Include(u => u.Role)
                     .FirstOrDefaultAsync(u => u.UserID == userId);
 
-                return user?.Adapt<UserDTO>();
+                if (user == null) return null;
+
+                return new UserDTO
+                {
+                    UserID = user.UserID,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    CreatedAt = user.CreatedAt,
+                    RoleType = user.Role?.RoleType,
+                    IsActive = user.IsActive,
+                    DisabledAt = user.DisabledAt
+                };
             }
             catch
             {
