@@ -57,6 +57,9 @@ function LoginPage() {
           Don't have an account?{' '}
           <Link to="/register" className="auth-link">Register</Link>
         </p>
+        <p className="auth-switch">
+          <Link to="/forgot-password" className="auth-link">Forgot password?</Link>
+        </p>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from './AuthContext.jsx'
 import BottomNav from './BottomNav.jsx'
 import SiteLogo from './SiteLogo.jsx'
 import './ProfilePage.css'
@@ -16,6 +17,14 @@ const IMAGES = [
 ]
 
 function ProfilePage() {
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logout()
+    navigate('/login')
+  }
+
   return (
     <div className="profile-page">
       <svg
@@ -46,7 +55,11 @@ function ProfilePage() {
           </svg>
         </button>
         <SiteLogo />
-        <Link to="/settings" className="profile-settings-link">SETTINGS</Link>
+        <span className="profile-settings-link">
+          {user?.firstName && user?.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : user?.email ?? ''}
+        </span>
       </header>
 
       <main className="profile-main">
@@ -56,6 +69,9 @@ function ProfilePage() {
               {item.label}
             </Link>
           ))}
+          <button className="profile-menu-item profile-logout-btn" onClick={handleLogout}>
+            LOG OUT
+          </button>
         </nav>
 
         <div className="profile-images">

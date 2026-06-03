@@ -9,16 +9,32 @@ export function AuthProvider({ children }) {
     catch { return null }
   })
 
+  const saveUser = (info) => {
+    setUser(info)
+    localStorage.setItem('maia_user', JSON.stringify(info))
+  }
+
   const login = useCallback(async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password })
-    const userInfo = { email, isLoggedIn: data.isLoggedIn }
-    setUser(userInfo)
-    localStorage.setItem('maia_user', JSON.stringify(userInfo))
+
+    try {
+      const { data: profile } = await api.get('/auth/me')
+      saveUser({
+        email,
+        firstName: profile.firstName ?? profile.FirstName ?? '',
+        lastName:  profile.lastName  ?? profile.LastName  ?? '',
+        isLoggedIn: true,
+      })
+    } catch {
+      saveUser({ email, firstName: '', lastName: '', isLoggedIn: true })
+    }
+
     return data
   }, [])
 
   const register = useCallback(async (firstName, lastName, email, password) => {
     const { data } = await api.post('/auth/register', { firstName, lastName, email, password })
+    saveUser({ email, firstName, lastName, isLoggedIn: true })
     return data
   }, [])
 

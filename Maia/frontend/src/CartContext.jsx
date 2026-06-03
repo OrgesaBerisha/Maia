@@ -5,13 +5,14 @@ const CartContext = createContext(null)
 
 function mapItem(i) {
   return {
-    cartItemId: i.id,
-    id:         i.productId,
-    name:       i.productName?.toUpperCase() ?? '',
-    price:      `${i.price} EUR`,
-    image:      i.productImage ?? '',
-    quantity:   i.quantity,
-    size:       i.size ?? 'ONE SIZE',
+    cartItemId:    i.id,
+    id:            i.productId,
+    productSource: i.productSource ?? 'women',
+    name:          i.productName?.toUpperCase() ?? '',
+    price:         i.price ?? 0,
+    image:         i.imageUrl ?? '',
+    quantity:      i.quantity,
+    size:          i.size ?? 'ONE SIZE',
   }
 }
 
@@ -38,7 +39,14 @@ export function CartProvider({ children }) {
 
   const addToBag = async (item) => {
     try {
-      await api.post('/Cart', { productId: item.id, quantity: 1 })
+      await api.post('/Cart', {
+        productId:     item.id,
+        productSource: item.productSource ?? 'women',
+        productName:   item.name,
+        imageUrl:      item.image ?? '',
+        price:         parseFloat(item.price) || 0,
+        quantity:      1,
+      })
       await fetchCart()
     } catch {
       setBag(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item])
@@ -61,10 +69,6 @@ export function CartProvider({ children }) {
   }
 
   const removeFromFavorites = async (id, size) => {
-    const item = favorites.find(i => i.id === id && i.size === size)
-    if (item?.wishlistItemId) {
-      try { await api.delete(`/Wishlist/${item.wishlistItemId}`) } catch { /* continue */ }
-    }
     setFavorites(prev => prev.filter(i => !(i.id === id && i.size === size)))
   }
 
