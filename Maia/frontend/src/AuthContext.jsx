@@ -19,7 +19,12 @@ export function AuthProvider({ children }) {
 
     try {
       const { data: profile } = await api.get('/auth/me')
-      saveUser({ email, firstName: profile.firstName ?? '', lastName: profile.lastName ?? '', isLoggedIn: true })
+      saveUser({
+        email,
+        firstName: profile.firstName ?? profile.FirstName ?? '',
+        lastName:  profile.lastName  ?? profile.LastName  ?? '',
+        isLoggedIn: true,
+      })
     } catch {
       saveUser({ email, firstName: '', lastName: '', isLoggedIn: true })
     }

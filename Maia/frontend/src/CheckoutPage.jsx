@@ -36,10 +36,14 @@ function CheckoutPage() {
   const { bag, removeFromBag } = useCart()
   const { user } = useAuth()
 
+  const fullName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(' ')
+    : ''
+
   const [form, setForm] = useState({
     ...EMPTY_FORM,
-    fullName: user ? `${user.firstName} ${user.lastName}`.trim() : '',
-    email:    user?.email ?? '',
+    fullName,
+    email: user?.email ?? '',
   })
   const [errors, setErrors]       = useState({})
   const [submitting, setSubmit]   = useState(false)
