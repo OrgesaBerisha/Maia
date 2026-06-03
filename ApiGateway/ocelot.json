@@ -57,14 +57,6 @@
       "SwaggerKey": "settings"
     },
     {
-      "UpstreamPathTemplate": "/gateway/maia/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [ { "Host": "localhost", "Port": 5293 } ],
-      "SwaggerKey": "maia"
-    },
-    {
       "UpstreamPathTemplate": "/gateway/orders/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
       "DownstreamPathTemplate": "/api/{everything}",
@@ -141,16 +133,6 @@
           "Name": "Settings Service",
           "Version": "v1",
           "Url": "http://localhost:5187/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "maia",
-      "Config": [
-        {
-          "Name": "Maia Main API",
-          "Version": "v1",
-          "Url": "http://localhost:5293/swagger/v1/swagger.json"
         }
       ]
     },
