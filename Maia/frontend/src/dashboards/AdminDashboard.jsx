@@ -100,7 +100,6 @@ function CustomersTab() {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        password: 'unchanged',
       })
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
@@ -261,7 +260,7 @@ function StaffTab() {
                 <td><span className={`db-badge ${u.isActive ? 'db-badge--green' : 'db-badge--red'}`}>{u.isActive ? 'Active' : 'Disabled'}</span></td>
                 <td className="db-actions-cell">
                   <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive).then(reload)}>
+                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive).then(reload).catch(e => alert(e?.response?.data?.message ?? 'Status update failed.'))}>
                     {u.isActive ? 'Disable' : 'Enable'}
                   </button>
                   <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>

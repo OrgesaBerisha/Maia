@@ -8,7 +8,6 @@ namespace Maia.Data.DTO
         [MaxLength(100, ErrorMessage = "Title max length is 100")]
         public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "ImageUrl is required")]
         public string ImageUrl { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Price is required")]
