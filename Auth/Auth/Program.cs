@@ -41,7 +41,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnMessageReceived = ctx =>
             {
-                ctx.Token = ctx.Request.Cookies["jwt"];
+                var token = ctx.Request.Cookies["jwt"];
+                if (!string.IsNullOrEmpty(token))
+                    ctx.Token = token;
                 return Task.CompletedTask;
             }
         };
@@ -78,7 +80,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();

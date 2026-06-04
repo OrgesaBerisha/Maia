@@ -16,12 +16,14 @@ namespace Auth.Controllers
         private readonly IAuthService _service;
         private readonly DataContext _context;
         private readonly IEmailService _email;
+        private readonly IWebHostEnvironment _env;
 
-        public AuthController(IAuthService service, DataContext context, IEmailService email)
+        public AuthController(IAuthService service, DataContext context, IEmailService email, IWebHostEnvironment env)
         {
             _context = context;
             _email = email;
             _service = service;
+            _env = env;
         }
 
         [HttpPost("register")]
@@ -124,20 +126,28 @@ namespace Auth.Controllers
         // ================= HELPER =================
         private void AppendAuthCookies(string accessToken, string refreshToken)
         {
-            Response.Cookies.Append("jwt", accessToken, new CookieOptions
+            bool isDev = _env.IsDevelopment();
+            var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddMinutes(30)
+                Secure   = !isDev,
+                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
+            };
+
+            Response.Cookies.Append("jwt", accessToken, new CookieOptions
+            {
+                HttpOnly = cookieOptions.HttpOnly,
+                Secure   = cookieOptions.Secure,
+                SameSite = cookieOptions.SameSite,
+                Expires  = DateTime.UtcNow.AddMinutes(30)
             });
 
             Response.Cookies.Append("refresh", refreshToken, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
+                HttpOnly = cookieOptions.HttpOnly,
+                Secure   = cookieOptions.Secure,
+                SameSite = cookieOptions.SameSite,
+                Expires  = DateTime.UtcNow.AddDays(7)
             });
         }
 
