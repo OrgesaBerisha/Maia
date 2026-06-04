@@ -21,5 +21,8 @@ namespace MenSection.Data.DTO
 
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters")]
         public string Description { get; set; } = string.Empty;
+
+        [StringLength(50, ErrorMessage = "Color cannot exceed 50 characters")]
+        public string? Color { get; set; }
     }
 }

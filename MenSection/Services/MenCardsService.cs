@@ -33,7 +33,8 @@ namespace MenSection.Services
                 MenCategoryId = p.MenCategoryId,
                 MenCategoryName = p.MenCategory?.Name,
 
-                Description = p.Description
+                Description = p.Description,
+                Color = p.Color
             });
         }
 
@@ -57,7 +58,8 @@ namespace MenSection.Services
 
 
 
-                Description = p.Description
+                Description = p.Description,
+                Color = p.Color
             });
         }
 
@@ -67,10 +69,11 @@ namespace MenSection.Services
             var card = new MenCards
             {
                 Title = dto.Title,
-                ImageUrl = dto.ImageUrl,
+                ImageUrl = dto.ImageUrl ?? string.Empty,
                 Price = dto.Price,
                 MenCategoryId = dto.MenCategoryId,
-                Description = dto.Description
+                Description = dto.Description,
+                Color = dto.Color
             };
 
             _context.MenCards.Add(card);
@@ -83,7 +86,8 @@ namespace MenSection.Services
                 ImageUrl = card.ImageUrl,
                 Price = card.Price,
                 MenCategoryId = card.MenCategoryId,
-                Description = card.Description
+                Description = card.Description,
+                Color = card.Color
             };
         }
 
@@ -95,10 +99,11 @@ namespace MenSection.Services
             if (entity == null) return null;
 
             entity.Title = dto.Title;
-            entity.ImageUrl = dto.ImageUrl;
+            entity.ImageUrl = dto.ImageUrl ?? string.Empty;
             entity.Price = dto.Price;
             entity.MenCategoryId = dto.MenCategoryId;
             entity.Description = dto.Description;
+            entity.Color = dto.Color;
 
             await _context.SaveChangesAsync();
 
@@ -109,7 +114,8 @@ namespace MenSection.Services
                 ImageUrl = entity.ImageUrl,
                 Price = entity.Price,
                 MenCategoryId = entity.MenCategoryId,
-                Description = entity.Description
+                Description = entity.Description,
+                Color = entity.Color
             };
         }
 

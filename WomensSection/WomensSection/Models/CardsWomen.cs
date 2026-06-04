@@ -20,6 +20,8 @@ namespace Maia.Models
 
         public string Description { get; set; } = string.Empty;
 
+        public string? Color { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
