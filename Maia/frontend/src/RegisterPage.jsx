@@ -22,7 +22,13 @@ function RegisterPage() {
       await register(form.firstName, form.lastName, form.email, form.password)
       navigate('/login')
     } catch (err) {
-      setError(err?.response?.data?.message ?? 'Registration failed. Try again.')
+      const data = err?.response?.data
+      if (data?.errors) {
+        const msgs = Object.values(data.errors).flat().join(' ')
+        setError(msgs)
+      } else {
+        setError(data?.message ?? 'Registration failed. Try again.')
+      }
     } finally {
       setLoad(false)
     }
