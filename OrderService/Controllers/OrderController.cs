@@ -4,6 +4,8 @@ using OrderService.Data;
 using OrderService.Data.DTO;
 using OrderService.Models;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace OrderService.Controllers
 {
@@ -12,10 +14,13 @@ namespace OrderService.Controllers
     public class OrderController : ControllerBase
     {
         private readonly OrderDbContext _context;
+        private readonly IHttpClientFactory _http;
+        private const string NotifUrl = "http://localhost:5151/api/notifications/send";
 
-        public OrderController(OrderDbContext context)
+        public OrderController(OrderDbContext context, IHttpClientFactory http)
         {
             _context = context;
+            _http = http;
         }
 
         private int GetUserId() =>
@@ -53,7 +58,27 @@ namespace OrderService.Controllers
             _context.CartItems.RemoveRange(cart.CartItems);
             await _context.SaveChangesAsync();
 
+            _ = SendNotification(userId.ToString(),
+                "Order Placed",
+                $"Your order #{order.Id} has been placed! Total: {order.TotalPrice:F2} EUR");
+
             return Ok(new { order.Id, order.TotalPrice, order.Status, order.CreatedAt });
+        }
+
+        [HttpPatch("{id:int}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderStatusDto dto)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            order.Status = dto.Status;
+            await _context.SaveChangesAsync();
+
+            _ = SendNotification(order.UserId.ToString(),
+                "Order Update",
+                $"Order #{order.Id} status: {dto.Status}");
+
+            return Ok(new { order.Id, order.Status });
         }
 
         [HttpGet]
@@ -101,6 +126,24 @@ namespace OrderService.Controllers
                 o.CreatedAt,
                 ItemCount = o.OrderItems.Count
             }));
+        }
+
+        private async Task SendNotification(string userId, string title, string message)
+        {
+            try
+            {
+                var client = _http.CreateClient();
+                var payload = JsonSerializer.Serialize(new
+                {
+                    userId,
+                    title,
+                    message,
+                    type = "inapp"
+                });
+                await client.PostAsync(NotifUrl,
+                    new StringContent(payload, Encoding.UTF8, "application/json"));
+            }
+            catch { /* notification failure should not break the order flow */ }
         }
     }
 }
