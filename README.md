@@ -193,6 +193,6 @@ NotificationService ofron njoftime në kohë reale:
 
 | Anëtar | GitHub |
 |--------|--------|
-| Anesa Mecinaj | [@AnesaaM](https://github.com/AnesaaM) |
 | Orgesa Berisha | [@OrgesaBerisha](https://github.com/OrgesaBerisha) |
-| Festan Haqi | [@festathaqi](https://github.com/festathaqi) |
+| Anesa Mecinaj | [@AnesaaM](https://github.com/AnesaaM) |
+| Festa Thaqi | [@festathaqi](https://github.com/festathaqi) |
