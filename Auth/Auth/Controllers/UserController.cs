@@ -45,7 +45,7 @@ namespace Auth.Controllers
         }
 
         [HttpGet("customers")]
-        [Authorize(Roles = "Admin,SalesManager,WomenManager,MenManager")]
+        [Authorize(Roles = "Admin,SalesManager,WomenManager,MenManager,KidsManager")]
         public async Task<IActionResult> GetAllCustomers()
         {
             var customers = await _service.GetAllCustomers();
@@ -109,6 +109,29 @@ namespace Auth.Controllers
             if (updated == null)
                 return NotFound(new { message = "User not found." });
             return Ok(updated);
+        }
+
+        [HttpPost("staff")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateStaff([FromBody] CreateStaffDTO request)
+        {
+            try
+            {
+                var created = await _service.CreateStaffUser(request);
+                return Ok(created);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("roles")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _service.GetAllRoles();
+            return Ok(roles);
         }
     }
 }

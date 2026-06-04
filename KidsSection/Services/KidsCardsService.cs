@@ -36,7 +36,8 @@ namespace KidsSection.Services
                 KidsProductTypeId = p.KidsProductTypeId,
                 KidsProductTypeName = p.KidsProductType?.Name,
 
-                Description = p.Description
+                Description = p.Description,
+                DiscountPercent = p.DiscountPercent
             });
         }
 
@@ -62,7 +63,8 @@ namespace KidsSection.Services
                 KidsProductTypeId = p.KidsProductTypeId,
                 KidsProductTypeName = p.KidsProductType?.Name,
 
-                Description = p.Description
+                Description = p.Description,
+                DiscountPercent = p.DiscountPercent
             });
         }
 
@@ -168,7 +170,8 @@ namespace KidsSection.Services
                 KidsProductTypeId = x.KidsProductTypeId,
                 KidsProductTypeName = x.KidsProductType?.Name,
 
-                Description = x.Description
+                Description = x.Description,
+                DiscountPercent = x.DiscountPercent
             });
         }
 
@@ -207,7 +210,8 @@ namespace KidsSection.Services
                 KidsProductTypeId = x.KidsProductTypeId,
                 KidsProductTypeName = x.KidsProductType?.Name,
 
-                Description = x.Description
+                Description = x.Description,
+                DiscountPercent = x.DiscountPercent
             });
         }
 
@@ -243,8 +247,30 @@ namespace KidsSection.Services
                 KidsProductTypeId = x.KidsProductTypeId,
                 KidsProductTypeName = x.KidsProductType?.Name,
 
-                Description = x.Description
+                Description = x.Description,
+                DiscountPercent = x.DiscountPercent
             });
+        }
+
+        public async Task<KidsCardsDto?> SetDiscountAsync(int id, int? discountPercent)
+        {
+            var entity = await _context.KidsCards.FindAsync(id);
+            if (entity == null) return null;
+
+            entity.DiscountPercent = discountPercent;
+            await _context.SaveChangesAsync();
+
+            return new KidsCardsDto
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                ImageUrl = entity.ImageUrl,
+                Price = entity.Price,
+                KidsCategoryId = entity.KidsCategoryId,
+                KidsProductTypeId = entity.KidsProductTypeId,
+                Description = entity.Description,
+                DiscountPercent = entity.DiscountPercent
+            };
         }
     }
 }

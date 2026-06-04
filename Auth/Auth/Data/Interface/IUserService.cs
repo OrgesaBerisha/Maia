@@ -11,5 +11,7 @@ namespace Auth.Data.Interface
         Task<UserDTO?> UpdateUser(int id, UserRegisterDTO request);
         Task<UserDTO?> UpdateUserRole(int userID, int newRoleID);
         Task<UserDTO?> SetUserActiveStatus(int userID, bool isActive);
+        Task<UserDTO> CreateStaffUser(CreateStaffDTO request);
+        Task<IEnumerable<RoleDTO>> GetAllRoles();
     }
 }

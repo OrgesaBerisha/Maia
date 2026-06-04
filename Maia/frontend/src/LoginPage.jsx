@@ -19,8 +19,16 @@ function LoginPage() {
     setError('')
     setLoad(true)
     try {
-      await login(form.email, form.password)
-      navigate('/')
+      const data = await login(form.email, form.password)
+      const role = data?.role ?? ''
+      const roleRoutes = {
+        Admin:         '/dashboard/admin',
+        SalesManager:  '/dashboard/sales',
+        WomenManager:  '/dashboard/women',
+        MenManager:    '/dashboard/men',
+        KidsManager:   '/dashboard/kids',
+      }
+      navigate(roleRoutes[role] ?? '/')
     } catch (err) {
       setError(err?.response?.data?.message ?? 'Invalid email or password.')
     } finally {

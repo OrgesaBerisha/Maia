@@ -10,35 +10,7 @@ namespace Maia.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_CardsWoman_WomanCategories_WomanCategoryId",
-                table: "CardsWoman");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_CardsWoman",
-                table: "CardsWoman");
-
-            migrationBuilder.RenameTable(
-                name: "CardsWoman",
-                newName: "CardsWomen");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_CardsWoman_WomanCategoryId",
-                table: "CardsWomen",
-                newName: "IX_CardsWomen_WomanCategoryId");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_CardsWomen",
-                table: "CardsWomen",
-                column: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CardsWomen_WomanCategories_WomanCategoryId",
-                table: "CardsWomen",
-                column: "WomanCategoryId",
-                principalTable: "WomanCategories",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Restrict);
+            // Table was already created as CardsWomen in a prior migration — no-op.
         }
 
         /// <inheritdoc />

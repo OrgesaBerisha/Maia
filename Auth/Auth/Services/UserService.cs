@@ -148,6 +148,50 @@ namespace Auth.Services
             return MapToDTO(user);
         }
 
+        public async Task<UserDTO> CreateStaffUser(CreateStaffDTO request)
+        {
+            if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email))
+                throw new Exception("Email is already in use.");
+
+            var role = await _dbContext.Roles.FirstOrDefaultAsync(r => r.RoleType == request.RoleType)
+                ?? throw new Exception($"Role '{request.RoleType}' not found.");
+
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            var user = new User
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(request.Password)),
+                PasswordSalt = hmac.Key,
+                RoleID = role.RoleID,
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            await _dbContext.Users.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
+
+            return new UserDTO
+            {
+                UserID = user.UserID,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                CreatedAt = user.CreatedAt,
+                RoleType = role.RoleType,
+                IsActive = user.IsActive,
+                DisabledAt = null
+            };
+        }
+
+        public async Task<IEnumerable<RoleDTO>> GetAllRoles()
+        {
+            return await _dbContext.Roles
+                .Select(r => new RoleDTO { RoleID = r.RoleID, RoleType = r.RoleType })
+                .ToListAsync();
+        }
+
         // Shared mapping helper — avoids repeating the same 8-field block everywhere
         private static UserDTO MapToDTO(User user) => new UserDTO
         {

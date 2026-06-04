@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './CartContext.jsx'
 import { AuthProvider } from './AuthContext.jsx'
 import { NotificationProvider } from './NotificationContext.jsx'
+import ProtectedRoute from './ProtectedRoute.jsx'
 
 const HomeScreen   = lazy(() => import('./HomeScreen.jsx'))
 const ShopPage     = lazy(() => import('./ShopPage.jsx'))
@@ -14,6 +15,12 @@ const LoginPage           = lazy(() => import('./LoginPage.jsx'))
 const RegisterPage        = lazy(() => import('./RegisterPage.jsx'))
 const ForgotPasswordPage  = lazy(() => import('./ForgotPasswordPage.jsx'))
 const ResetPasswordPage   = lazy(() => import('./ResetPasswordPage.jsx'))
+
+const AdminDashboard        = lazy(() => import('./dashboards/AdminDashboard.jsx'))
+const SalesManagerDashboard = lazy(() => import('./dashboards/SalesManagerDashboard.jsx'))
+const WomenManagerDashboard = lazy(() => import('./dashboards/WomenManagerDashboard.jsx'))
+const MenManagerDashboard   = lazy(() => import('./dashboards/MenManagerDashboard.jsx'))
+const KidsManagerDashboard  = lazy(() => import('./dashboards/KidsManagerDashboard.jsx'))
 
 function App() {
   return (
@@ -33,6 +40,32 @@ function App() {
                 <Route path="/register"        element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password"  element={<ResetPasswordPage />} />
+
+                <Route path="/dashboard/admin" element={
+                  <ProtectedRoute allowedRoles={['Admin']}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/sales" element={
+                  <ProtectedRoute allowedRoles={['SalesManager']}>
+                    <SalesManagerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/women" element={
+                  <ProtectedRoute allowedRoles={['WomenManager']}>
+                    <WomenManagerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/men" element={
+                  <ProtectedRoute allowedRoles={['MenManager']}>
+                    <MenManagerDashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/dashboard/kids" element={
+                  <ProtectedRoute allowedRoles={['KidsManager']}>
+                    <KidsManagerDashboard />
+                  </ProtectedRoute>
+                } />
               </Routes>
             </Suspense>
           </BrowserRouter>

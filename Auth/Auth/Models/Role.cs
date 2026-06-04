@@ -21,6 +21,7 @@ namespace Auth.Models
         public const string SalesManager = "SalesManager";
         public const string WomenManager = "WomenManager";
         public const string MenManager = "MenManager";
+        public const string KidsManager = "KidsManager";
         public const string Customer = "Customer";
     }
 }

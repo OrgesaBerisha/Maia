@@ -11,6 +11,6 @@
         public int KidsProductTypeId { get; set; }
         public string? KidsProductTypeName { get; set; }
         public string Description { get; set; } = string.Empty;
-
+        public int? DiscountPercent { get; set; }
     }
 }

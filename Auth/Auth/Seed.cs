@@ -21,11 +21,21 @@ namespace Auth
                     new Role { RoleType = Roles.SalesManager },
                     new Role { RoleType = Roles.WomenManager },
                     new Role { RoleType = Roles.MenManager },
+                    new Role { RoleType = Roles.KidsManager },
                     new Role { RoleType = Roles.Customer }
                 };
 
                 await context.Roles.AddRangeAsync(roles);
                 await context.SaveChangesAsync();
+            }
+            else
+            {
+                // Ensure KidsManager role exists if DB was seeded before this role was added
+                if (!await context.Roles.AnyAsync(r => r.RoleType == Roles.KidsManager))
+                {
+                    await context.Roles.AddAsync(new Role { RoleType = Roles.KidsManager });
+                    await context.SaveChangesAsync();
+                }
             }
 
             // =========================
@@ -35,6 +45,7 @@ namespace Auth
             await SeedUser(context, "sales@manager.com", "Sales", "Manager", "Sales123!", Roles.SalesManager);
             await SeedUser(context, "women@manager.com", "Women", "Manager", "Women123!", Roles.WomenManager);
             await SeedUser(context, "men@manager.com", "Men", "Manager", "Men123!", Roles.MenManager);
+            await SeedUser(context, "kids@manager.com", "Kids", "Manager", "Kids123!", Roles.KidsManager);
         }
 
         // FIXED: null-guard on role lookup for all seeded users, not just admin

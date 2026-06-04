@@ -23,10 +23,11 @@ export function AuthProvider({ children }) {
         email,
         firstName: profile.firstName ?? profile.FirstName ?? '',
         lastName:  profile.lastName  ?? profile.LastName  ?? '',
+        role: data.role ?? '',
         isLoggedIn: true,
       })
     } catch {
-      saveUser({ email, firstName: '', lastName: '', isLoggedIn: true })
+      saveUser({ email, firstName: '', lastName: '', role: data.role ?? '', isLoggedIn: true })
     }
 
     return data

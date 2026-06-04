@@ -74,8 +74,16 @@ namespace KidsSection.Controllers
 
         [HttpGet("sort")]
         public async Task<IActionResult> Sort(SortOptions sortBy)
-    {
-        return Ok(await _service.SortAsync(sortBy));
+        {
+            return Ok(await _service.SortAsync(sortBy));
+        }
+
+        [HttpPatch("{id}/sale")]
+        public async Task<IActionResult> SetSale(int id, [FromBody] SetDiscountDto dto)
+        {
+            var result = await _service.SetDiscountAsync(id, dto.DiscountPercent);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
     }
-}
 }
