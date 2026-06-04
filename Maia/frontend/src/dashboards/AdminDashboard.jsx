@@ -72,6 +72,12 @@ function OverviewTab({ stats }) {
 // ── Customers Tab ──────────────────────────────────────────────────────────
 function CustomersTab() {
   const [q, setQ] = useState('')
+  const [modal, setModal] = useState(null)
+  const [selected, setSelected] = useState(null)
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '' })
+  const [saving, setSaving] = useState(false)
+  const [formErr, setFormErr] = useState('')
+
   const { data: users, loading, error, reload } = useApi(async () => {
     const r = await api.get('/users/customers')
     return r.data
@@ -80,6 +86,32 @@ function CustomersTab() {
   const filtered = users.filter(u =>
     !q || `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(q.toLowerCase())
   )
+
+  const openEdit = (u) => {
+    setSelected(u)
+    setForm({ firstName: u.firstName, lastName: u.lastName, email: u.email })
+    setFormErr(''); setModal('edit')
+  }
+
+  const save = async () => {
+    setSaving(true); setFormErr('')
+    try {
+      await api.put(`/users/${selected.userID}`, {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        password: 'unchanged',
+      })
+      setModal(null); reload()
+    } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
+    finally { setSaving(false) }
+  }
+
+  const deleteUser = async (u) => {
+    if (!confirm(`Delete customer ${u.firstName} ${u.lastName}?`)) return
+    try { await api.delete(`/users/${u.userID}`); reload() }
+    catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
+  }
 
   return (
     <div className="db-section">
@@ -91,23 +123,53 @@ function CustomersTab() {
       <div className="db-table-wrap">
         <table className="db-table">
           <thead><tr>
-            <th>NAME</th><th>EMAIL</th><th>JOINED</th>
+            <th>NAME</th><th>EMAIL</th><th>JOINED</th><th>ACTIONS</th>
           </tr></thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={3} className="db-empty">Loading…</td></tr>
+              <tr><td colSpan={4} className="db-empty">Loading…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={3} className="db-empty">No customers found.</td></tr>
+              <tr><td colSpan={4} className="db-empty">No customers found.</td></tr>
             ) : filtered.map(u => (
               <tr key={u.userID ?? u.email}>
                 <td>{u.firstName} {u.lastName}</td>
                 <td>{u.email}</td>
                 <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
+                <td className="db-actions-cell">
+                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
+                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {modal === 'edit' && (
+        <Modal title="Edit Customer" onClose={() => setModal(null)}
+          actions={<>
+            <button className="db-btn db-btn--ghost" onClick={() => setModal(null)}>Cancel</button>
+            <button className="db-btn db-btn--primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+          </>}>
+          {formErr && <div className="db-error">{formErr}</div>}
+          <div className="db-form">
+            <div className="db-form-row">
+              <div className="db-field">
+                <label className="db-label">First Name</label>
+                <input className="db-input" value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} />
+              </div>
+              <div className="db-field">
+                <label className="db-label">Last Name</label>
+                <input className="db-input" value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} />
+              </div>
+            </div>
+            <div className="db-field">
+              <label className="db-label">Email</label>
+              <input className="db-input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
@@ -115,7 +177,7 @@ function CustomersTab() {
 // ── Staff Tab ──────────────────────────────────────────────────────────────
 function StaffTab() {
   const [q, setQ] = useState('')
-  const [modal, setModal] = useState(null) // null | 'add' | 'edit' | 'role'
+  const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formErr, setFormErr] = useState('')
@@ -131,7 +193,7 @@ function StaffTab() {
     return r.data
   }, [])
 
-  const staff = allUsers.filter(u => u.role?.roleType !== 'Customer')
+  const staff = allUsers.filter(u => u.roleType !== 'Customer')
   const filtered = staff.filter(u =>
     !q || `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(q.toLowerCase())
   )
@@ -143,7 +205,7 @@ function StaffTab() {
 
   const openEdit = (u) => {
     setSelected(u)
-    setForm({ firstName: u.firstName, lastName: u.lastName, email: u.email, password: '', roleType: u.role?.roleType ?? '' })
+    setForm({ firstName: u.firstName, lastName: u.lastName, email: u.email, password: '', roleType: u.roleType ?? '' })
     setFormErr(''); setModal('edit')
   }
 
@@ -195,7 +257,7 @@ function StaffTab() {
               <tr key={u.userID}>
                 <td>{u.firstName} {u.lastName}</td>
                 <td>{u.email}</td>
-                <td><span className={`db-badge ${ROLE_COLORS[u.role?.roleType] ?? 'db-badge--grey'}`}>{u.role?.roleType ?? '—'}</span></td>
+                <td><span className={`db-badge ${ROLE_COLORS[u.roleType] ?? 'db-badge--grey'}`}>{u.roleType ?? '—'}</span></td>
                 <td><span className={`db-badge ${u.isActive ? 'db-badge--green' : 'db-badge--red'}`}>{u.isActive ? 'Active' : 'Disabled'}</span></td>
                 <td className="db-actions-cell">
                   <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
@@ -257,9 +319,10 @@ function StaffTab() {
 // ── Products Tab (reusable for Women/Men/Kids) ─────────────────────────────
 function ProductsTab({ section }) {
   const cfg = {
-    women: { endpoint: '/CardsWomen', catKey: 'womanCategoryId', catLabel: 'Category', catEndpoint: '/WomanCategory', idKey: 'id' },
-    men:   { endpoint: '/MenCards',   catKey: 'menCategoryId',   catLabel: 'Category', catEndpoint: '/MenCategory',   idKey: 'id' },
-    kids:  { endpoint: '/KidsCards',  catKey: 'kidsCategoryId',  catLabel: 'Category', catEndpoint: '/KidsCategory',  idKey: 'id' },
+    women: { endpoint: '/CardsWomen', catKey: 'womanCategoryId', catEndpoint: '/WomanCategory', idKey: 'id' },
+    men:   { endpoint: '/MenCards',   catKey: 'menCategoryId',   catEndpoint: '/MenCategory',   idKey: 'id' },
+    kids:  { endpoint: '/KidsCards',  catKey: 'kidsCategoryId',  catEndpoint: '/KidsCategory',  idKey: 'id',
+             typeKey: 'kidsProductTypeId', typeEndpoint: '/KidsProductType' },
   }[section]
 
   const [q, setQ] = useState('')
@@ -267,15 +330,23 @@ function ProductsTab({ section }) {
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formErr, setFormErr] = useState('')
-  const [form, setForm] = useState({ title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: '' })
+  const baseForm = { title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: '' }
+  if (cfg.typeKey) baseForm[cfg.typeKey] = ''
+  const [form, setForm] = useState(baseForm)
 
   const { data: products, loading, error, reload } = useApi(async () => {
-    const r = await api.get(`/api${cfg.endpoint}`)
+    const r = await api.get(cfg.endpoint)
     return r.data
   }, [section])
 
   const { data: categories } = useApi(async () => {
-    try { const r = await api.get(`/api${cfg.catEndpoint}`); return r.data }
+    try { const r = await api.get(cfg.catEndpoint); return r.data }
+    catch { return [] }
+  }, [section])
+
+  const { data: types } = useApi(async () => {
+    if (!cfg.typeEndpoint) return []
+    try { const r = await api.get(cfg.typeEndpoint); return r.data }
     catch { return [] }
   }, [section])
 
@@ -284,22 +355,26 @@ function ProductsTab({ section }) {
   )
 
   const openAdd = () => {
-    setForm({ title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: categories[0]?.id ?? '' })
-    setFormErr(''); setModal('add')
+    const f = { title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: categories[0]?.id ?? '' }
+    if (cfg.typeKey) f[cfg.typeKey] = types[0]?.id ?? ''
+    setForm(f); setFormErr(''); setModal('add')
   }
 
   const openEdit = (p) => {
     setSelected(p)
-    setForm({ title: p.title, description: p.description ?? '', price: p.price, imageUrl: p.imageUrl ?? '', [cfg.catKey]: p[cfg.catKey] ?? '' })
-    setFormErr(''); setModal('edit')
+    const f = { title: p.title, description: p.description ?? '', price: p.price, imageUrl: p.imageUrl ?? '', [cfg.catKey]: p[cfg.catKey] ?? '' }
+    if (cfg.typeKey) f[cfg.typeKey] = p[cfg.typeKey] ?? ''
+    setForm(f); setFormErr(''); setModal('edit')
   }
 
   const save = async () => {
     setSaving(true); setFormErr('')
     const body = { ...form, price: parseFloat(form.price) }
+    if (cfg.catKey) body[cfg.catKey] = parseInt(body[cfg.catKey])
+    if (cfg.typeKey) body[cfg.typeKey] = parseInt(body[cfg.typeKey])
     try {
-      if (modal === 'add') await api.post(`/api${cfg.endpoint}`, body)
-      else await api.put(`/api${cfg.endpoint}/${selected[cfg.idKey]}`, body)
+      if (modal === 'add') await api.post(cfg.endpoint, body)
+      else await api.put(`${cfg.endpoint}/${selected[cfg.idKey]}`, body)
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
     finally { setSaving(false) }
@@ -307,8 +382,15 @@ function ProductsTab({ section }) {
 
   const del = async (p) => {
     if (!confirm(`Delete "${p.title}"?`)) return
-    try { await api.delete(`/api${cfg.endpoint}/${p[cfg.idKey]}`); reload() }
+    try { await api.delete(`${cfg.endpoint}/${p[cfg.idKey]}`); reload() }
     catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
+  }
+
+  const getCategoryName = (p) => {
+    if (section === 'women') return p.category || p.womanCategoryId || '—'
+    if (section === 'men')   return p.menCategoryName || p.menCategoryId || '—'
+    if (section === 'kids')  return p.kidsCategoryName || p.kidsCategoryId || '—'
+    return '—'
   }
 
   return (
@@ -333,7 +415,7 @@ function ProductsTab({ section }) {
                 <td><img className="db-img-preview" src={p.imageUrl || 'https://placehold.co/56x56?text=No+Img'} alt={p.title} /></td>
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
-                <td>{p.womanCategory?.name ?? p.menCategory?.name ?? p.kidsCategory?.name ?? p[cfg.catKey] ?? '—'}</td>
+                <td>{getCategoryName(p)}</td>
                 <td className="db-actions-cell">
                   <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
                   <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
@@ -371,6 +453,14 @@ function ProductsTab({ section }) {
                 </select>
               </div>
             </div>
+            {cfg.typeKey && (
+              <div className="db-field">
+                <label className="db-label">Product Type</label>
+                <select className="db-select" value={form[cfg.typeKey]} onChange={e => setForm(f => ({ ...f, [cfg.typeKey]: e.target.value }))}>
+                  {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+            )}
             <div className="db-field">
               <label className="db-label">Image URL</label>
               <input className="db-input" value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="https://…" />
@@ -401,7 +491,7 @@ function SalesTab() {
   const endpoint = { women: '/CardsWomen', men: '/MenCards', kids: '/KidsCards' }[section]
 
   const { data: products, loading, reload } = useApi(async () => {
-    const r = await api.get(`/api${endpoint}`)
+    const r = await api.get(endpoint)
     return r.data
   }, [section])
 
@@ -419,10 +509,10 @@ function SalesTab() {
     setSaving(true)
     try {
       if (section === 'kids') {
-        await api.patch(`/api/KidsCards/${selected.id}/sale`, { discountPercent: parseInt(discount) || 0 })
+        await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: parseInt(discount) || 0 })
       } else {
         const newPrice = parseFloat(selected.originalPrice ?? selected.price) * (1 - (parseInt(discount) || 0) / 100)
-        await api.put(`/api${endpoint}/${selected.id}`, { ...selected, price: parseFloat(newPrice.toFixed(2)) })
+        await api.put(`${endpoint}/${selected.id}`, { ...selected, price: parseFloat(newPrice.toFixed(2)) })
       }
       setModal(null); reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -496,13 +586,13 @@ export default function AdminDashboard() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: allUsers } = useApi(async () => { const r = await api.get('/users'); return r.data }, [])
-  const { data: customers } = useApi(async () => { const r = await api.get('/users/customers'); return r.data }, [])
-  const { data: women } = useApi(async () => { const r = await api.get('/api/CardsWomen'); return r.data }, [])
-  const { data: men }   = useApi(async () => { const r = await api.get('/api/MenCards');   return r.data }, [])
-  const { data: kids }  = useApi(async () => { const r = await api.get('/api/KidsCards');  return r.data }, [])
+  const { data: allUsers }  = useApi(async () => { const r = await api.get('/users');            return r.data }, [])
+  const { data: customers } = useApi(async () => { const r = await api.get('/users/customers');  return r.data }, [])
+  const { data: women }     = useApi(async () => { const r = await api.get('/CardsWomen');        return r.data }, [])
+  const { data: men }       = useApi(async () => { const r = await api.get('/MenCards');          return r.data }, [])
+  const { data: kids }      = useApi(async () => { const r = await api.get('/KidsCards');         return r.data }, [])
 
-  const staff = allUsers.filter(u => u.role?.roleType !== 'Customer')
+  const staff = allUsers.filter(u => u.roleType !== 'Customer')
 
   const stats = [
     { label: 'Customers',       value: customers.length },

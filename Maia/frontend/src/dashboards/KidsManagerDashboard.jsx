@@ -52,17 +52,17 @@ function ProductsTab() {
   })
 
   const { data: products, loading, error, reload } = useApi(async () => {
-    const r = await api.get('/api/KidsCards')
+    const r = await api.get('/KidsCards')
     return r.data
   }, [])
 
   const { data: categories } = useApi(async () => {
-    try { const r = await api.get('/api/KidsCategory'); return r.data }
+    try { const r = await api.get('/KidsCategory'); return r.data }
     catch { return [] }
   }, [])
 
   const { data: types } = useApi(async () => {
-    try { const r = await api.get('/api/KidsProductType'); return r.data }
+    try { const r = await api.get('/KidsProductType'); return r.data }
     catch { return [] }
   }, [])
 
@@ -100,21 +100,21 @@ function ProductsTab() {
       discountPercent: form.discountPercent !== '' ? parseInt(form.discountPercent) : null,
     }
     try {
-      if (modal === 'add') await api.post('/api/KidsCards', body)
-      else await api.put(`/api/KidsCards/${selected.id}`, body)
+      if (modal === 'add') await api.post('/KidsCards', body)
+      else await api.put(`/KidsCards/${selected.id}`, body)
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
     finally { setSaving(false) }
   }
 
   const applyDiscount = async (p, pct) => {
-    try { await api.patch(`/api/KidsCards/${p.id}/sale`, { discountPercent: pct }); reload() }
+    try { await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: pct }); reload() }
     catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
   }
 
   const del = async (p) => {
     if (!confirm(`Delete "${p.title}"?`)) return
-    try { await api.delete(`/api/KidsCards/${p.id}`); reload() }
+    try { await api.delete(`/KidsCards/${p.id}`); reload() }
     catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
   }
 
@@ -140,8 +140,8 @@ function ProductsTab() {
                 <td><img className="db-img-preview" src={p.imageUrl || 'https://placehold.co/56x56?text=No+Img'} alt={p.title} /></td>
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
-                <td>{p.kidsCategory?.name ?? p.kidsCategoryId ?? '—'}</td>
-                <td>{p.kidsProductType?.name ?? p.kidsProductTypeId ?? '—'}</td>
+                <td>{p.kidsCategoryName || p.kidsCategoryId || '—'}</td>
+                <td>{p.kidsProductTypeName || p.kidsProductTypeId || '—'}</td>
                 <td>
                   {p.discountPercent > 0
                     ? <span className="db-badge db-badge--green">{p.discountPercent}% OFF</span>
@@ -224,7 +224,7 @@ function SimpleListTab({ label, endpoint }) {
   const [formErr, setFormErr] = useState('')
 
   const { data: items, loading, error, reload } = useApi(async () => {
-    const r = await api.get(`/api${endpoint}`)
+    const r = await api.get(endpoint)
     return r.data
   }, [endpoint])
 
@@ -234,7 +234,7 @@ function SimpleListTab({ label, endpoint }) {
   const save = async () => {
     setSaving(true); setFormErr('')
     try {
-      if (modal === 'add') await api.post(`/api${endpoint}`, form)
+      if (modal === 'add') await api.post(endpoint, form)
       else await api.put(`/api${endpoint}/${selected.id}`, form)
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
@@ -301,9 +301,9 @@ export default function KidsManagerDashboard() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: products }   = useApi(async () => { const r = await api.get('/api/KidsCards');       return r.data }, [])
-  const { data: categories } = useApi(async () => { try { const r = await api.get('/api/KidsCategory');    return r.data } catch { return [] } }, [])
-  const { data: types }      = useApi(async () => { try { const r = await api.get('/api/KidsProductType'); return r.data } catch { return [] } }, [])
+  const { data: products }   = useApi(async () => { const r = await api.get('/KidsCards');       return r.data }, [])
+  const { data: categories } = useApi(async () => { try { const r = await api.get('/KidsCategory');    return r.data } catch { return [] } }, [])
+  const { data: types }      = useApi(async () => { try { const r = await api.get('/KidsProductType'); return r.data } catch { return [] } }, [])
 
   const handleLogout = async () => { await logout(); navigate('/login') }
 

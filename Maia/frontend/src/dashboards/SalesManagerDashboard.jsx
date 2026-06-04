@@ -74,7 +74,7 @@ function SectionSalesTab({ section }) {
     setSaving(true); setSaveErr('')
     try {
       if (section === 'kids') {
-        await api.patch(`/api/KidsCards/${selected.id}/sale`, {
+        await api.patch(`/KidsCards/${selected.id}/sale`, {
           discountPercent: parseInt(discount) || 0,
         })
       } else {
@@ -92,7 +92,7 @@ function SectionSalesTab({ section }) {
   const removeSale = async (p) => {
     try {
       if (section === 'kids') {
-        await api.patch(`/api/KidsCards/${p.id}/sale`, { discountPercent: 0 })
+        await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -185,9 +185,9 @@ function SectionSalesTab({ section }) {
 
 // ── Active Sales Tab ───────────────────────────────────────────────────────
 function ActiveSalesTab() {
-  const { data: women, loading: wl }  = useApi(async () => { const r = await api.get('/api/CardsWomen'); return r.data }, [])
-  const { data: men,   loading: ml }  = useApi(async () => { const r = await api.get('/api/MenCards');   return r.data }, [])
-  const { data: kids,  loading: kl }  = useApi(async () => { const r = await api.get('/api/KidsCards');  return r.data }, [])
+  const { data: women, loading: wl }  = useApi(async () => { const r = await api.get('/CardsWomen'); return r.data }, [])
+  const { data: men,   loading: ml }  = useApi(async () => { const r = await api.get('/MenCards');   return r.data }, [])
+  const { data: kids,  loading: kl }  = useApi(async () => { const r = await api.get('/KidsCards');  return r.data }, [])
 
   const loading = wl || ml || kl
 
@@ -234,9 +234,9 @@ export default function SalesManagerDashboard() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: women } = useApi(async () => { const r = await api.get('/api/CardsWomen'); return r.data }, [])
-  const { data: men }   = useApi(async () => { const r = await api.get('/api/MenCards');   return r.data }, [])
-  const { data: kids }  = useApi(async () => { const r = await api.get('/api/KidsCards');  return r.data }, [])
+  const { data: women } = useApi(async () => { const r = await api.get('/CardsWomen'); return r.data }, [])
+  const { data: men }   = useApi(async () => { const r = await api.get('/MenCards');   return r.data }, [])
+  const { data: kids }  = useApi(async () => { const r = await api.get('/KidsCards');  return r.data }, [])
 
   const totalOnSale = [
     ...women.filter(p => p.discountPercent > 0),

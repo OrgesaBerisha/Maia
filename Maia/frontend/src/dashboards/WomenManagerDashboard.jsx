@@ -48,12 +48,12 @@ function ProductsTab() {
   const [form, setForm] = useState({ title: '', description: '', price: '', imageUrl: '', womanCategoryId: '' })
 
   const { data: products, loading, error, reload } = useApi(async () => {
-    const r = await api.get('/api/CardsWomen')
+    const r = await api.get('/CardsWomen')
     return r.data
   }, [])
 
   const { data: categories } = useApi(async () => {
-    try { const r = await api.get('/api/WomanCategory'); return r.data }
+    try { const r = await api.get('/WomanCategory'); return r.data }
     catch { return [] }
   }, [])
 
@@ -76,8 +76,8 @@ function ProductsTab() {
     setSaving(true); setFormErr('')
     const body = { ...form, price: parseFloat(form.price), womanCategoryId: parseInt(form.womanCategoryId) }
     try {
-      if (modal === 'add') await api.post('/api/CardsWomen', body)
-      else await api.put(`/api/CardsWomen/${selected.id}`, body)
+      if (modal === 'add') await api.post('/CardsWomen', body)
+      else await api.put(`/CardsWomen/${selected.id}`, body)
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
     finally { setSaving(false) }
@@ -85,7 +85,7 @@ function ProductsTab() {
 
   const del = async (p) => {
     if (!confirm(`Delete "${p.title}"?`)) return
-    try { await api.delete(`/api/CardsWomen/${p.id}`); reload() }
+    try { await api.delete(`/CardsWomen/${p.id}`); reload() }
     catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
   }
 
@@ -111,7 +111,7 @@ function ProductsTab() {
                 <td><img className="db-img-preview" src={p.imageUrl || 'https://placehold.co/56x56?text=No+Img'} alt={p.title} /></td>
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
-                <td>{p.womanCategory?.name ?? p.womanCategoryId ?? '—'}</td>
+                <td>{p.category || p.womanCategoryId || '—'}</td>
                 <td style={{ display: 'flex', gap: 6 }}>
                   <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
                   <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
@@ -174,7 +174,7 @@ function CategoriesTab() {
   const [formErr, setFormErr] = useState('')
 
   const { data: categories, loading, error, reload } = useApi(async () => {
-    const r = await api.get('/api/WomanCategory')
+    const r = await api.get('/WomanCategory')
     return r.data
   }, [])
 
@@ -184,8 +184,8 @@ function CategoriesTab() {
   const save = async () => {
     setSaving(true); setFormErr('')
     try {
-      if (modal === 'add') await api.post('/api/WomanCategory', form)
-      else await api.put(`/api/WomanCategory/${selected.id}`, form)
+      if (modal === 'add') await api.post('/WomanCategory', form)
+      else await api.put(`/WomanCategory/${selected.id}`, form)
       setModal(null); reload()
     } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
     finally { setSaving(false) }
@@ -193,7 +193,7 @@ function CategoriesTab() {
 
   const del = async (c) => {
     if (!confirm(`Delete category "${c.name}"?`)) return
-    try { await api.delete(`/api/WomanCategory/${c.id}`); reload() }
+    try { await api.delete(`/WomanCategory/${c.id}`); reload() }
     catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
   }
 
@@ -251,8 +251,8 @@ export default function WomenManagerDashboard() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
 
-  const { data: products } = useApi(async () => { const r = await api.get('/api/CardsWomen'); return r.data }, [])
-  const { data: categories } = useApi(async () => { try { const r = await api.get('/api/WomanCategory'); return r.data } catch { return [] } }, [])
+  const { data: products } = useApi(async () => { const r = await api.get('/CardsWomen'); return r.data }, [])
+  const { data: categories } = useApi(async () => { try { const r = await api.get('/WomanCategory'); return r.data } catch { return [] } }, [])
 
   const handleLogout = async () => { await logout(); navigate('/login') }
 
