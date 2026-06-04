@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useNotifications } from './NotificationContext.jsx'
 import { useAuth } from './AuthContext.jsx'
 import './NotificationBell.css'
@@ -43,12 +44,15 @@ function NotificationBell() {
 
       {open && (
         <div className="notif-dropdown">
-          <p className="notif-title">NOTIFICATIONS</p>
+          <div className="notif-dropdown-header">
+            <p className="notif-title">NOTIFICATIONS</p>
+            {unreadCount > 0 && <span className="notif-unread-count">{unreadCount} new</span>}
+          </div>
           {notifications.length === 0 ? (
-            <p className="notif-empty">No notifications</p>
+            <p className="notif-empty">No notifications yet</p>
           ) : (
             <ul className="notif-list">
-              {notifications.map(n => (
+              {notifications.slice(0, 5).map(n => (
                 <li
                   key={n.id}
                   className={`notif-item${n.isRead ? ' notif-item--read' : ''}`}
@@ -60,6 +64,9 @@ function NotificationBell() {
               ))}
             </ul>
           )}
+          <Link to="/notifications" className="notif-view-all" onClick={() => setOpen(false)}>
+            VIEW ALL →
+          </Link>
         </div>
       )}
     </div>
