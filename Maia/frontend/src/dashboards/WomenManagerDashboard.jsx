@@ -74,19 +74,29 @@ function ProductsTab() {
 
   const save = async () => {
     setSaving(true); setFormErr('')
-    const body = { ...form, price: parseFloat(form.price), womanCategoryId: parseInt(form.womanCategoryId) }
+    const price = parseFloat(form.price)
+    const catId = parseInt(form.womanCategoryId)
+    if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
+    if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
+    const body = { ...form, price, womanCategoryId: catId }
     try {
       if (modal === 'add') await api.post('/CardsWomen', body)
       else await api.put(`/CardsWomen/${selected.id}`, body)
       setModal(null); reload()
-    } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
+    } catch (e) {
+      const d = e?.response?.data
+      setFormErr(d?.message ?? (d?.errors ? Object.values(d.errors).flat().join('; ') : null) ?? d?.title ?? 'Save failed.')
+    }
     finally { setSaving(false) }
   }
 
   const del = async (p) => {
     if (!confirm(`Delete "${p.title}"?`)) return
     try { await api.delete(`/CardsWomen/${p.id}`); reload() }
-    catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
+    catch (e) {
+      const d = e?.response?.data
+      alert(d?.message ?? d?.title ?? 'Delete failed.')
+    }
   }
 
   return (
