@@ -1,8 +1,14 @@
-﻿namespace Maia.Data.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Maia.Data.DTO
 {
     public class LoginDto
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Password is required")]
+        public string Password { get; set; } = string.Empty;
     }
 }
