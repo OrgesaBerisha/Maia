@@ -16,6 +16,11 @@ const RegisterPage        = lazy(() => import('./RegisterPage.jsx'))
 const ForgotPasswordPage  = lazy(() => import('./ForgotPasswordPage.jsx'))
 const ResetPasswordPage   = lazy(() => import('./ResetPasswordPage.jsx'))
 
+const PurchasesPage      = lazy(() => import('./PurchasesPage.jsx'))
+const ContactDataPage    = lazy(() => import('./ContactDataPage.jsx'))
+const StoresPage         = lazy(() => import('./StoresPage.jsx'))
+const NotificationsPage  = lazy(() => import('./NotificationsPage.jsx'))
+
 const AdminDashboard        = lazy(() => import('./dashboards/AdminDashboard.jsx'))
 const SalesManagerDashboard = lazy(() => import('./dashboards/SalesManagerDashboard.jsx'))
 const WomenManagerDashboard = lazy(() => import('./dashboards/WomenManagerDashboard.jsx'))
@@ -34,7 +39,11 @@ function App() {
                 <Route path="/shop"     element={<ShopPage />} />
                 <Route path="/search"   element={<SearchPage />} />
                 <Route path="/bag"      element={<BagPage />} />
-                <Route path="/profile"  element={<ProfilePage />} />
+                <Route path="/profile"       element={<ProfilePage />} />
+                <Route path="/purchases"    element={<PurchasesPage />} />
+                <Route path="/contact"      element={<ContactDataPage />} />
+                <Route path="/stores"       element={<StoresPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/login"           element={<LoginPage />} />
                 <Route path="/register"        element={<RegisterPage />} />
