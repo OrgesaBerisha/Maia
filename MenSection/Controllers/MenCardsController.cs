@@ -29,7 +29,7 @@ namespace MenSection.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateMenCardsDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateMenCardsDto dto)
         {
             var result = await _service.CreateAsync(dto);
             return Ok(result);

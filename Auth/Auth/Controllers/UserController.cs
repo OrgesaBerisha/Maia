@@ -69,7 +69,7 @@ namespace Auth.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserRegisterDTO request)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserDTO request)
         {
             try
             {

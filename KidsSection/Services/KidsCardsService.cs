@@ -71,22 +71,15 @@ namespace KidsSection.Services
         // CREATE
         public async Task<KidsCardsDto> CreateAsync(CreateKidsCardsDto dto)
         {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.Image.FileName);
-            var path = Path.Combine("wwwroot/images", fileName);
-
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await dto.Image.CopyToAsync(stream);
-            }
-
             var card = new KidsCards
             {
                 Title = dto.Title,
-                ImageUrl = "/images/" + fileName,
+                ImageUrl = dto.ImageUrl,
                 Price = dto.Price,
                 KidsCategoryId = dto.KidsCategoryId,
                 KidsProductTypeId = dto.KidsProductTypeId,
-                Description = dto.Description
+                Description = dto.Description,
+                DiscountPercent = dto.DiscountPercent
             };
 
             _context.KidsCards.Add(card);
@@ -98,11 +91,10 @@ namespace KidsSection.Services
                 Title = card.Title,
                 ImageUrl = card.ImageUrl,
                 Price = card.Price,
-
                 KidsCategoryId = card.KidsCategoryId,
                 KidsProductTypeId = card.KidsProductTypeId,
-
-                Description = card.Description
+                Description = card.Description,
+                DiscountPercent = card.DiscountPercent
             };
         }
 
@@ -114,10 +106,13 @@ namespace KidsSection.Services
             if (entity == null) return null;
 
             entity.Title = dto.Title;
+            entity.ImageUrl = dto.ImageUrl;
             entity.Price = dto.Price;
             entity.KidsCategoryId = dto.KidsCategoryId;
             entity.KidsProductTypeId = dto.KidsProductTypeId;
             entity.Description = dto.Description;
+            if (dto.DiscountPercent.HasValue)
+                entity.DiscountPercent = dto.DiscountPercent;
 
             await _context.SaveChangesAsync();
 
@@ -127,11 +122,10 @@ namespace KidsSection.Services
                 Title = entity.Title,
                 ImageUrl = entity.ImageUrl,
                 Price = entity.Price,
-
                 KidsCategoryId = entity.KidsCategoryId,
                 KidsProductTypeId = entity.KidsProductTypeId,
-
-                Description = entity.Description
+                Description = entity.Description,
+                DiscountPercent = entity.DiscountPercent
             };
         }
 

@@ -29,7 +29,7 @@ namespace KidsSection.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateKidsCardsDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateKidsCardsDto dto)
         {
             var result = await _service.CreateAsync(dto);
             return Ok(result);

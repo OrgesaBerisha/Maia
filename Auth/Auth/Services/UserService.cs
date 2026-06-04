@@ -79,7 +79,7 @@ namespace Auth.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<UserDTO?> UpdateUser(int id, UserRegisterDTO request)
+        public async Task<UserDTO?> UpdateUser(int id, UpdateUserDTO request)
         {
             var user = await _dbContext.Users
                 .Include(u => u.Role)
@@ -88,7 +88,6 @@ namespace Auth.Services
 
             if (user == null) return null;
 
-            // FIXED: check email uniqueness before allowing update
             var emailTaken = await _dbContext.Users
                 .AnyAsync(u => u.Email == request.Email && u.UserID != id);
 
@@ -98,6 +97,13 @@ namespace Auth.Services
             user.FirstName = request.FirstName;
             user.LastName = request.LastName;
             user.Email = request.Email;
+
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
+                using var hmac = new System.Security.Cryptography.HMACSHA512();
+                user.PasswordSalt = hmac.Key;
+                user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(request.Password));
+            }
 
             await _dbContext.SaveChangesAsync();
 

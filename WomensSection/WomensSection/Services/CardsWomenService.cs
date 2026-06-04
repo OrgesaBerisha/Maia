@@ -75,10 +75,12 @@ public class CardsWomenService : ICardsWomenService
 
     private static CardsWomenDto ToDto(CardsWomen x) => new()
     {
-        Id       = x.Id,
-        Title    = x.Title,
-        ImageUrl = x.ImageUrl,
-        Price    = x.Price,
-        Category = x.WomanCategory?.Name ?? string.Empty
+        Id              = x.Id,
+        Title           = x.Title,
+        ImageUrl        = x.ImageUrl,
+        Price           = x.Price,
+        WomanCategoryId = x.WomanCategoryId,
+        Category        = x.WomanCategory?.Name ?? string.Empty,
+        Description     = x.Description
     };
 }

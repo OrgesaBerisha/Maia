@@ -8,7 +8,7 @@ namespace Auth.Data.Interface
         Task<IEnumerable<UserDTO>> GetAllUsers();
         Task<IEnumerable<UserDTO>> GetAllCustomers();
         Task DeleteUser(int id);
-        Task<UserDTO?> UpdateUser(int id, UserRegisterDTO request);
+        Task<UserDTO?> UpdateUser(int id, UpdateUserDTO request);
         Task<UserDTO?> UpdateUserRole(int userID, int newRoleID);
         Task<UserDTO?> SetUserActiveStatus(int userID, bool isActive);
         Task<UserDTO> CreateStaffUser(CreateStaffDTO request);

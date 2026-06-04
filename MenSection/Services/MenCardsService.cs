@@ -64,18 +64,10 @@ namespace MenSection.Services
         // CREATE
         public async Task<MenCardsDto> CreateAsync(CreateMenCardsDto dto)
         {
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(dto.Image.FileName);
-            var path = Path.Combine("wwwroot/images", fileName);
-
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await dto.Image.CopyToAsync(stream);
-            }
-
             var card = new MenCards
             {
                 Title = dto.Title,
-                ImageUrl = "/images/" + fileName,
+                ImageUrl = dto.ImageUrl,
                 Price = dto.Price,
                 MenCategoryId = dto.MenCategoryId,
                 Description = dto.Description
@@ -90,10 +82,7 @@ namespace MenSection.Services
                 Title = card.Title,
                 ImageUrl = card.ImageUrl,
                 Price = card.Price,
-
                 MenCategoryId = card.MenCategoryId,
-
-
                 Description = card.Description
             };
         }
@@ -106,9 +95,9 @@ namespace MenSection.Services
             if (entity == null) return null;
 
             entity.Title = dto.Title;
+            entity.ImageUrl = dto.ImageUrl;
             entity.Price = dto.Price;
             entity.MenCategoryId = dto.MenCategoryId;
-
             entity.Description = dto.Description;
 
             await _context.SaveChangesAsync();
@@ -119,9 +108,7 @@ namespace MenSection.Services
                 Title = entity.Title,
                 ImageUrl = entity.ImageUrl,
                 Price = entity.Price,
-
                 MenCategoryId = entity.MenCategoryId,
-
                 Description = entity.Description
             };
         }
