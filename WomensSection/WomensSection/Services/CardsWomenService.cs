@@ -31,10 +31,11 @@ public class CardsWomenService : ICardsWomenService
         var product = new CardsWomen
         {
             Title           = dto.Title,
-            ImageUrl        = dto.ImageUrl,
+            ImageUrl        = dto.ImageUrl ?? string.Empty,
             Price           = dto.Price,
             Description     = dto.Description,
-            WomanCategoryId = dto.WomanCategoryId
+            WomanCategoryId = dto.WomanCategoryId,
+            Color           = dto.Color
         };
         var created = await _repo.AddAsync(product);
         return ToDto(created);
@@ -48,10 +49,11 @@ public class CardsWomenService : ICardsWomenService
         var updated = new CardsWomen
         {
             Title           = dto.Title,
-            ImageUrl        = dto.ImageUrl,
+            ImageUrl        = dto.ImageUrl ?? string.Empty,
             Price           = dto.Price,
             Description     = dto.Description,
-            WomanCategoryId = dto.WomanCategoryId
+            WomanCategoryId = dto.WomanCategoryId,
+            Color           = dto.Color
         };
         var result = await _repo.UpdateAsync(id, updated);
         return result == null ? null : ToDto(result);
@@ -81,6 +83,7 @@ public class CardsWomenService : ICardsWomenService
         Price           = x.Price,
         WomanCategoryId = x.WomanCategoryId,
         Category        = x.WomanCategory?.Name ?? string.Empty,
-        Description     = x.Description
+        Description     = x.Description,
+        Color           = x.Color
     };
 }

@@ -74,12 +74,13 @@ namespace KidsSection.Services
             var card = new KidsCards
             {
                 Title = dto.Title,
-                ImageUrl = dto.ImageUrl,
+                ImageUrl = dto.ImageUrl ?? string.Empty,
                 Price = dto.Price,
                 KidsCategoryId = dto.KidsCategoryId,
                 KidsProductTypeId = dto.KidsProductTypeId,
                 Description = dto.Description,
-                DiscountPercent = dto.DiscountPercent
+                DiscountPercent = dto.DiscountPercent,
+                Color = dto.Color
             };
 
             _context.KidsCards.Add(card);
@@ -106,13 +107,14 @@ namespace KidsSection.Services
             if (entity == null) return null;
 
             entity.Title = dto.Title;
-            entity.ImageUrl = dto.ImageUrl;
+            entity.ImageUrl = dto.ImageUrl ?? string.Empty;
             entity.Price = dto.Price;
             entity.KidsCategoryId = dto.KidsCategoryId;
             entity.KidsProductTypeId = dto.KidsProductTypeId;
             entity.Description = dto.Description;
             if (dto.DiscountPercent.HasValue)
                 entity.DiscountPercent = dto.DiscountPercent;
+            entity.Color = dto.Color;
 
             await _context.SaveChangesAsync();
 
@@ -165,7 +167,8 @@ namespace KidsSection.Services
                 KidsProductTypeName = x.KidsProductType?.Name,
 
                 Description = x.Description,
-                DiscountPercent = x.DiscountPercent
+                DiscountPercent = x.DiscountPercent,
+                Color = x.Color
             });
         }
 
@@ -205,7 +208,8 @@ namespace KidsSection.Services
                 KidsProductTypeName = x.KidsProductType?.Name,
 
                 Description = x.Description,
-                DiscountPercent = x.DiscountPercent
+                DiscountPercent = x.DiscountPercent,
+                Color = x.Color
             });
         }
 
@@ -242,7 +246,8 @@ namespace KidsSection.Services
                 KidsProductTypeName = x.KidsProductType?.Name,
 
                 Description = x.Description,
-                DiscountPercent = x.DiscountPercent
+                DiscountPercent = x.DiscountPercent,
+                Color = x.Color
             });
         }
 

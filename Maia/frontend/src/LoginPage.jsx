@@ -30,7 +30,13 @@ function LoginPage() {
       }
       navigate(roleRoutes[role] ?? '/')
     } catch (err) {
-      setError(err?.response?.data?.message ?? 'Invalid email or password.')
+      const data = err?.response?.data
+      if (data?.errors) {
+        const msgs = Object.values(data.errors).flat().join(' ')
+        setError(msgs)
+      } else {
+        setError(data?.message ?? 'Invalid email or password.')
+      }
     } finally {
       setLoad(false)
     }

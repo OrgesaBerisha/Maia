@@ -49,6 +49,7 @@ function CheckoutPage() {
   const [submitting, setSubmit]   = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const [orderRef, setOrderRef]   = useState('')
+  const [orderError, setOrderError] = useState('')
 
   const subtotal = bag.reduce((s, i) => s + parseFloat(i.price), 0)
   const total    = subtotal + (bag.length > 0 ? SHIPPING_COST : 0)
@@ -75,13 +76,16 @@ function CheckoutPage() {
     if (Object.keys(errs).length) { setErrors(errs); return }
 
     setSubmit(true)
+    setOrderError('')
     try {
-      await api.post('/Order', {
-        customerName: form.fullName,
-        items: bag.map(item => ({ productId: item.id, quantity: item.quantity ?? 1 })),
-      })
+      const shippingAddress = `${form.address}, ${form.city} ${form.postalCode}, ${form.country}`
+      await api.post('/Order', { shippingAddress })
     } catch (err) {
-      console.error('Order API error:', err?.response?.data ?? err.message)
+      const msg = err?.response?.data?.message ?? err?.response?.data ?? err.message
+      setOrderError(typeof msg === 'string' ? msg : 'Order failed. Please try again.')
+      console.error('Order API error:', msg)
+      setSubmit(false)
+      return
     }
 
     const ref = `MAIA-${Date.now().toString().slice(-6)}`
@@ -167,6 +171,9 @@ function CheckoutPage() {
 
           {Object.values(errors).some(Boolean) && (
             <p className="form-error">Please fill in all required fields.</p>
+          )}
+          {orderError && (
+            <p className="form-error">{orderError}</p>
           )}
 
           <button

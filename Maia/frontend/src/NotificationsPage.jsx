@@ -13,27 +13,28 @@ function fmtTime(iso) {
   )
 }
 
+function notifIcon(title = '') {
+  const t = title.toLowerCase()
+  if (t.includes('welcome'))  return '👋'
+  if (t.includes('order placed') || t.includes('order'))  return '🛍️'
+  if (t.includes('shipped'))  return '🚚'
+  if (t.includes('delivered')) return '✅'
+  if (t.includes('cancelled')) return '❌'
+  if (t.includes('update'))    return '📦'
+  if (t.includes('password'))  return '🔒'
+  return '🔔'
+}
+
 function NotificationsPage() {
   const { notifications, markRead, unreadCount } = useNotifications()
 
+  const markAll = () =>
+    notifications.filter(n => !n.isRead).forEach(n => markRead(n.id))
+
   return (
     <div className="notifs-page">
-      <svg
-        className="notifs-blob"
-        viewBox="0 0 1440 220"
-        preserveAspectRatio="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <path
-          d="M0,0 L1440,0 L1440,140
-             C1340,162 1200,178 1060,164
-             C920,150 800,118 660,132
-             C520,146 380,178 240,188
-             C160,194 80,190 0,196
-             Z"
-          fill="#d4c5b3"
-        />
+      <svg className="notifs-blob" viewBox="0 0 1440 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0,0 L1440,0 L1440,140 C1340,162 1200,178 1060,164 C920,150 800,118 660,132 C520,146 380,178 240,188 C160,194 80,190 0,196 Z" fill="#d4c5b3" />
       </svg>
 
       <header className="notifs-header">
@@ -48,10 +49,13 @@ function NotificationsPage() {
           {unreadCount > 0 && (
             <span className="notifs-badge">{unreadCount} unread</span>
           )}
+          {unreadCount > 1 && (
+            <button className="notifs-mark-all" onClick={markAll}>Mark all as read</button>
+          )}
         </div>
 
         {notifications.length === 0 ? (
-          <p className="notifs-empty">NO NOTIFICATIONS</p>
+          <p className="notifs-empty">NO NOTIFICATIONS YET</p>
         ) : (
           <div className="notifs-list">
             {notifications.map(n => (
@@ -63,10 +67,12 @@ function NotificationsPage() {
                 tabIndex={n.isRead ? undefined : 0}
                 onKeyDown={e => e.key === 'Enter' && !n.isRead && markRead(n.id)}
               >
-                <div className="notif-indicator">
-                  {!n.isRead && <span className="notif-dot" />}
-                </div>
+                <div className="notif-icon">{notifIcon(n.title)}</div>
                 <div className="notif-content">
+                  <div className="notif-title-row">
+                    <span className="notif-title">{n.title}</span>
+                    {!n.isRead && <span className="notif-dot" />}
+                  </div>
                   <p className="notif-message">{n.message}</p>
                   {n.createdAt && (
                     <span className="notif-time">{fmtTime(n.createdAt)}</span>

@@ -21,5 +21,8 @@ namespace Maia.Data.DTO
         [Required(ErrorMessage = "Category is required")]
         [Range(1, int.MaxValue, ErrorMessage = "Category ID must be a positive number")]
         public int WomanCategoryId { get; set; }
+
+        [StringLength(50, ErrorMessage = "Color cannot exceed 50 characters")]
+        public string? Color { get; set; }
     }
 }

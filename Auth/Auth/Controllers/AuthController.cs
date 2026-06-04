@@ -6,6 +6,8 @@ using Auth.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Text.Json;
 
 namespace Auth.Controllers
 {
@@ -17,13 +19,16 @@ namespace Auth.Controllers
         private readonly DataContext _context;
         private readonly IEmailService _email;
         private readonly IWebHostEnvironment _env;
+        private readonly IHttpClientFactory _http;
+        private const string NotifUrl = "http://localhost:5151/api/notifications/send";
 
-        public AuthController(IAuthService service, DataContext context, IEmailService email, IWebHostEnvironment env)
+        public AuthController(IAuthService service, DataContext context, IEmailService email, IWebHostEnvironment env, IHttpClientFactory http)
         {
             _context = context;
             _email = email;
             _service = service;
             _env = env;
+            _http = http;
         }
 
         [HttpPost("register")]
@@ -32,6 +37,11 @@ namespace Auth.Controllers
             try
             {
                 var userDto = await _service.Register(request);
+
+                _ = SendNotification(userDto.UserID.ToString(),
+                    "Welcome to Maia!",
+                    $"Hello {userDto.FirstName}, your account has been created. Start exploring our collections!");
+
                 return Ok(new { message = "User registered successfully." });
             }
             catch (Exception ex)
@@ -210,6 +220,18 @@ namespace Auth.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Fjalëkalimi u ndryshua me sukses." });
+        }
+
+        private async Task SendNotification(string userId, string title, string message)
+        {
+            try
+            {
+                var client = _http.CreateClient();
+                var payload = JsonSerializer.Serialize(new { userId, title, message, type = "inapp" });
+                await client.PostAsync(NotifUrl,
+                    new StringContent(payload, Encoding.UTF8, "application/json"));
+            }
+            catch { /* notification failure should not break auth flow */ }
         }
     }
 }

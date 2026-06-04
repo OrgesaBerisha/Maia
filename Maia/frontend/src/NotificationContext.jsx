@@ -15,8 +15,8 @@ export function NotificationProvider({ children }) {
     try {
       const { data } = await api.get('/notifications')
       setNotifications(data)
-    } catch {
-      // silent fail
+    } catch (err) {
+      console.error('[Notifications] fetch failed:', err?.response?.status, err?.message)
     }
   }, [isLoggedIn])
 
