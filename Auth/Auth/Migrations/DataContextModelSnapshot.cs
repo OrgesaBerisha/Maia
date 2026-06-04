@@ -60,7 +60,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.PasswordResetToken", b =>
@@ -91,7 +91,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("PasswordResetTokens");
+                    b.ToTable("PasswordResetTokens", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.Permission", b =>
@@ -112,7 +112,7 @@ namespace Auth.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
 
                     b.HasData(
                         new
@@ -187,7 +187,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.Role", b =>
@@ -204,7 +204,7 @@ namespace Auth.Migrations
 
                     b.HasKey("RoleID");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.RolePermission", b =>
@@ -227,7 +227,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("RolePermissions");
+                    b.ToTable("RolePermissions", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.User", b =>
@@ -283,7 +283,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("RoleID");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.UserRole", b =>
@@ -309,7 +309,7 @@ namespace Auth.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Auth.Models.AuditLog", b =>
