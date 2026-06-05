@@ -316,7 +316,7 @@ function StaffTab() {
 }
 
 const ADMIN_FALLBACK_CATS = {
-  women: [{ id:1,name:'Dresses'},{id:2,name:'Shoes'},{id:3,name:'Jackets'},{id:4,name:'Bags'},{id:5,name:'Jewelry'},{id:6,name:'Swimwear'}],
+  women: [{id:1,name:'Tops'},{id:2,name:'Dresses'},{id:3,name:'Bottoms'},{id:4,name:'Outerwear'},{id:5,name:'Swimwear'},{id:6,name:'Matching Sets'},{id:7,name:'Footwear'},{id:8,name:'Accessories'}],
   men:   [{ id:1,name:'T-Shirts'},{id:2,name:'Jackets'},{id:3,name:'Jeans'},{id:4,name:'Shirts'}],
   kids:  [{ id:1,name:'T-Shirts'},{id:2,name:'Dresses'},{id:3,name:'Jeans'},{id:4,name:'Shorts'}],
 }

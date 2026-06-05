@@ -72,12 +72,14 @@ namespace Maia.Data
             var seedDate = new DateTime(2026, 1, 1);
 
             modelBuilder.Entity<WomanCategory>().HasData(
-                new WomanCategory { Id = 1, Name = "Dresses" },
-                new WomanCategory { Id = 2, Name = "Shoes" },
-                new WomanCategory { Id = 3, Name = "Jackets" },
-                new WomanCategory { Id = 4, Name = "Bags" },
-                new WomanCategory { Id = 5, Name = "Jewelry" },
-                new WomanCategory { Id = 6, Name = "Swimwear" }
+                new WomanCategory { Id = 1, Name = "Tops" },
+                new WomanCategory { Id = 2, Name = "Dresses" },
+                new WomanCategory { Id = 3, Name = "Bottoms" },
+                new WomanCategory { Id = 4, Name = "Outerwear" },
+                new WomanCategory { Id = 5, Name = "Swimwear" },
+                new WomanCategory { Id = 6, Name = "Matching Sets" },
+                new WomanCategory { Id = 7, Name = "Footwear" },
+                new WomanCategory { Id = 8, Name = "Accessories" }
             );
 
             modelBuilder.Entity<CardsWomen>().HasData(

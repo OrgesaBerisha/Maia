@@ -38,9 +38,10 @@ function Modal({ title, onClose, children, actions }) {
 }
 
 const FALLBACK_WOMEN_CATS = [
-  { id: 1, name: 'Dresses' }, { id: 2, name: 'Shoes' },
-  { id: 3, name: 'Jackets' }, { id: 4, name: 'Bags' },
-  { id: 5, name: 'Jewelry' }, { id: 6, name: 'Swimwear' },
+  { id: 1, name: 'Tops' },          { id: 2, name: 'Dresses' },
+  { id: 3, name: 'Bottoms' },       { id: 4, name: 'Outerwear' },
+  { id: 5, name: 'Swimwear' },      { id: 6, name: 'Matching Sets' },
+  { id: 7, name: 'Footwear' },      { id: 8, name: 'Accessories' },
 ]
 
 // ── Products Tab ───────────────────────────────────────────────────────────
