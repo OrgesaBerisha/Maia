@@ -75,7 +75,9 @@ namespace Maia.Data
                 new WomanCategory { Id = 1, Name = "Dresses" },
                 new WomanCategory { Id = 2, Name = "Shoes" },
                 new WomanCategory { Id = 3, Name = "Jackets" },
-                new WomanCategory { Id = 4, Name = "Bags" }
+                new WomanCategory { Id = 4, Name = "Bags" },
+                new WomanCategory { Id = 5, Name = "Jewelry" },
+                new WomanCategory { Id = 6, Name = "Swimwear" }
             );
 
             modelBuilder.Entity<CardsWomen>().HasData(
