@@ -287,6 +287,7 @@ export default function SalesManagerDashboard() {
             <span className="db-user-email">{user?.email}</span>
           </div>
           <button className="db-logout-btn" onClick={handleLogout}>LOG OUT</button>
+          <button className="db-home-btn" onClick={() => navigate('/')}>HOME PAGE</button>
         </div>
       </aside>
       <main className="db-main">

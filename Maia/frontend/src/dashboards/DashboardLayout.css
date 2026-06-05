@@ -130,6 +130,25 @@
   color: #e8e0d8;
 }
 
+.db-home-btn {
+  background: none;
+  border: 1px solid #4a5e48;
+  color: #8aaa82;
+  padding: 9px 0;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.db-home-btn:hover {
+  border-color: #8aaa82;
+  color: #d4ead4;
+}
+
 /* ── Main ─────────────────────────────────────── */
 .db-main {
   margin-left: 240px;
