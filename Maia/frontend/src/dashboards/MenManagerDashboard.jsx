@@ -301,7 +301,7 @@ export default function MenManagerDashboard() {
           </div>
           <div className="db-stat-card">
             <span className="db-stat-label">Categories</span>
-            <span className="db-stat-value">{categories.length || FALLBACK_MEN_CATS.length}</span>
+            <span className="db-stat-value">{categories.length}</span>
           </div>
           <div className="db-stat-card">
             <span className="db-stat-label">On Sale</span>
