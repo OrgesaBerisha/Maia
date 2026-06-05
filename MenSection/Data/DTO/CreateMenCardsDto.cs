@@ -8,7 +8,6 @@ namespace MenSection.Data.DTO
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Title must be between 2 and 100 characters")]
         public string Title { get; set; } = string.Empty;
 
-        [Url(ErrorMessage = "Invalid image URL format")]
         public string? ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Price is required")]

@@ -24,10 +24,13 @@ namespace MenSection.Data
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<MenCategory>().HasData(
-                new MenCategory { Id = 1, Name = "T-Shirts" },
-                new MenCategory { Id = 2, Name = "Jackets" },
-                new MenCategory { Id = 3, Name = "Jeans" },
-                new MenCategory { Id = 4, Name = "Shirts" }
+                new MenCategory { Id = 1, Name = "Tops" },
+                new MenCategory { Id = 2, Name = "Bottoms" },
+                new MenCategory { Id = 3, Name = "Suits & Formalwear" },
+                new MenCategory { Id = 4, Name = "Outerwear" },
+                new MenCategory { Id = 5, Name = "Swimwear" },
+                new MenCategory { Id = 6, Name = "Footwear" },
+                new MenCategory { Id = 7, Name = "Accessories" }
             );
 
             modelBuilder.Entity<MenCards>().HasData(
