@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import BottomNav from './BottomNav.jsx'
 import SizeModal from './SizeModal.jsx'
 import SiteLogo from './SiteLogo.jsx'
@@ -65,6 +65,7 @@ async function fetchBySection(section, query) {
 
 function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [query, setQuery]         = useState(searchParams.get('q') ?? '')
   const [section, setSection]     = useState(searchParams.get('section') ?? 'ALL')
   const [products, setProducts]   = useState([])
@@ -86,7 +87,6 @@ function SearchPage() {
       const items = await fetchBySection(section, query)
       setProducts(items)
       setSelectedColors([])
-      setSelectedCategory('')
       setSortBy('')
     } catch {
       setError('Could not load products. Is the backend running?')
@@ -103,6 +103,7 @@ function SearchPage() {
 
   const changeSection = (sec) => {
     setSection(sec)
+    setSelectedCategory('')
     setSearchParams(p => { p.set('section', sec); return p })
   }
 
@@ -151,14 +152,19 @@ function SearchPage() {
       </svg>
 
       <header className="search-header">
-        <nav className="section-tabs">
-          {SECTIONS.map(sec => (
-            <button key={sec} className={`section-tab${section === sec ? ' active' : ''}`} onClick={() => changeSection(sec)}>
-              {sec}
-              {section === sec && <span className="tab-indicator" />}
-            </button>
-          ))}
-        </nav>
+        <div className="search-header-left">
+          <button className="collection-menu-btn" onClick={() => navigate('/shop')} aria-label="Collection menu">
+            <span /><span /><span />
+          </button>
+          <nav className="section-tabs">
+            {SECTIONS.map(sec => (
+              <button key={sec} className={`section-tab${section === sec ? ' active' : ''}`} onClick={() => changeSection(sec)}>
+                {sec}
+                {section === sec && <span className="tab-indicator" />}
+              </button>
+            ))}
+          </nav>
+        </div>
         <SiteLogo />
       </header>
 

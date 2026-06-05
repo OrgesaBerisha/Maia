@@ -52,18 +52,23 @@ function ShopPage() {
         </svg>
 
         <div className="shop-header-content">
-          <nav className="section-tabs">
-            {SECTIONS.map(sec => (
-              <button
-                key={sec}
-                className={`section-tab${activeSection === sec ? ' active' : ''}`}
-                onClick={() => setActiveSection(sec)}
-              >
-                {sec}
-                {activeSection === sec && <span className="tab-indicator" />}
-              </button>
-            ))}
-          </nav>
+          <div className="shop-header-left">
+            <button className="collection-menu-btn" onClick={() => navigate('/shop')} aria-label="Collection menu">
+              <span /><span /><span />
+            </button>
+            <nav className="section-tabs">
+              {SECTIONS.map(sec => (
+                <button
+                  key={sec}
+                  className={`section-tab${activeSection === sec ? ' active' : ''}`}
+                  onClick={() => setActiveSection(sec)}
+                >
+                  {sec}
+                  {activeSection === sec && <span className="tab-indicator" />}
+                </button>
+              ))}
+            </nav>
+          </div>
           <SiteLogo />
         </div>
       </header>
@@ -82,18 +87,6 @@ function ShopPage() {
           </div>
         </div>
 
-        <div className="categories-footer-grid">
-          <div className="categories-col-label">
-            {FOOTER_CATS.left.map(cat => (
-              <span key={cat} className="category-item footer-item">{cat}</span>
-            ))}
-          </div>
-          <div className="categories-col-list">
-            {FOOTER_CATS.right.map(cat => (
-              <span key={cat} className="category-item footer-item">{cat}</span>
-            ))}
-          </div>
-        </div>
       </main>
 
       <BottomNav />

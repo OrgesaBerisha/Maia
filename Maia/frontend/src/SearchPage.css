@@ -24,6 +24,32 @@
   justify-content: space-between;
 }
 
+.search-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.collection-menu-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+
+.collection-menu-btn span {
+  display: block;
+  width: 26px;
+  height: 2px;
+  background: #1a1208;
+  border-radius: 1px;
+}
+
 .section-tabs {
   display: flex;
   gap: 48px;
