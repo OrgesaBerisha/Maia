@@ -57,6 +57,12 @@ function ProductsTab() {
     catch { return [] }
   }, [])
 
+  useEffect(() => {
+    if (modal && categories.length > 0) {
+      setForm(f => (!f.menCategoryId ? { ...f, menCategoryId: categories[0].id } : f))
+    }
+  }, [categories, modal])
+
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
   )

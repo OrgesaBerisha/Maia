@@ -66,6 +66,18 @@ function ProductsTab() {
     catch { return [] }
   }, [])
 
+  useEffect(() => {
+    if (modal && categories.length > 0) {
+      setForm(f => (!f.kidsCategoryId ? { ...f, kidsCategoryId: categories[0].id } : f))
+    }
+  }, [categories, modal])
+
+  useEffect(() => {
+    if (modal && types.length > 0) {
+      setForm(f => (!f.kidsProductTypeId ? { ...f, kidsProductTypeId: types[0].id } : f))
+    }
+  }, [types, modal])
+
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
   )

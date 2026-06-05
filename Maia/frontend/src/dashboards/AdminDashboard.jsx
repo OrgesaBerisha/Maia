@@ -349,6 +349,18 @@ function ProductsTab({ section }) {
     catch { return [] }
   }, [section])
 
+  useEffect(() => {
+    if (modal && categories.length > 0) {
+      setForm(f => (!f[cfg.catKey] ? { ...f, [cfg.catKey]: categories[0].id } : f))
+    }
+  }, [categories, modal])
+
+  useEffect(() => {
+    if (modal && cfg.typeKey && types.length > 0) {
+      setForm(f => (!f[cfg.typeKey] ? { ...f, [cfg.typeKey]: types[0].id } : f))
+    }
+  }, [types, modal])
+
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
   )
