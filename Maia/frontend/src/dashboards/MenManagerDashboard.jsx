@@ -39,7 +39,7 @@ function Modal({ title, onClose, children, actions }) {
 }
 
 // ── Products Tab ───────────────────────────────────────────────────────────
-function ProductsTab() {
+function ProductsTab({ categories }) {
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -51,17 +51,6 @@ function ProductsTab() {
     const r = await api.get('/MenCards')
     return r.data
   }, [])
-
-  const { data: categories } = useApi(async () => {
-    try { const r = await api.get('/MenCategory'); return r.data }
-    catch { return [] }
-  }, [])
-
-  useEffect(() => {
-    if (modal && categories.length > 0) {
-      setForm(f => (!f.menCategoryId ? { ...f, menCategoryId: categories[0].id } : f))
-    }
-  }, [categories, modal])
 
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
@@ -81,7 +70,8 @@ function ProductsTab() {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form.menCategoryId)
+    const rawCatId = form.menCategoryId || categories[0]?.id
+    const catId = parseInt(rawCatId)
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
     if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
     const body = { ...form, price, menCategoryId: catId }
@@ -158,7 +148,7 @@ function ProductsTab() {
               </div>
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form.menCategoryId} onChange={e => setForm(f => ({ ...f, menCategoryId: e.target.value }))}>
+                <select className="db-select" value={form.menCategoryId || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, menCategoryId: e.target.value }))}>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
@@ -280,7 +270,7 @@ export default function MenManagerDashboard() {
           <div className="db-stat-card"><span className="db-stat-label">Categories</span><span className="db-stat-value">{categories.length}</span></div>
         </div>
       )
-      case 'products':   return <ProductsTab />
+      case 'products':   return <ProductsTab categories={categories} />
       case 'categories': return <CategoriesTab />
       default: return null
     }

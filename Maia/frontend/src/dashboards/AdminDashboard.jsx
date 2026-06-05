@@ -381,16 +381,16 @@ function ProductsTab({ section }) {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form[cfg.catKey])
+    const catId = parseInt(form[cfg.catKey] || categories[0]?.id)
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
     if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
     if (cfg.typeKey) {
-      const typeId = parseInt(form[cfg.typeKey])
+      const typeId = parseInt(form[cfg.typeKey] || types[0]?.id)
       if (isNaN(typeId)) { setFormErr('Select a product type.'); setSaving(false); return }
     }
     const body = { ...form, price }
     body[cfg.catKey] = catId
-    if (cfg.typeKey) body[cfg.typeKey] = parseInt(form[cfg.typeKey])
+    if (cfg.typeKey) body[cfg.typeKey] = parseInt(form[cfg.typeKey] || types[0]?.id)
     try {
       if (modal === 'add') await api.post(cfg.endpoint, body)
       else await api.put(`${cfg.endpoint}/${selected[cfg.idKey]}`, body)
@@ -473,7 +473,7 @@ function ProductsTab({ section }) {
               </div>
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form[cfg.catKey]} onChange={e => setForm(f => ({ ...f, [cfg.catKey]: e.target.value }))}>
+                <select className="db-select" value={form[cfg.catKey] || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, [cfg.catKey]: e.target.value }))}>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
@@ -481,7 +481,7 @@ function ProductsTab({ section }) {
             {cfg.typeKey && (
               <div className="db-field">
                 <label className="db-label">Product Type</label>
-                <select className="db-select" value={form[cfg.typeKey]} onChange={e => setForm(f => ({ ...f, [cfg.typeKey]: e.target.value }))}>
+                <select className="db-select" value={form[cfg.typeKey] || types[0]?.id || ''} onChange={e => setForm(f => ({ ...f, [cfg.typeKey]: e.target.value }))}>
                   {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>

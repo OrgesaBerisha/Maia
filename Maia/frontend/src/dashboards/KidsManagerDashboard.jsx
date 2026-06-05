@@ -40,7 +40,7 @@ function Modal({ title, onClose, children, actions }) {
 }
 
 // ── Products Tab ───────────────────────────────────────────────────────────
-function ProductsTab() {
+function ProductsTab({ categories, types }) {
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -55,28 +55,6 @@ function ProductsTab() {
     const r = await api.get('/KidsCards')
     return r.data
   }, [])
-
-  const { data: categories } = useApi(async () => {
-    try { const r = await api.get('/KidsCategory'); return r.data }
-    catch { return [] }
-  }, [])
-
-  const { data: types } = useApi(async () => {
-    try { const r = await api.get('/KidsProductType'); return r.data }
-    catch { return [] }
-  }, [])
-
-  useEffect(() => {
-    if (modal && categories.length > 0) {
-      setForm(f => (!f.kidsCategoryId ? { ...f, kidsCategoryId: categories[0].id } : f))
-    }
-  }, [categories, modal])
-
-  useEffect(() => {
-    if (modal && types.length > 0) {
-      setForm(f => (!f.kidsProductTypeId ? { ...f, kidsProductTypeId: types[0].id } : f))
-    }
-  }, [types, modal])
 
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
@@ -105,8 +83,8 @@ function ProductsTab() {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form.kidsCategoryId)
-    const typeId = parseInt(form.kidsProductTypeId)
+    const catId = parseInt(form.kidsCategoryId || categories[0]?.id)
+    const typeId = parseInt(form.kidsProductTypeId || types[0]?.id)
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
     if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
     if (isNaN(typeId)) { setFormErr('Select a product type.'); setSaving(false); return }
@@ -210,13 +188,13 @@ function ProductsTab() {
             <div className="db-form-row">
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form.kidsCategoryId} onChange={e => setForm(f => ({ ...f, kidsCategoryId: e.target.value }))}>
+                <select className="db-select" value={form.kidsCategoryId || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, kidsCategoryId: e.target.value }))}>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div className="db-field">
                 <label className="db-label">Product Type</label>
-                <select className="db-select" value={form.kidsProductTypeId} onChange={e => setForm(f => ({ ...f, kidsProductTypeId: e.target.value }))}>
+                <select className="db-select" value={form.kidsProductTypeId || types[0]?.id || ''} onChange={e => setForm(f => ({ ...f, kidsProductTypeId: e.target.value }))}>
                   {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
@@ -341,7 +319,7 @@ export default function KidsManagerDashboard() {
           <div className="db-stat-card"><span className="db-stat-label">On Sale</span><span className="db-stat-value">{products.filter(p => p.discountPercent > 0).length}</span></div>
         </div>
       )
-      case 'products':   return <ProductsTab />
+      case 'products':   return <ProductsTab categories={categories} types={types} />
       case 'categories': return <SimpleListTab label="Categories" endpoint="/KidsCategory" />
       case 'types':      return <SimpleListTab label="Product Types" endpoint="/KidsProductType" />
       default: return null

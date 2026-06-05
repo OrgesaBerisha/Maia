@@ -38,7 +38,7 @@ function Modal({ title, onClose, children, actions }) {
 }
 
 // ── Products Tab ───────────────────────────────────────────────────────────
-function ProductsTab() {
+function ProductsTab({ categories }) {
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -52,17 +52,6 @@ function ProductsTab() {
     const r = await api.get('/CardsWomen')
     return r.data
   }, [])
-
-  const { data: categories, loading: catsLoading } = useApi(async () => {
-    const r = await api.get('/WomanCategory')
-    return r.data
-  }, [])
-
-  useEffect(() => {
-    if (modal && categories.length > 0) {
-      setForm(f => (!f.womanCategoryId ? { ...f, womanCategoryId: categories[0].id } : f))
-    }
-  }, [categories, modal])
 
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
@@ -98,7 +87,7 @@ function ProductsTab() {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form.womanCategoryId)
+    const catId = parseInt(form.womanCategoryId || categories[0]?.id)
     if (!form.title?.trim()) { setFormErr('Title is required.'); setSaving(false); return }
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
     if (isNaN(catId) || catId < 1) { setFormErr('Select a category.'); setSaving(false); return }
@@ -225,12 +214,12 @@ function ProductsTab() {
               </div>
               <div className="db-field">
                 <label className="db-label">Category *</label>
-                {catsLoading ? (
+                {categories.length === 0 ? (
                   <input className="db-input" disabled value="Loading categories…" />
                 ) : (
                   <select
                     className="db-select"
-                    value={form.womanCategoryId}
+                    value={form.womanCategoryId || categories[0]?.id || ''}
                     onChange={e => setForm(f => ({ ...f, womanCategoryId: e.target.value }))}
                   >
                     <option value="">— Select category —</option>
@@ -318,7 +307,7 @@ export default function WomenManagerDashboard() {
           </div>
         </div>
       )
-      case 'products': return <ProductsTab />
+      case 'products': return <ProductsTab categories={categories} />
       default: return null
     }
   }
