@@ -37,15 +37,23 @@ function Modal({ title, onClose, children, actions }) {
   )
 }
 
+const FALLBACK_WOMEN_CATS = [
+  { id: 1, name: 'Dresses' }, { id: 2, name: 'Shoes' },
+  { id: 3, name: 'Jackets' }, { id: 4, name: 'Bags' },
+  { id: 5, name: 'Jewelry' }, { id: 6, name: 'Swimwear' },
+]
+
 // ── Products Tab ───────────────────────────────────────────────────────────
 function ProductsTab({ categories }) {
+  const cats = categories.length > 0 ? categories : FALLBACK_WOMEN_CATS
+
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formErr, setFormErr] = useState('')
   const [form, setForm] = useState({
-    title: '', description: '', price: '', imageUrl: '', womanCategoryId: '', color: ''
+    title: '', description: '', price: '', imageUrl: '', categoryName: '', color: ''
   })
 
   const { data: products, loading, error, reload } = useApi(async () => {
@@ -58,14 +66,7 @@ function ProductsTab({ categories }) {
   )
 
   const openAdd = () => {
-    setForm({
-      title: '',
-      description: '',
-      price: '',
-      imageUrl: '',
-      womanCategoryId: categories[0]?.id ?? '',
-      color: ''
-    })
+    setForm({ title: '', description: '', price: '', imageUrl: '', categoryName: '', color: '' })
     setFormErr('')
     setModal('add')
   }
@@ -77,7 +78,7 @@ function ProductsTab({ categories }) {
       description: p.description ?? '',
       price: String(p.price ?? ''),
       imageUrl: p.imageUrl ?? '',
-      womanCategoryId: String(p.womanCategoryId ?? ''),
+      categoryName: p.category ?? '',
       color: p.color ?? ''
     })
     setFormErr('')
@@ -87,15 +88,19 @@ function ProductsTab({ categories }) {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form.womanCategoryId || categories[0]?.id)
+    const cat = cats.find(c => c.name.toLowerCase() === form.categoryName.trim().toLowerCase())
     if (!form.title?.trim()) { setFormErr('Title is required.'); setSaving(false); return }
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
-    if (isNaN(catId) || catId < 1) { setFormErr('Select a category.'); setSaving(false); return }
+    if (!form.categoryName.trim()) { setFormErr('Category is required.'); setSaving(false); return }
+    if (!cat) {
+      setFormErr(`Unknown category. Available: ${cats.map(c => c.name).join(', ')}`)
+      setSaving(false); return
+    }
     const body = {
       title: form.title.trim(),
       description: form.description.trim(),
       price,
-      womanCategoryId: catId,
+      womanCategoryId: cat.id,
       imageUrl: form.imageUrl.trim() || null,
       color: form.color.trim() || null
     }
@@ -214,20 +219,16 @@ function ProductsTab({ categories }) {
               </div>
               <div className="db-field">
                 <label className="db-label">Category *</label>
-                {categories.length === 0 ? (
-                  <input className="db-input" disabled value="Loading categories…" />
-                ) : (
-                  <select
-                    className="db-select"
-                    value={form.womanCategoryId || categories[0]?.id || ''}
-                    onChange={e => setForm(f => ({ ...f, womanCategoryId: e.target.value }))}
-                  >
-                    <option value="">— Select category —</option>
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                )}
+                <input
+                  className="db-input"
+                  list="women-cats"
+                  value={form.categoryName}
+                  onChange={e => setForm(f => ({ ...f, categoryName: e.target.value }))}
+                  placeholder="e.g. Dresses, Shoes, Jackets…"
+                />
+                <datalist id="women-cats">
+                  {cats.map(c => <option key={c.id} value={c.name} />)}
+                </datalist>
               </div>
             </div>
             <div className="db-field">

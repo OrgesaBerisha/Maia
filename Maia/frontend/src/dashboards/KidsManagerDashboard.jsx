@@ -39,8 +39,19 @@ function Modal({ title, onClose, children, actions }) {
   )
 }
 
+const FALLBACK_KIDS_CATS = [
+  { id: 1, name: 'T-Shirts' }, { id: 2, name: 'Dresses' },
+  { id: 3, name: 'Jeans' },    { id: 4, name: 'Shorts' },
+]
+const FALLBACK_KIDS_TYPES = [
+  { id: 1, name: 'Boys' }, { id: 2, name: 'Girls' },
+]
+
 // ── Products Tab ───────────────────────────────────────────────────────────
 function ProductsTab({ categories, types }) {
+  const cats  = categories.length > 0 ? categories : FALLBACK_KIDS_CATS
+  const typs  = types.length > 0 ? types : FALLBACK_KIDS_TYPES
+
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
@@ -48,7 +59,7 @@ function ProductsTab({ categories, types }) {
   const [formErr, setFormErr] = useState('')
   const [form, setForm] = useState({
     title: '', description: '', price: '', imageUrl: '',
-    kidsCategoryId: '', kidsProductTypeId: '', discountPercent: ''
+    categoryName: '', typeName: '', discountPercent: ''
   })
 
   const { data: products, loading, error, reload } = useApi(async () => {
@@ -61,12 +72,7 @@ function ProductsTab({ categories, types }) {
   )
 
   const openAdd = () => {
-    setForm({
-      title: '', description: '', price: '', imageUrl: '',
-      kidsCategoryId: categories[0]?.id ?? '',
-      kidsProductTypeId: types[0]?.id ?? '',
-      discountPercent: ''
-    })
+    setForm({ title: '', description: '', price: '', imageUrl: '', categoryName: '', typeName: '', discountPercent: '' })
     setFormErr(''); setModal('add')
   }
 
@@ -74,8 +80,8 @@ function ProductsTab({ categories, types }) {
     setSelected(p)
     setForm({
       title: p.title, description: p.description ?? '', price: p.price,
-      imageUrl: p.imageUrl ?? '', kidsCategoryId: p.kidsCategoryId ?? '',
-      kidsProductTypeId: p.kidsProductTypeId ?? '', discountPercent: p.discountPercent ?? ''
+      imageUrl: p.imageUrl ?? '', categoryName: p.kidsCategoryName ?? '',
+      typeName: p.kidsProductTypeName ?? '', discountPercent: p.discountPercent ?? ''
     })
     setFormErr(''); setModal('edit')
   }
@@ -83,16 +89,18 @@ function ProductsTab({ categories, types }) {
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form.kidsCategoryId || categories[0]?.id)
-    const typeId = parseInt(form.kidsProductTypeId || types[0]?.id)
+    const cat  = cats.find(c => c.name.toLowerCase() === form.categoryName.trim().toLowerCase())
+    const typ  = typs.find(t => t.name.toLowerCase() === form.typeName.trim().toLowerCase())
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
-    if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
-    if (isNaN(typeId)) { setFormErr('Select a product type.'); setSaving(false); return }
+    if (!form.categoryName.trim()) { setFormErr('Category is required.'); setSaving(false); return }
+    if (!cat) { setFormErr(`Unknown category. Available: ${cats.map(c => c.name).join(', ')}`); setSaving(false); return }
+    if (!form.typeName.trim()) { setFormErr('Product type is required.'); setSaving(false); return }
+    if (!typ) { setFormErr(`Unknown type. Available: ${typs.map(t => t.name).join(', ')}`); setSaving(false); return }
     const body = {
-      ...form,
-      price,
-      kidsCategoryId: catId,
-      kidsProductTypeId: typeId,
+      title: form.title, description: form.description, price,
+      imageUrl: form.imageUrl,
+      kidsCategoryId: cat.id,
+      kidsProductTypeId: typ.id,
       discountPercent: form.discountPercent !== '' ? parseInt(form.discountPercent) : null,
     }
     try {
@@ -188,15 +196,13 @@ function ProductsTab({ categories, types }) {
             <div className="db-form-row">
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form.kidsCategoryId || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, kidsCategoryId: e.target.value }))}>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <input className="db-input" list="kids-cats" value={form.categoryName} onChange={e => setForm(f => ({ ...f, categoryName: e.target.value }))} placeholder="e.g. T-Shirts, Dresses…" />
+                <datalist id="kids-cats">{cats.map(c => <option key={c.id} value={c.name} />)}</datalist>
               </div>
               <div className="db-field">
                 <label className="db-label">Product Type</label>
-                <select className="db-select" value={form.kidsProductTypeId || types[0]?.id || ''} onChange={e => setForm(f => ({ ...f, kidsProductTypeId: e.target.value }))}>
-                  {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                <input className="db-input" list="kids-types" value={form.typeName} onChange={e => setForm(f => ({ ...f, typeName: e.target.value }))} placeholder="e.g. Boys, Girls" />
+                <datalist id="kids-types">{typs.map(t => <option key={t.id} value={t.name} />)}</datalist>
               </div>
             </div>
             <div className="db-field">

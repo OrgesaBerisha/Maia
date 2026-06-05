@@ -38,14 +38,21 @@ function Modal({ title, onClose, children, actions }) {
   )
 }
 
+const FALLBACK_MEN_CATS = [
+  { id: 1, name: 'T-Shirts' }, { id: 2, name: 'Jackets' },
+  { id: 3, name: 'Jeans' },    { id: 4, name: 'Shirts' },
+]
+
 // ── Products Tab ───────────────────────────────────────────────────────────
 function ProductsTab({ categories }) {
+  const cats = categories.length > 0 ? categories : FALLBACK_MEN_CATS
+
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formErr, setFormErr] = useState('')
-  const [form, setForm] = useState({ title: '', description: '', price: '', imageUrl: '', menCategoryId: '' })
+  const [form, setForm] = useState({ title: '', description: '', price: '', imageUrl: '', categoryName: '' })
 
   const { data: products, loading, error, reload } = useApi(async () => {
     const r = await api.get('/MenCards')
@@ -57,24 +64,24 @@ function ProductsTab({ categories }) {
   )
 
   const openAdd = () => {
-    setForm({ title: '', description: '', price: '', imageUrl: '', menCategoryId: categories[0]?.id ?? '' })
+    setForm({ title: '', description: '', price: '', imageUrl: '', categoryName: '' })
     setFormErr(''); setModal('add')
   }
 
   const openEdit = (p) => {
     setSelected(p)
-    setForm({ title: p.title, description: p.description ?? '', price: p.price, imageUrl: p.imageUrl ?? '', menCategoryId: p.menCategoryId ?? '' })
+    setForm({ title: p.title, description: p.description ?? '', price: p.price, imageUrl: p.imageUrl ?? '', categoryName: p.menCategoryName ?? '' })
     setFormErr(''); setModal('edit')
   }
 
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const rawCatId = form.menCategoryId || categories[0]?.id
-    const catId = parseInt(rawCatId)
+    const cat = cats.find(c => c.name.toLowerCase() === form.categoryName.trim().toLowerCase())
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
-    if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
-    const body = { ...form, price, menCategoryId: catId }
+    if (!form.categoryName.trim()) { setFormErr('Category is required.'); setSaving(false); return }
+    if (!cat) { setFormErr(`Unknown category. Available: ${cats.map(c => c.name).join(', ')}`); setSaving(false); return }
+    const body = { title: form.title, description: form.description, price, imageUrl: form.imageUrl, menCategoryId: cat.id }
     try {
       if (modal === 'add') await api.post('/MenCards', body)
       else await api.put(`/MenCards/${selected.id}`, body)
@@ -148,9 +155,8 @@ function ProductsTab({ categories }) {
               </div>
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form.menCategoryId || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, menCategoryId: e.target.value }))}>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <input className="db-input" list="men-cats" value={form.categoryName} onChange={e => setForm(f => ({ ...f, categoryName: e.target.value }))} placeholder="e.g. T-Shirts, Jackets…" />
+                <datalist id="men-cats">{cats.map(c => <option key={c.id} value={c.name} />)}</datalist>
               </div>
             </div>
             <div className="db-field">

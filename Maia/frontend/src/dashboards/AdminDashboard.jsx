@@ -315,6 +315,15 @@ function StaffTab() {
   )
 }
 
+const ADMIN_FALLBACK_CATS = {
+  women: [{ id:1,name:'Dresses'},{id:2,name:'Shoes'},{id:3,name:'Jackets'},{id:4,name:'Bags'},{id:5,name:'Jewelry'},{id:6,name:'Swimwear'}],
+  men:   [{ id:1,name:'T-Shirts'},{id:2,name:'Jackets'},{id:3,name:'Jeans'},{id:4,name:'Shirts'}],
+  kids:  [{ id:1,name:'T-Shirts'},{id:2,name:'Dresses'},{id:3,name:'Jeans'},{id:4,name:'Shorts'}],
+}
+const ADMIN_FALLBACK_TYPES = {
+  kids: [{ id:1,name:'Boys'},{id:2,name:'Girls'}],
+}
+
 // ── Products Tab (reusable for Women/Men/Kids) ─────────────────────────────
 function ProductsTab({ section }) {
   const cfg = {
@@ -329,9 +338,7 @@ function ProductsTab({ section }) {
   const [selected, setSelected] = useState(null)
   const [saving, setSaving] = useState(false)
   const [formErr, setFormErr] = useState('')
-  const baseForm = { title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: '' }
-  if (cfg.typeKey) baseForm[cfg.typeKey] = ''
-  const [form, setForm] = useState(baseForm)
+  const [form, setForm] = useState({ title: '', description: '', price: '', imageUrl: '', categoryName: '', typeName: '' })
 
   const { data: products, loading, error, reload } = useApi(async () => {
     const r = await api.get(cfg.endpoint)
@@ -349,48 +356,51 @@ function ProductsTab({ section }) {
     catch { return [] }
   }, [section])
 
-  useEffect(() => {
-    if (modal && categories.length > 0) {
-      setForm(f => (!f[cfg.catKey] ? { ...f, [cfg.catKey]: categories[0].id } : f))
-    }
-  }, [categories, modal])
+  const cats = categories.length > 0 ? categories : (ADMIN_FALLBACK_CATS[section] ?? [])
+  const typs = types.length > 0 ? types : (ADMIN_FALLBACK_TYPES[section] ?? [])
 
-  useEffect(() => {
-    if (modal && cfg.typeKey && types.length > 0) {
-      setForm(f => (!f[cfg.typeKey] ? { ...f, [cfg.typeKey]: types[0].id } : f))
-    }
-  }, [types, modal])
+  const getCatNameFromProduct = (p) => {
+    if (section === 'women') return p.category ?? ''
+    if (section === 'men')   return p.menCategoryName ?? ''
+    if (section === 'kids')  return p.kidsCategoryName ?? ''
+    return ''
+  }
 
   const filtered = products.filter(p =>
     !q || p.title?.toLowerCase().includes(q.toLowerCase())
   )
 
   const openAdd = () => {
-    const f = { title: '', description: '', price: '', imageUrl: '', [cfg.catKey]: categories[0]?.id ?? '' }
-    if (cfg.typeKey) f[cfg.typeKey] = types[0]?.id ?? ''
-    setForm(f); setFormErr(''); setModal('add')
+    setForm({ title: '', description: '', price: '', imageUrl: '', categoryName: '', typeName: '' })
+    setFormErr(''); setModal('add')
   }
 
   const openEdit = (p) => {
     setSelected(p)
-    const f = { title: p.title, description: p.description ?? '', price: p.price, imageUrl: p.imageUrl ?? '', [cfg.catKey]: p[cfg.catKey] ?? '' }
-    if (cfg.typeKey) f[cfg.typeKey] = p[cfg.typeKey] ?? ''
-    setForm(f); setFormErr(''); setModal('edit')
+    setForm({
+      title: p.title, description: p.description ?? '', price: p.price,
+      imageUrl: p.imageUrl ?? '', categoryName: getCatNameFromProduct(p),
+      typeName: p.kidsProductTypeName ?? ''
+    })
+    setFormErr(''); setModal('edit')
   }
 
   const save = async () => {
     setSaving(true); setFormErr('')
     const price = parseFloat(form.price)
-    const catId = parseInt(form[cfg.catKey] || categories[0]?.id)
+    const cat = cats.find(c => c.name.toLowerCase() === form.categoryName.trim().toLowerCase())
     if (isNaN(price) || price <= 0) { setFormErr('Enter a valid price.'); setSaving(false); return }
-    if (isNaN(catId)) { setFormErr('Select a category.'); setSaving(false); return }
+    if (!form.categoryName.trim()) { setFormErr('Category is required.'); setSaving(false); return }
+    if (!cat) { setFormErr(`Unknown category. Available: ${cats.map(c => c.name).join(', ')}`); setSaving(false); return }
     if (cfg.typeKey) {
-      const typeId = parseInt(form[cfg.typeKey] || types[0]?.id)
-      if (isNaN(typeId)) { setFormErr('Select a product type.'); setSaving(false); return }
+      const typ = typs.find(t => t.name.toLowerCase() === form.typeName.trim().toLowerCase())
+      if (!form.typeName.trim()) { setFormErr('Product type is required.'); setSaving(false); return }
+      if (!typ) { setFormErr(`Unknown type. Available: ${typs.map(t => t.name).join(', ')}`); setSaving(false); return }
     }
-    const body = { ...form, price }
-    body[cfg.catKey] = catId
-    if (cfg.typeKey) body[cfg.typeKey] = parseInt(form[cfg.typeKey] || types[0]?.id)
+    const typ = cfg.typeKey ? typs.find(t => t.name.toLowerCase() === form.typeName.trim().toLowerCase()) : null
+    const body = { title: form.title, description: form.description, price, imageUrl: form.imageUrl }
+    body[cfg.catKey] = cat.id
+    if (cfg.typeKey && typ) body[cfg.typeKey] = typ.id
     try {
       if (modal === 'add') await api.post(cfg.endpoint, body)
       else await api.put(`${cfg.endpoint}/${selected[cfg.idKey]}`, body)
@@ -473,17 +483,15 @@ function ProductsTab({ section }) {
               </div>
               <div className="db-field">
                 <label className="db-label">Category</label>
-                <select className="db-select" value={form[cfg.catKey] || categories[0]?.id || ''} onChange={e => setForm(f => ({ ...f, [cfg.catKey]: e.target.value }))}>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <input className="db-input" list="admin-cats" value={form.categoryName} onChange={e => setForm(f => ({ ...f, categoryName: e.target.value }))} placeholder={`e.g. ${cats[0]?.name ?? 'category'}…`} />
+                <datalist id="admin-cats">{cats.map(c => <option key={c.id} value={c.name} />)}</datalist>
               </div>
             </div>
             {cfg.typeKey && (
               <div className="db-field">
                 <label className="db-label">Product Type</label>
-                <select className="db-select" value={form[cfg.typeKey] || types[0]?.id || ''} onChange={e => setForm(f => ({ ...f, [cfg.typeKey]: e.target.value }))}>
-                  {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
+                <input className="db-input" list="admin-types" value={form.typeName} onChange={e => setForm(f => ({ ...f, typeName: e.target.value }))} placeholder="e.g. Boys, Girls" />
+                <datalist id="admin-types">{typs.map(t => <option key={t.id} value={t.name} />)}</datalist>
               </div>
             )}
             <div className="db-field">
