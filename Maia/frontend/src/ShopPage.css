@@ -166,6 +166,33 @@
   transition: width 0.25s ease;
 }
 
+.shop-search-form {
+  padding-top: 16px;
+}
+
+.shop-search-input {
+  background: none;
+  border: none;
+  border-bottom: 1px solid #c8bfb5;
+  outline: none;
+  width: 100%;
+  max-width: 480px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: #1a1208;
+  padding: 8px 0;
+  transition: border-color 0.2s;
+}
+
+.shop-search-input::placeholder {
+  color: #b0a99f;
+}
+
+.shop-search-input:focus {
+  border-bottom-color: #1a1208;
+}
+
 .category-item:hover { opacity: 0.55; }
 .category-item:hover::after { width: 100%; }
 

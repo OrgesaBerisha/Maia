@@ -7,7 +7,7 @@ import { useCart } from './CartContext.jsx'
 import api from './api/axios.js'
 import './SearchPage.css'
 
-const SECTIONS = ['ALL', 'WOMAN', 'MAN', 'KIDS']
+const SECTIONS = ['WOMAN', 'MAN', 'KIDS']
 
 const COLORS = ['Black', 'White', 'Blue', 'Red', 'Pink', 'Grey', 'Navy', 'Beige', 'Brown', 'Green', 'Yellow']
 
@@ -35,7 +35,7 @@ async function fetchBySection(section, query) {
   const q = query.trim()
   switch (section) {
     case 'WOMAN': {
-      const params = { page: 1, pageSize: 100 }
+      const params = { page: 1, pageSize: 500 }
       if (q) params.search = q
       const { data } = await api.get('/CardsWomen/browse', { params })
       return (data.items ?? data ?? []).map(p => mapProduct(p, 'WOMAN'))
@@ -66,8 +66,8 @@ async function fetchBySection(section, query) {
 function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
-  const [query, setQuery]         = useState(searchParams.get('q') ?? '')
-  const [section, setSection]     = useState(searchParams.get('section') ?? 'ALL')
+  const query                      = searchParams.get('q') ?? ''
+  const [section, setSection]     = useState(searchParams.get('section') ?? 'WOMAN')
   const [products, setProducts]   = useState([])
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState(null)
@@ -169,18 +169,6 @@ function SearchPage() {
       </header>
 
       <main className="search-main">
-        <div className="search-input-wrap">
-          <input
-            className="search-input"
-            type="text"
-            placeholder="WHAT ARE YOU LOOKING FOR?"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            autoFocus
-            spellCheck={false}
-          />
-        </div>
-
         <div className="filter-bar">
           <button className={`filter-toggle${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(v => !v)}>
             FILTERS {hasActiveFilters ? `(${(selectedColors.length > 0 ? 1 : 0) + (selectedCategory ? 1 : 0) + (sortBy ? 1 : 0)})` : ''}
