@@ -74,7 +74,7 @@ function SearchPage() {
   const [showFilters, setShowFilters] = useState(false)
 
   const [selectedColors, setSelectedColors]     = useState([])
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ?? '')
   const [sortBy, setSortBy]                     = useState('')
 
   const { addToBag } = useCart()
