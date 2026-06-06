@@ -14,6 +14,8 @@ namespace Maia.Data.Interface
 
         Task<CardsWomenDto?> UpdateAsync(int id, CreateCardsWomenDto dto);
 
+        Task<CardsWomenDto?> SetDiscountAsync(int id, int? discountPercent);
+
         // (SEARCH + FILTER + SORT + PAGINATION)
         Task<PagedResult<CardsWomenDto>> BrowseAsync(
       string? search,

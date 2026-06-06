@@ -18,15 +18,21 @@ const COLOR_HEX = {
 }
 
 function mapProduct(p, source) {
+  const discount = p.discountPercent ?? 0
+  const salePrice = discount > 0
+    ? (parseFloat(p.price) * (1 - discount / 100)).toFixed(2)
+    : null
   return {
-    id:         p.id,
-    name:       (p.title ?? p.name)?.toUpperCase(),
-    price:      p.price,
-    priceLabel: `${p.price} EUR`,
-    category:   (p.womanCategory ?? p.menCategoryName ?? p.kidsCategoryName ?? p.category ?? '').toUpperCase(),
-    categoryId: p.womanCategoryId ?? p.menCategoryId ?? p.kidsCategoryId,
-    image:      p.imageUrl ?? p.image,
-    color:      p.color ?? null,
+    id:             p.id,
+    name:           (p.title ?? p.name)?.toUpperCase(),
+    price:          p.price,
+    priceLabel:     `${p.price} EUR`,
+    salePrice,
+    discountPercent: discount > 0 ? discount : null,
+    category:       (p.womanCategory ?? p.menCategoryName ?? p.kidsCategoryName ?? p.category ?? '').toUpperCase(),
+    categoryId:     p.womanCategoryId ?? p.menCategoryId ?? p.kidsCategoryId,
+    image:          p.imageUrl ?? p.image,
+    color:          p.color ?? null,
     source,
   }
 }
@@ -250,7 +256,14 @@ function SearchPage() {
                 </div>
                 <div className="product-info">
                   <span className="product-name">{product.name}</span>
-                  <span className="product-price">{product.priceLabel}</span>
+                  {product.salePrice ? (
+                    <div className="product-price-block">
+                      <span className="product-price product-price--original">{product.priceLabel}</span>
+                      <span className="product-price product-price--sale">{product.salePrice} EUR</span>
+                    </div>
+                  ) : (
+                    <span className="product-price">{product.priceLabel}</span>
+                  )}
                   {product.color && <span className="product-color-label">{product.color}</span>}
                 </div>
               </div>

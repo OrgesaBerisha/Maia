@@ -42,6 +42,7 @@ const FALLBACK_WOMEN_CATS = [
   { id: 3, name: 'Bottoms' },       { id: 4, name: 'Outerwear' },
   { id: 5, name: 'Swimwear' },      { id: 6, name: 'Matching Sets' },
   { id: 7, name: 'Footwear' },      { id: 8, name: 'Accessories' },
+  { id: 9, name: 'Sale' },
 ]
 
 // ── Products Tab ───────────────────────────────────────────────────────────
@@ -167,8 +168,22 @@ function ProductsTab({ categories }) {
                   />
                 </td>
                 <td>{p.title}</td>
-                <td>€{Number(p.price).toFixed(2)}</td>
-                <td>{p.category || '—'}</td>
+                <td>
+                  {p.discountPercent > 0 ? (
+                    <span>
+                      <span style={{ textDecoration: 'line-through', color: '#9a8e82', marginRight: 6 }}>€{Number(p.price).toFixed(2)}</span>
+                      <span style={{ color: '#22a355' }}>€{(p.price * (1 - p.discountPercent / 100)).toFixed(2)}</span>
+                    </span>
+                  ) : (
+                    `€${Number(p.price).toFixed(2)}`
+                  )}
+                </td>
+                <td>
+                  {p.category || '—'}
+                  {p.discountPercent > 0 && (
+                    <span className="db-badge db-badge--green" style={{ marginLeft: 6 }}>{p.discountPercent}% OFF</span>
+                  )}
+                </td>
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>

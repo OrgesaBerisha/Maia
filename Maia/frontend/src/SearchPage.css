@@ -191,6 +191,22 @@
   color: #9a8e82;
 }
 
+.product-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.product-price--original {
+  text-decoration: line-through;
+  color: #c8bfb5;
+}
+
+.product-price--sale {
+  color: #22a355;
+  font-weight: 500;
+}
+
 .no-results {
   font-size: 12px;
   letter-spacing: 0.15em;

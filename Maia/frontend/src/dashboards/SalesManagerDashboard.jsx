@@ -77,6 +77,10 @@ function SectionSalesTab({ section }) {
         await api.patch(`/KidsCards/${selected.id}/sale`, {
           discountPercent: parseInt(discount) || 0,
         })
+      } else if (section === 'women') {
+        await api.patch(`/CardsWomen/${selected.id}/sale`, {
+          discountPercent: parseInt(discount) || 0,
+        })
       } else {
         await api.put(`/api${endpoint}/${selected.id}`, {
           ...selected,
@@ -93,6 +97,8 @@ function SectionSalesTab({ section }) {
     try {
       if (section === 'kids') {
         await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
+      } else if (section === 'women') {
+        await api.patch(`/CardsWomen/${p.id}/sale`, { discountPercent: 0 })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -155,7 +161,7 @@ function SectionSalesTab({ section }) {
               <label className="db-label">Product</label>
               <input className="db-input" value={selected?.title} disabled />
             </div>
-            {section === 'kids' ? (
+            {section === 'kids' || section === 'women' ? (
               <>
                 <div className="db-field">
                   <label className="db-label">Discount Percentage</label>

@@ -23,5 +23,8 @@ namespace Maia.Data.DTO
 
         [StringLength(50, ErrorMessage = "Color cannot exceed 50 characters")]
         public string? Color { get; set; }
+
+        [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
+        public int? DiscountPercent { get; set; }
     }
 }

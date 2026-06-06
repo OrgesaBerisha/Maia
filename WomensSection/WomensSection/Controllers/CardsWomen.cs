@@ -93,5 +93,14 @@ namespace Maia.Controllers
 
             return Ok(updated);
         }
+
+        // ✅ SET / REMOVE DISCOUNT
+        [HttpPatch("{id}/sale")]
+        public async Task<IActionResult> SetDiscount(int id, [FromBody] SetDiscountDto dto)
+        {
+            var result = await _service.SetDiscountAsync(id, dto.DiscountPercent);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
     }
 }

@@ -35,7 +35,8 @@ public class CardsWomenService : ICardsWomenService
             Price           = dto.Price,
             Description     = dto.Description,
             WomanCategoryId = dto.WomanCategoryId,
-            Color           = dto.Color
+            Color           = dto.Color,
+            DiscountPercent = dto.DiscountPercent
         };
         var created = await _repo.AddAsync(product);
         return ToDto(created);
@@ -53,11 +54,15 @@ public class CardsWomenService : ICardsWomenService
             Price           = dto.Price,
             Description     = dto.Description,
             WomanCategoryId = dto.WomanCategoryId,
-            Color           = dto.Color
+            Color           = dto.Color,
+            DiscountPercent = dto.DiscountPercent
         };
         var result = await _repo.UpdateAsync(id, updated);
         return result == null ? null : ToDto(result);
     }
+
+    public async Task<CardsWomenDto?> SetDiscountAsync(int id, int? discountPercent) =>
+        await _repo.SetDiscountAsync(id, discountPercent);
 
     public async Task<PagedResult<CardsWomenDto>> BrowseAsync(
         string? search, int? categoryId, decimal? minPrice,
@@ -84,6 +89,7 @@ public class CardsWomenService : ICardsWomenService
         WomanCategoryId = x.WomanCategoryId,
         Category        = x.WomanCategory?.Name ?? string.Empty,
         Description     = x.Description,
-        Color           = x.Color
+        Color           = x.Color,
+        DiscountPercent = x.DiscountPercent
     };
 }

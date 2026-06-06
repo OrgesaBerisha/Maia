@@ -196,4 +196,12 @@
 .category-item:hover { opacity: 0.55; }
 .category-item:hover::after { width: 100%; }
 
+.category-item--sale {
+  color: #22a355;
+  font-weight: 600;
+}
+.category-item--sale::after {
+  background: #22a355;
+}
+
 .footer-item { font-size: 14px; cursor: default; }

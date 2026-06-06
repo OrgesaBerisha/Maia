@@ -7,9 +7,9 @@ import './ShopPage.css'
 const SECTIONS = ['WOMAN', 'MAN', 'KIDS']
 
 const CATEGORIES = {
-  WOMAN: ['VIEW ALL', 'TOPS', 'DRESSES', 'BOTTOMS', 'OUTERWEAR', 'SWIMWEAR', 'MATCHING SETS', 'FOOTWEAR', 'ACCESSORIES'],
-  MAN:   ['VIEW ALL', 'TOPS', 'BOTTOMS', 'SUITS & FORMALWEAR', 'OUTERWEAR', 'SWIMWEAR', 'FOOTWEAR', 'ACCESSORIES'],
-  KIDS:  ['VIEW ALL', 'T-SHIRTS', 'DRESSES', 'TOPS', 'JEANS', 'SHORTS'],
+  WOMAN: ['VIEW ALL', 'TOPS', 'DRESSES', 'BOTTOMS', 'OUTERWEAR', 'SWIMWEAR', 'MATCHING SETS', 'FOOTWEAR', 'ACCESSORIES', 'SALE'],
+  MAN:   ['VIEW ALL', 'TOPS', 'BOTTOMS', 'SUITS & FORMALWEAR', 'OUTERWEAR', 'SWIMWEAR', 'FOOTWEAR', 'ACCESSORIES', 'SALE'],
+  KIDS:  ['VIEW ALL', 'T-SHIRTS', 'DRESSES', 'TOPS', 'JEANS', 'SHORTS', 'SALE'],
 }
 
 const FOOTER_CATS = {
@@ -88,7 +88,11 @@ function ShopPage() {
           </div>
           <div className="categories-col-list">
             {CATEGORIES[activeSection].map(cat => (
-              <button key={cat} className="category-item" onClick={() => goToSearch(cat)}>
+              <button
+                key={cat}
+                className={`category-item${cat === 'SALE' ? ' category-item--sale' : ''}`}
+                onClick={() => goToSearch(cat)}
+              >
                 {cat}
               </button>
             ))}

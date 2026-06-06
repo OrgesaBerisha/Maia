@@ -1,3 +1,4 @@
+using Maia.Data.DTO;
 using Maia.Data.Repository.Interface;
 using Maia.Models;
 using Microsoft.EntityFrameworkCore;
@@ -42,10 +43,37 @@ namespace Maia.Data.Repository
             product.Price           = updated.Price;
             product.Description     = updated.Description;
             product.WomanCategoryId = updated.WomanCategoryId;
+            product.Color           = updated.Color;
+            product.DiscountPercent = updated.DiscountPercent;
             product.UpdatedAt       = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return product;
+        }
+
+        public async Task<CardsWomenDto?> SetDiscountAsync(int id, int? discountPercent)
+        {
+            var product = await _context.CardsWoman
+                .Include(x => x.WomanCategory)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (product == null) return null;
+
+            product.DiscountPercent = discountPercent;
+            product.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            return new CardsWomenDto
+            {
+                Id              = product.Id,
+                Title           = product.Title,
+                ImageUrl        = product.ImageUrl,
+                Price           = product.Price,
+                WomanCategoryId = product.WomanCategoryId,
+                Category        = product.WomanCategory?.Name ?? string.Empty,
+                Description     = product.Description,
+                Color           = product.Color,
+                DiscountPercent = product.DiscountPercent
+            };
         }
 
         public async Task<bool> DeleteAsync(int id)
