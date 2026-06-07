@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './CartContext.jsx'
 import { AuthProvider } from './AuthContext.jsx'
 import { NotificationProvider } from './NotificationContext.jsx'
+import { WishlistProvider } from './WishlistContext.jsx'
 import ProtectedRoute from './ProtectedRoute.jsx'
 
 const HomeScreen   = lazy(() => import('./HomeScreen.jsx'))
@@ -32,6 +33,7 @@ function App() {
     <AuthProvider>
       <NotificationProvider>
         <CartProvider>
+          <WishlistProvider>
           <BrowserRouter>
             <Suspense fallback={null}>
               <Routes>
@@ -78,6 +80,7 @@ function App() {
               </Routes>
             </Suspense>
           </BrowserRouter>
+          </WishlistProvider>
         </CartProvider>
       </NotificationProvider>
     </AuthProvider>

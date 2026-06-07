@@ -4,6 +4,8 @@ import BottomNav from './BottomNav.jsx'
 import SizeModal from './SizeModal.jsx'
 import SiteLogo from './SiteLogo.jsx'
 import { useCart } from './CartContext.jsx'
+import { useWishlist } from './WishlistContext.jsx'
+import { useAuth } from './AuthContext.jsx'
 import api from './api/axios.js'
 import './SearchPage.css'
 
@@ -85,6 +87,8 @@ function SearchPage() {
   const [sortBy, setSortBy]                     = useState('')
 
   const { addToBag } = useCart()
+  const { isWishlisted, toggleWishlist } = useWishlist()
+  const { isLoggedIn } = useAuth()
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -255,6 +259,15 @@ function SearchPage() {
                   <img src={product.image} alt={product.name} className="product-img" loading="lazy" />
                   {product.color && (
                     <span className="product-color-dot" style={{ background: COLOR_HEX[product.color] ?? '#ccc' }} title={product.color} />
+                  )}
+                  {isLoggedIn && product.source === 'WOMAN' && (
+                    <button
+                      className={`product-wishlist${isWishlisted(product.id) ? ' product-wishlist--active' : ''}`}
+                      aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                      onClick={e => { e.preventDefault(); toggleWishlist(product) }}
+                    >
+                      {isWishlisted(product.id) ? '♥' : '♡'}
+                    </button>
                   )}
                   <button className="product-add" aria-label={`Add ${product.name} to bag`} onClick={e => { e.preventDefault(); setModal(product) }}>+</button>
                 </div>
