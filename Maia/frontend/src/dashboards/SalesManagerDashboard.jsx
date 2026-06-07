@@ -57,9 +57,9 @@ function SectionSalesTab({ section }) {
     return r.data
   }, [section])
 
-  const filtered = products.filter(p =>
-    !q || p.title?.toLowerCase().includes(q.toLowerCase())
-  )
+  const filtered = products
+    .filter(p => !q || p.title?.toLowerCase().includes(q.toLowerCase()))
+    .sort((a, b) => ((b.discountPercent || 0) > 0 ? 1 : 0) - ((a.discountPercent || 0) > 0 ? 1 : 0))
 
   const openSale = (p) => {
     setSelected(p)

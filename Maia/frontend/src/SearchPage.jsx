@@ -130,8 +130,12 @@ function SearchPage() {
     if (selectedColors.length > 0)
       list = list.filter(p => p.color && selectedColors.includes(p.color))
 
-    if (selectedCategory)
-      list = list.filter(p => p.category === selectedCategory)
+    if (selectedCategory) {
+      if (selectedCategory === 'SALE')
+        list = list.filter(p => p.category === 'SALE' || p.discountPercent > 0)
+      else
+        list = list.filter(p => p.category === selectedCategory)
+    }
 
     if (sortBy === 'price_asc')
       list.sort((a, b) => a.price - b.price)
