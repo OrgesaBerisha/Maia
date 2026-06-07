@@ -44,20 +44,31 @@ namespace Maia.Services
         public async Task<object> GetOrdersAsync(int userId)
         {
             var orders = await _repo.GetByUserIdAsync(userId);
-            return orders.Select(o => new
+            return MapOrders(orders);
+        }
+
+        public async Task<object> GetAllOrdersAsync()
+        {
+            var orders = await _repo.GetAllAsync();
+            return MapOrders(orders);
+        }
+
+        private static object MapOrders(IEnumerable<Order> orders) =>
+            orders.Select(o => new
             {
                 o.Id,
+                o.UserId,
                 o.TotalPrice,
                 o.CreatedAt,
                 Items = o.OrderItems.Select(i => new
                 {
                     i.ProductId,
-                    ProductName = i.Product?.Title,
+                    ProductName  = i.Product?.Title,
+                    ProductImage = i.Product?.ImageUrl,
                     i.Quantity,
                     i.Price,
-                    Subtotal    = i.Price * i.Quantity
+                    Subtotal     = i.Price * i.Quantity
                 })
             });
-        }
     }
 }

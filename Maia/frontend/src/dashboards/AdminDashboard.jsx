@@ -9,6 +9,7 @@ const TABS = [
   { key: 'overview',  label: 'Overview',       icon: '◈' },
   { key: 'users',     label: 'Customers',       icon: '◉' },
   { key: 'staff',     label: 'Staff',           icon: '◎' },
+  { key: 'orders',    label: 'Orders',          icon: '◐' },
   { key: 'women',     label: 'Women Section',   icon: '◇' },
   { key: 'men',       label: 'Men Section',     icon: '◆' },
   { key: 'kids',      label: 'Kids Section',    icon: '◈' },
@@ -472,6 +473,62 @@ function ProductsTab({ section }) {
   )
 }
 
+// ── Orders Tab ─────────────────────────────────────────────────────────────
+function OrdersTab() {
+  const [q, setQ] = useState('')
+  const { data: orders, loading, error } = useApi(async () => {
+    const r = await api.get('/Order/all')
+    return Array.isArray(r.data) ? r.data : []
+  }, [])
+
+  const filtered = orders.filter(o =>
+    !q || String(o.id).includes(q) || String(o.userId).includes(q)
+  )
+
+  return (
+    <div className="db-section">
+      <div className="db-toolbar">
+        <input className="db-search" placeholder="Search by order or user ID…" value={q} onChange={e => setQ(e.target.value)} />
+        <span className="db-stat-label" style={{ flexShrink: 0 }}>{filtered.length} orders</span>
+      </div>
+      {error && <div className="db-error">{error}</div>}
+      <div className="db-table-wrap">
+        <table className="db-table">
+          <thead><tr>
+            <th>ORDER ID</th><th>USER ID</th><th>ITEMS</th><th>TOTAL</th><th>DATE</th>
+          </tr></thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={5} className="db-empty">Loading…</td></tr>
+            ) : filtered.length === 0 ? (
+              <tr><td colSpan={5} className="db-empty">No orders yet.</td></tr>
+            ) : filtered.map(o => (
+              <tr key={o.id}>
+                <td>#{o.id}</td>
+                <td>{o.userId}</td>
+                <td>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {o.items?.map((item, i) => (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {item.productImage && (
+                          <img src={item.productImage} alt={item.productName} style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4 }} />
+                        )}
+                        <span>{item.productName} × {item.quantity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </td>
+                <td>€{Number(o.totalPrice).toFixed(2)}</td>
+                <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 // ── Sales Tab ──────────────────────────────────────────────────────────────
 function SalesTab() {
   const [section, setSection] = useState('women')
@@ -659,6 +716,7 @@ export default function AdminDashboard() {
       case 'overview': return <OverviewTab stats={stats} />
       case 'users':    return <CustomersTab />
       case 'staff':    return <StaffTab />
+      case 'orders':   return <OrdersTab />
       case 'women':    return <ProductsTab section="women" />
       case 'men':      return <ProductsTab section="men" />
       case 'kids':     return <ProductsTab section="kids" />

@@ -33,5 +33,11 @@ namespace Maia.Controllers
         {
             return Ok(await _service.GetOrdersAsync(GetUserId()));
         }
+
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            return Ok(await _service.GetAllOrdersAsync());
+        }
     }
 }

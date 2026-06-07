@@ -79,7 +79,14 @@ function CheckoutPage() {
     setOrderError('')
     try {
       const shippingAddress = `${form.address}, ${form.city} ${form.postalCode}, ${form.country}`
-      await api.post('/Order', { shippingAddress })
+      await api.post('/Order', {
+        customerName: form.fullName,
+        shippingAddress,
+        items: bag.map(item => ({
+          productId: item.id,
+          quantity:  1,
+        })),
+      })
     } catch (err) {
       const msg = err?.response?.data?.message ?? err?.response?.data ?? err.message
       setOrderError(typeof msg === 'string' ? msg : 'Order failed. Please try again.')

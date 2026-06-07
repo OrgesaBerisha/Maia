@@ -30,6 +30,13 @@ namespace Maia.Data.Repository
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
 
+        public async Task<IEnumerable<Order>> GetAllAsync() =>
+            await _context.Orders
+                .Include(o => o.OrderItems)
+                    .ThenInclude(i => i.Product)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+
         public async Task SaveAsync() =>
             await _context.SaveChangesAsync();
     }

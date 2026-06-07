@@ -7,6 +7,7 @@ namespace Maia.Data.Repository.Interface
         Task<CardsWomen?> GetProductAsync(int productId);
         Task              AddOrderAsync(Order order);
         Task<IEnumerable<Order>> GetByUserIdAsync(int userId);
+        Task<IEnumerable<Order>> GetAllAsync();
         Task SaveAsync();
     }
 }

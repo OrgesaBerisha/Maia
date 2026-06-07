@@ -6,5 +6,6 @@ namespace Maia.Data.Interface
     {
         Task CreateOrderAsync(int userId, CreateOrderDto dto);
         Task<object> GetOrdersAsync(int userId);
+        Task<object> GetAllOrdersAsync();
     }
 }
