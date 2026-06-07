@@ -16,6 +16,9 @@ export function WishlistProvider({ children }) {
       setItems(list.map(i => ({
         wishlistItemId: i.Id ?? i.id,
         productId:      i.ProductId ?? i.productId,
+        name:           (i.ProductName ?? i.productName ?? '').toUpperCase(),
+        image:          i.ProductImage ?? i.productImage ?? '',
+        price:          i.Price ?? i.price ?? 0,
       })))
     } catch {
       setItems([])

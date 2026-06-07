@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from './CartContext.jsx'
+import { useWishlist } from './WishlistContext.jsx'
 import BottomNav from './BottomNav.jsx'
 import SiteLogo from './SiteLogo.jsx'
 import './BagPage.css'
@@ -37,7 +38,13 @@ function BagItem({ item, onDelete, onSave, onMoveToCart, isFav }) {
 
 function BagPage() {
   const [tab, setTab] = useState('bag')
-  const { bag, favorites, removeFromBag, saveForLater, removeFromFavorites, moveToCart } = useCart()
+  const { bag, removeFromBag, saveForLater, addToBag } = useCart()
+  const { items: wishlistItems, toggleWishlist } = useWishlist()
+
+  const moveWishlistToCart = async (item) => {
+    await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: 'women' })
+    await toggleWishlist({ id: item.productId, source: 'WOMAN' })
+  }
 
   const bagTotal = bag.reduce((sum, i) => {
     const num = parseFloat(i.price)
@@ -79,7 +86,7 @@ function BagPage() {
             onClick={() => setTab('favorites')}
           >
             FAVORITES
-            {favorites.length > 0 && <span className="bag-count">{favorites.length}</span>}
+            {wishlistItems.length > 0 && <span className="bag-count">{wishlistItems.length}</span>}
           </button>
         </div>
         <SiteLogo />
@@ -116,16 +123,16 @@ function BagPage() {
 
         {tab === 'favorites' && (
           <>
-            {favorites.length === 0 ? (
+            {wishlistItems.length === 0 ? (
               <p className="bag-empty">NO SAVED ITEMS</p>
             ) : (
-              favorites.map((item, i) => (
+              wishlistItems.map((item, i) => (
                 <BagItem
-                  key={`${item.id}-${item.size}-${i}`}
-                  item={item}
+                  key={`${item.wishlistItemId}-${i}`}
+                  item={{ ...item, id: item.productId, size: '' }}
                   isFav={true}
-                  onDelete={() => removeFromFavorites(item.id, item.size)}
-                  onMoveToCart={() => moveToCart(item.id, item.size)}
+                  onDelete={() => toggleWishlist({ id: item.productId, source: 'WOMAN' })}
+                  onMoveToCart={() => moveWishlistToCart(item)}
                 />
               ))
             )}
