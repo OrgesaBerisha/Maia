@@ -49,12 +49,11 @@ function SectionSalesTab({ section }) {
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
   const [discount, setDiscount] = useState('')
-  const [newPrice, setNewPrice] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveErr, setSaveErr] = useState('')
 
   const { data: products, loading, error, reload } = useApi(async () => {
-    const r = await api.get(`/api${endpoint}`)
+    const r = await api.get(endpoint)
     return r.data
   }, [section])
 
@@ -65,26 +64,27 @@ function SectionSalesTab({ section }) {
   const openSale = (p) => {
     setSelected(p)
     setDiscount(p.discountPercent ?? '')
-    setNewPrice(Number(p.price).toFixed(2))
     setSaveErr('')
     setModal('sale')
   }
 
   const applySale = async () => {
     setSaving(true); setSaveErr('')
+    const pct = parseInt(discount) || 0
     try {
-      if (section === 'kids') {
-        await api.patch(`/KidsCards/${selected.id}/sale`, {
-          discountPercent: parseInt(discount) || 0,
-        })
-      } else if (section === 'women') {
-        await api.patch(`/CardsWomen/${selected.id}/sale`, {
-          discountPercent: parseInt(discount) || 0,
-        })
+      if (section === 'women') {
+        await api.patch(`/CardsWomen/${selected.id}/sale`, { discountPercent: pct })
+      } else if (section === 'kids') {
+        await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: pct })
       } else {
-        await api.put(`/api${endpoint}/${selected.id}`, {
-          ...selected,
-          price: parseFloat(newPrice),
+        await api.put(`/MenCards/${selected.id}`, {
+          title: selected.title,
+          imageUrl: selected.imageUrl || null,
+          price: selected.price,
+          menCategoryId: selected.menCategoryId,
+          description: selected.description || '',
+          color: selected.color || null,
+          discountPercent: pct,
         })
       }
       setModal(null); reload()
@@ -95,10 +95,20 @@ function SectionSalesTab({ section }) {
 
   const removeSale = async (p) => {
     try {
-      if (section === 'kids') {
-        await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
-      } else if (section === 'women') {
+      if (section === 'women') {
         await api.patch(`/CardsWomen/${p.id}/sale`, { discountPercent: 0 })
+      } else if (section === 'kids') {
+        await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
+      } else {
+        await api.put(`/MenCards/${p.id}`, {
+          title: p.title,
+          imageUrl: p.imageUrl || null,
+          price: p.price,
+          menCategoryId: p.menCategoryId,
+          description: p.description || '',
+          color: p.color || null,
+          discountPercent: 0,
+        })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -161,25 +171,15 @@ function SectionSalesTab({ section }) {
               <label className="db-label">Product</label>
               <input className="db-input" value={selected?.title} disabled />
             </div>
-            {section === 'kids' || section === 'women' ? (
-              <>
-                <div className="db-field">
-                  <label className="db-label">Discount Percentage</label>
-                  <input className="db-input" type="number" min="0" max="100" value={discount}
-                    onChange={e => setDiscount(e.target.value)} placeholder="e.g. 20" />
-                </div>
-                {discount > 0 && (
-                  <div className="db-field">
-                    <label className="db-label">Sale Price Preview</label>
-                    <input className="db-input" value={`€${discountedPrice}`} disabled />
-                  </div>
-                )}
-              </>
-            ) : (
+            <div className="db-field">
+              <label className="db-label">Discount Percentage</label>
+              <input className="db-input" type="number" min="0" max="90" value={discount}
+                onChange={e => setDiscount(e.target.value)} placeholder="e.g. 20" />
+            </div>
+            {discount > 0 && (
               <div className="db-field">
-                <label className="db-label">New Sale Price (€)</label>
-                <input className="db-input" type="number" step="0.01" value={newPrice}
-                  onChange={e => setNewPrice(e.target.value)} />
+                <label className="db-label">Sale Price Preview</label>
+                <input className="db-input" value={`€${discountedPrice}`} disabled />
               </div>
             )}
           </div>
