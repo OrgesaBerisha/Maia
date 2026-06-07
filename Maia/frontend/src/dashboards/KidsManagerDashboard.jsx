@@ -157,12 +157,14 @@ function ProductsTab({ categories, types }) {
                     ? <span className="db-badge db-badge--green">{p.discountPercent}% OFF</span>
                     : '—'}
                 </td>
-                <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
-                  {p.discountPercent > 0
-                    ? <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => applyDiscount(p, 0)}>Remove Sale</button>
-                    : null}
-                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
+                    {p.discountPercent > 0
+                      ? <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => applyDiscount(p, 0)}>Remove Sale</button>
+                      : null}
+                    <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -273,9 +275,11 @@ function SimpleListTab({ label, endpoint }) {
             ) : items.map(c => (
               <tr key={c.id}>
                 <td>{c.name}</td>
-                <td style={{ display: 'flex', gap: 6 }}>
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(c)}>Edit</button>
-                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(c)}>Delete</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(c)}>Edit</button>
+                    <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(c)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}

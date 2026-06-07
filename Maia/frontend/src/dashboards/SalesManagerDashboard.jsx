@@ -145,13 +145,15 @@ function SectionSalesTab({ section }) {
                     ? <span className="db-badge db-badge--green">{p.discountPercent}% OFF</span>
                     : <span className="db-badge db-badge--grey">No sale</span>}
                 </td>
-                <td style={{ display: 'flex', gap: 6 }}>
-                  <button className="db-btn db-btn--primary db-btn--sm" onClick={() => openSale(p)}>
-                    {p.discountPercent ? 'Edit Sale' : 'Set Sale'}
-                  </button>
-                  {p.discountPercent > 0 && (
-                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => removeSale(p)}>Remove</button>
-                  )}
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--primary db-btn--sm" onClick={() => openSale(p)}>
+                      {p.discountPercent ? 'Edit Sale' : 'Set Sale'}
+                    </button>
+                    {p.discountPercent > 0 && (
+                      <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => removeSale(p)}>Remove</button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
