@@ -77,6 +77,7 @@ builder.Services.AddScoped<ICartService,       CartService>();
 builder.Services.AddScoped<IWishlistService,   WishlistService>();
 builder.Services.AddScoped<IOrderService,      OrderService>();
 
+builder.Services.AddHttpClient();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
