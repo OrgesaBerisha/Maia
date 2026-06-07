@@ -42,6 +42,23 @@ namespace Auth.Controllers
                     "Welcome to Maia!",
                     $"Hello {userDto.FirstName}, your account has been created. Start exploring our collections!");
 
+                _ = _email.SendAsync(
+                    userDto.Email,
+                    "Welcome to MAIA — Verify Your Account",
+                    $@"<div style='font-family:Georgia,serif;max-width:520px;margin:0 auto;background:#fbf8f5;padding:40px 32px;'>
+                        <h1 style='font-size:36px;letter-spacing:6px;color:#1c0a06;margin:0 0 24px;'>MAIA</h1>
+                        <p style='color:#7a5c52;font-size:14px;line-height:22px;margin:0 0 16px;'>
+                            Hello {userDto.FirstName},
+                        </p>
+                        <p style='color:#7a5c52;font-size:14px;line-height:22px;margin:0 0 24px;'>
+                            Thank you for creating your MAIA account. Your account is now active and ready to use.
+                        </p>
+                        <div style='background:#d4bab0;height:1px;margin:24px 0;'></div>
+                        <p style='color:#aa9990;font-size:12px;margin:0;'>
+                            If you did not create this account, please ignore this email.
+                        </p>
+                    </div>");
+
                 return Ok(new { message = "User registered successfully." });
             }
             catch (Exception ex)
