@@ -124,7 +124,15 @@ namespace OrderService.Controllers
                 o.TotalPrice,
                 o.Status,
                 o.CreatedAt,
-                ItemCount = o.OrderItems.Count
+                Items = o.OrderItems.Select(i => new
+                {
+                    i.ProductId,
+                    i.ProductName,
+                    i.ImageUrl,
+                    i.Price,
+                    i.Quantity,
+                    i.ProductSource
+                })
             }));
         }
 
