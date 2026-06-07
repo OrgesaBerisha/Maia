@@ -14,6 +14,8 @@ namespace WomensSection.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("IF COL_LENGTH('CardsWomen', 'DiscountPercent') IS NULL ALTER TABLE CardsWomen ADD DiscountPercent INT NULL");
+
             // Rename categories 5 and 6 to match actual DB state, then add 7, 8, 9
             migrationBuilder.Sql("UPDATE WomanCategories SET Name = N'Swimwear', CreatedAt = '2026-06-05T17:57:58.8866667' WHERE Id = 5");
             migrationBuilder.Sql("UPDATE WomanCategories SET Name = N'Matching Sets', CreatedAt = '2026-06-05T17:57:58.8866667' WHERE Id = 6");
