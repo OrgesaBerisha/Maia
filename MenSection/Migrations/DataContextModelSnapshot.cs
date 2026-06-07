@@ -33,6 +33,9 @@ namespace MenSection.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DiscountPercent")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -256,6 +259,11 @@ namespace MenSection.Migrations
                         {
                             Id = 7,
                             Name = "Accessories"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Sale"
                         });
                 });
 

@@ -10,5 +10,6 @@
         public string? MenCategoryName { get; set; }
         public string Description { get; set; } = string.Empty;
         public string? Color { get; set; }
+        public int? DiscountPercent { get; set; }
     }
 }

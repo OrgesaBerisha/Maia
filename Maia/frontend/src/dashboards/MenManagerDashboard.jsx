@@ -41,7 +41,7 @@ const FALLBACK_MEN_CATS = [
   { id: 1, name: 'Tops' },               { id: 2, name: 'Bottoms' },
   { id: 3, name: 'Suits & Formalwear' }, { id: 4, name: 'Outerwear' },
   { id: 5, name: 'Swimwear' },           { id: 6, name: 'Footwear' },
-  { id: 7, name: 'Accessories' },
+  { id: 7, name: 'Accessories' },        { id: 8, name: 'Sale' },
 ]
 
 // ── Products Tab ───────────────────────────────────────────────────────────
@@ -167,7 +167,19 @@ function ProductsTab({ categories }) {
                   />
                 </td>
                 <td>{p.title}</td>
-                <td>€{Number(p.price).toFixed(2)}</td>
+                <td>
+                  {p.discountPercent > 0 ? (
+                    <span>
+                      <span style={{ textDecoration: 'line-through', color: '#999', marginRight: 4 }}>€{Number(p.price).toFixed(2)}</span>
+                      <span style={{ color: '#22a355' }}>€{(p.price * (1 - p.discountPercent / 100)).toFixed(2)}</span>
+                    </span>
+                  ) : (
+                    <span>€{Number(p.price).toFixed(2)}</span>
+                  )}
+                  {p.discountPercent > 0 && (
+                    <span className="db-badge db-badge--green" style={{ marginLeft: 6 }}>{p.discountPercent}% OFF</span>
+                  )}
+                </td>
                 <td>{p.menCategoryName || '—'}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>

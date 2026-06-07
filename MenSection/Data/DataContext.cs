@@ -30,7 +30,8 @@ namespace MenSection.Data
                 new MenCategory { Id = 4, Name = "Outerwear" },
                 new MenCategory { Id = 5, Name = "Swimwear" },
                 new MenCategory { Id = 6, Name = "Footwear" },
-                new MenCategory { Id = 7, Name = "Accessories" }
+                new MenCategory { Id = 7, Name = "Accessories" },
+                new MenCategory { Id = 8, Name = "Sale" }
             );
 
             modelBuilder.Entity<MenCards>().HasData(

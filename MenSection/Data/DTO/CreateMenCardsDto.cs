@@ -23,5 +23,8 @@ namespace MenSection.Data.DTO
 
         [StringLength(50, ErrorMessage = "Color cannot exceed 50 characters")]
         public string? Color { get; set; }
+
+        [Range(0, 90, ErrorMessage = "Discount must be between 0 and 90 percent")]
+        public int? DiscountPercent { get; set; }
     }
 }

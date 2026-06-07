@@ -1,4 +1,4 @@
-﻿using MenSection.Data;
+using MenSection.Data;
 using MenSection.Models;
 using MenSection.Data.DTO;
 using MenSection.Data.Interface;
@@ -29,12 +29,11 @@ namespace MenSection.Services
                 Title = p.Title,
                 ImageUrl = p.ImageUrl,
                 Price = p.Price,
-
                 MenCategoryId = p.MenCategoryId,
                 MenCategoryName = p.MenCategory?.Name,
-
                 Description = p.Description,
-                Color = p.Color
+                Color = p.Color,
+                DiscountPercent = p.DiscountPercent
             });
         }
 
@@ -52,14 +51,11 @@ namespace MenSection.Services
                 Title = p.Title,
                 ImageUrl = p.ImageUrl,
                 Price = p.Price,
-
                 MenCategoryId = p.MenCategoryId,
                 MenCategoryName = p.MenCategory?.Name,
-
-
-
                 Description = p.Description,
-                Color = p.Color
+                Color = p.Color,
+                DiscountPercent = p.DiscountPercent
             });
         }
 
@@ -73,7 +69,8 @@ namespace MenSection.Services
                 Price = dto.Price,
                 MenCategoryId = dto.MenCategoryId,
                 Description = dto.Description,
-                Color = dto.Color
+                Color = dto.Color,
+                DiscountPercent = dto.DiscountPercent
             };
 
             _context.MenCards.Add(card);
@@ -87,7 +84,8 @@ namespace MenSection.Services
                 Price = card.Price,
                 MenCategoryId = card.MenCategoryId,
                 Description = card.Description,
-                Color = card.Color
+                Color = card.Color,
+                DiscountPercent = card.DiscountPercent
             };
         }
 
@@ -104,6 +102,7 @@ namespace MenSection.Services
             entity.MenCategoryId = dto.MenCategoryId;
             entity.Description = dto.Description;
             entity.Color = dto.Color;
+            entity.DiscountPercent = dto.DiscountPercent;
 
             await _context.SaveChangesAsync();
 
@@ -115,7 +114,8 @@ namespace MenSection.Services
                 Price = entity.Price,
                 MenCategoryId = entity.MenCategoryId,
                 Description = entity.Description,
-                Color = entity.Color
+                Color = entity.Color,
+                DiscountPercent = entity.DiscountPercent
             };
         }
 
@@ -138,7 +138,6 @@ namespace MenSection.Services
             var data = await _context.MenCards
                 .Where(x => x.Title.ToLower().Contains(name.ToLower()))
                 .Include(x => x.MenCategory)
-
                 .ToListAsync();
 
             return data.Select(x => new MenCardsDto
@@ -147,12 +146,11 @@ namespace MenSection.Services
                 Title = x.Title,
                 ImageUrl = x.ImageUrl,
                 Price = x.Price,
-
                 MenCategoryId = x.MenCategoryId,
                 MenCategoryName = x.MenCategory?.Name,
-
-
-                Description = x.Description
+                Description = x.Description,
+                Color = x.Color,
+                DiscountPercent = x.DiscountPercent
             });
         }
 
@@ -161,7 +159,6 @@ namespace MenSection.Services
         {
             var query = _context.MenCards
                 .Include(x => x.MenCategory)
-
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
@@ -184,12 +181,11 @@ namespace MenSection.Services
                 Title = x.Title,
                 ImageUrl = x.ImageUrl,
                 Price = x.Price,
-
                 MenCategoryId = x.MenCategoryId,
                 MenCategoryName = x.MenCategory?.Name,
-
-
-                Description = x.Description
+                Description = x.Description,
+                Color = x.Color,
+                DiscountPercent = x.DiscountPercent
             });
         }
 
@@ -198,7 +194,6 @@ namespace MenSection.Services
         {
             var query = _context.MenCards
                 .Include(x => x.MenCategory)
-
                 .AsQueryable();
 
             query = sortBy switch
@@ -218,12 +213,11 @@ namespace MenSection.Services
                 Title = x.Title,
                 ImageUrl = x.ImageUrl,
                 Price = x.Price,
-
                 MenCategoryId = x.MenCategoryId,
                 MenCategoryName = x.MenCategory?.Name,
-
-
-                Description = x.Description
+                Description = x.Description,
+                Color = x.Color,
+                DiscountPercent = x.DiscountPercent
             });
         }
 
