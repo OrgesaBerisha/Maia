@@ -32,7 +32,10 @@ function useApi(fetcher, deps = []) {
   const load = useCallback(async () => {
     setL(true); setErr('')
     try { setData(await fetcher()) }
-    catch (e) { setErr(e?.response?.data?.message ?? 'Failed to load.') }
+    catch (e) {
+      if (e?.response?.status === 401) setErr('Session expired — please log out and log back in.')
+      else setErr(e?.response?.data?.message ?? 'Failed to load.')
+    }
     finally { setL(false) }
   }, deps)
 
@@ -72,11 +75,6 @@ function OverviewTab({ stats }) {
 // ── Customers Tab ──────────────────────────────────────────────────────────
 function CustomersTab() {
   const [q, setQ] = useState('')
-  const [modal, setModal] = useState(null)
-  const [selected, setSelected] = useState(null)
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '' })
-  const [saving, setSaving] = useState(false)
-  const [formErr, setFormErr] = useState('')
 
   const { data: users, loading, error, reload } = useApi(async () => {
     const r = await api.get('/users/customers')
@@ -86,25 +84,6 @@ function CustomersTab() {
   const filtered = users.filter(u =>
     !q || `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(q.toLowerCase())
   )
-
-  const openEdit = (u) => {
-    setSelected(u)
-    setForm({ firstName: u.firstName, lastName: u.lastName, email: u.email })
-    setFormErr(''); setModal('edit')
-  }
-
-  const save = async () => {
-    setSaving(true); setFormErr('')
-    try {
-      await api.put(`/users/${selected.userID}`, {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-      })
-      setModal(null); reload()
-    } catch (e) { setFormErr(e?.response?.data?.message ?? 'Save failed.') }
-    finally { setSaving(false) }
-  }
 
   const deleteUser = async (u) => {
     if (!confirm(`Delete customer ${u.firstName} ${u.lastName}?`)) return
@@ -136,7 +115,6 @@ function CustomersTab() {
                 <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
                     <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
                   </div>
                 </td>
@@ -145,37 +123,13 @@ function CustomersTab() {
           </tbody>
         </table>
       </div>
-
-      {modal === 'edit' && (
-        <Modal title="Edit Customer" onClose={() => setModal(null)}
-          actions={<>
-            <button className="db-btn db-btn--ghost" onClick={() => setModal(null)}>Cancel</button>
-            <button className="db-btn db-btn--primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-          </>}>
-          {formErr && <div className="db-error">{formErr}</div>}
-          <div className="db-form">
-            <div className="db-form-row">
-              <div className="db-field">
-                <label className="db-label">First Name</label>
-                <input className="db-input" value={form.firstName} onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))} />
-              </div>
-              <div className="db-field">
-                <label className="db-label">Last Name</label>
-                <input className="db-input" value={form.lastName} onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))} />
-              </div>
-            </div>
-            <div className="db-field">
-              <label className="db-label">Email</label>
-              <input className="db-input" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   )
 }
 
 // ── Staff Tab ──────────────────────────────────────────────────────────────
+const MANAGER_ROLES = ['WomenManager', 'MenManager', 'KidsManager', 'SalesManager']
+
 function StaffTab() {
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
@@ -194,7 +148,7 @@ function StaffTab() {
     return r.data
   }, [])
 
-  const staff = allUsers.filter(u => u.roleType !== 'Customer')
+  const staff = allUsers.filter(u => MANAGER_ROLES.includes(u.roleType))
   const filtered = staff.filter(u =>
     !q || `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(q.toLowerCase())
   )
@@ -307,7 +261,7 @@ function StaffTab() {
             <div className="db-field">
               <label className="db-label">Role</label>
               <select className="db-select" value={form.roleType} onChange={e => setForm(f => ({ ...f, roleType: e.target.value }))}>
-                {roles.filter(r => r.roleType !== 'Customer').map(r => (
+                {roles.filter(r => MANAGER_ROLES.includes(r.roleType)).map(r => (
                   <option key={r.roleID} value={r.roleType}>{r.roleType}</option>
                 ))}
               </select>
