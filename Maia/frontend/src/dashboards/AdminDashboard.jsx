@@ -217,7 +217,7 @@ function StaffTab() {
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
-                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive).then(reload).catch(e => alert(e?.response?.data?.message ?? 'Status update failed.'))}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive, { headers: { 'Content-Type': 'application/json' } }).then(reload).catch(e => alert(e?.response?.data?.message ?? 'Status update failed.'))}>
                       {u.isActive ? 'Disable' : 'Enable'}
                     </button>
                     <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
