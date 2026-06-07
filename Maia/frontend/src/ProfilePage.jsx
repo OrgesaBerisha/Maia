@@ -11,6 +11,14 @@ const MENU_ITEMS = [
   { label: 'NOTIFICATIONS', to: '/notifications' },
 ]
 
+const DASHBOARD_ROUTES = {
+  Admin:         '/dashboard/admin',
+  SalesManager:  '/dashboard/sales',
+  WomenManager:  '/dashboard/women',
+  MenManager:    '/dashboard/men',
+  KidsManager:   '/dashboard/kids',
+}
+
 const IMAGES = [
   'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80',
   'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80',
@@ -69,6 +77,11 @@ function ProfilePage() {
               {item.label}
             </Link>
           ))}
+          {DASHBOARD_ROUTES[user?.role] && (
+            <Link to={DASHBOARD_ROUTES[user.role]} className="profile-menu-item profile-dashboard-btn">
+              DASHBOARD
+            </Link>
+          )}
           <button className="profile-menu-item profile-logout-btn" onClick={handleLogout}>
             LOG OUT
           </button>

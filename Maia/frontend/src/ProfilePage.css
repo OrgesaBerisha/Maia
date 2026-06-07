@@ -96,6 +96,10 @@
   color: #9b2020;
 }
 
+.profile-dashboard-btn {
+  color: #2a6e4a;
+}
+
 .profile-images { position: relative; height: 520px; }
 
 .profile-img {
