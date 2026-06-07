@@ -80,12 +80,14 @@ function CheckoutPage() {
     try {
       const shippingAddress = `${form.address}, ${form.city} ${form.postalCode}, ${form.country}`
       await api.post('/Order', {
-        customerName: form.fullName,
+        fullName:       form.fullName,
+        email:          form.email,
+        phone:          form.phone,
+        address:        form.address,
+        city:           form.city,
+        postalCode:     form.postalCode,
+        country:        form.country,
         shippingAddress,
-        items: bag.map(item => ({
-          productId: item.id,
-          quantity:  1,
-        })),
       })
     } catch (err) {
       const msg = err?.response?.data?.message ?? err?.response?.data ?? err.message

@@ -4,8 +4,13 @@ namespace OrderService.Data.DTO
 {
     public class CreateOrderDto
     {
-        [Required(ErrorMessage = "Shipping address is required")]
-        [StringLength(300, MinimumLength = 5, ErrorMessage = "Shipping address must be between 5 and 300 characters")]
+        public string FullName       { get; set; } = string.Empty;
+        public string Email          { get; set; } = string.Empty;
+        public string Phone          { get; set; } = string.Empty;
+        public string Address        { get; set; } = string.Empty;
+        public string City           { get; set; } = string.Empty;
+        public string PostalCode     { get; set; } = string.Empty;
+        public string Country        { get; set; } = string.Empty;
         public string ShippingAddress { get; set; } = string.Empty;
     }
 }

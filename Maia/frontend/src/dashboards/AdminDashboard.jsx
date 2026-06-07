@@ -476,7 +476,7 @@ function ProductsTab({ section }) {
 // ── Orders Tab ─────────────────────────────────────────────────────────────
 function OrdersTab() {
   const [q, setQ] = useState('')
-  const { data: orders, loading, error } = useApi(async () => {
+  const { data: orders, loading, error, reload } = useApi(async () => {
     const r = await api.get('/Order/all')
     return Array.isArray(r.data) ? r.data : []
   }, [])
@@ -485,41 +485,78 @@ function OrdersTab() {
     !q || String(o.id).includes(q) || String(o.userId).includes(q)
   )
 
+  const updateStatus = async (id, status) => {
+    try {
+      await api.patch(`/Order/${id}/status`, status, { headers: { 'Content-Type': 'application/json' } })
+      reload()
+    } catch { alert('Failed to update status.') }
+  }
+
+  const statusColor = s => ({ Pending: 'db-badge--warm', Processing: 'db-badge--blue', Shipped: 'db-badge--green', Delivered: 'db-badge--green', Cancelled: 'db-badge--red' }[s] ?? 'db-badge--grey')
+
   return (
     <div className="db-section">
       <div className="db-toolbar">
-        <input className="db-search" placeholder="Search by order or user ID…" value={q} onChange={e => setQ(e.target.value)} />
+        <input className="db-search" placeholder="Search by order ID or user ID…" value={q} onChange={e => setQ(e.target.value)} />
         <span className="db-stat-label" style={{ flexShrink: 0 }}>{filtered.length} orders</span>
       </div>
       {error && <div className="db-error">{error}</div>}
       <div className="db-table-wrap">
         <table className="db-table">
           <thead><tr>
-            <th>ORDER ID</th><th>USER ID</th><th>ITEMS</th><th>TOTAL</th><th>DATE</th>
+            <th>ORDER</th><th>CUSTOMER</th><th>DELIVERY</th><th>PRODUCTS</th><th>TOTAL</th><th>STATUS</th><th>DATE</th>
           </tr></thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="db-empty">Loading…</td></tr>
+              <tr><td colSpan={7} className="db-empty">Loading…</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={5} className="db-empty">No orders yet.</td></tr>
+              <tr><td colSpan={7} className="db-empty">No orders yet.</td></tr>
             ) : filtered.map(o => (
               <tr key={o.id}>
-                <td>#{o.id}</td>
-                <td>{o.userId}</td>
+                <td><strong>#{o.id}</strong></td>
                 <td>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: 12 }}>
+                    <div style={{ fontWeight: 600 }}>{o.fullName || '—'}</div>
+                    <div style={{ color: '#888' }}>{o.email}</div>
+                    <div style={{ color: '#888' }}>{o.phone}</div>
+                  </div>
+                </td>
+                <td>
+                  <div style={{ fontSize: 12 }}>
+                    <div>{o.address}</div>
+                    <div>{o.city}{o.postalCode ? `, ${o.postalCode}` : ''}</div>
+                    <div>{o.country}</div>
+                  </div>
+                </td>
+                <td>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {o.items?.map((item, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        {item.productImage && (
-                          <img src={item.productImage} alt={item.productName} style={{ width: 32, height: 32, objectFit: 'cover', borderRadius: 4 }} />
+                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {item.imageUrl && (
+                          <img src={item.imageUrl} alt={item.productName}
+                            style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />
                         )}
-                        <span>{item.productName} × {item.quantity}</span>
+                        <div style={{ fontSize: 12 }}>
+                          <div style={{ fontWeight: 600 }}>{item.productName}</div>
+                          <div style={{ color: '#888' }}>€{Number(item.price).toFixed(2)} × {item.quantity}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </td>
-                <td>€{Number(o.totalPrice).toFixed(2)}</td>
-                <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                <td><strong>€{Number(o.totalPrice).toFixed(2)}</strong></td>
+                <td>
+                  <select className="db-select" value={o.status}
+                    onChange={e => updateStatus(o.id, e.target.value)}
+                    style={{ fontSize: 12, padding: '4px 6px' }}>
+                    <option>Pending</option>
+                    <option>Processing</option>
+                    <option>Shipped</option>
+                    <option>Delivered</option>
+                    <option>Cancelled</option>
+                  </select>
+                </td>
+                <td style={{ whiteSpace: 'nowrap' }}>{new Date(o.createdAt).toLocaleDateString()}</td>
               </tr>
             ))}
           </tbody>
