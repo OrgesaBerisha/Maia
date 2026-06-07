@@ -134,9 +134,11 @@ function CustomersTab() {
                 <td>{u.firstName} {u.lastName}</td>
                 <td>{u.email}</td>
                 <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
-                <td className="db-actions-cell">
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
-                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
+                    <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -258,12 +260,14 @@ function StaffTab() {
                 <td>{u.email}</td>
                 <td><span className={`db-badge ${ROLE_COLORS[u.roleType] ?? 'db-badge--grey'}`}>{u.roleType ?? '—'}</span></td>
                 <td><span className={`db-badge ${u.isActive ? 'db-badge--green' : 'db-badge--red'}`}>{u.isActive ? 'Active' : 'Disabled'}</span></td>
-                <td className="db-actions-cell">
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive).then(reload).catch(e => alert(e?.response?.data?.message ?? 'Status update failed.'))}>
-                    {u.isActive ? 'Disable' : 'Enable'}
-                  </button>
-                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(u)}>Edit</button>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => api.put(`/users/${u.userID}/status`, !u.isActive).then(reload).catch(e => alert(e?.response?.data?.message ?? 'Status update failed.'))}>
+                      {u.isActive ? 'Disable' : 'Enable'}
+                    </button>
+                    <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteUser(u)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -451,9 +455,11 @@ function ProductsTab({ section }) {
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
                 <td>{getCategoryName(p)}</td>
-                <td className="db-actions-cell">
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
-                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openEdit(p)}>Edit</button>
+                    <button className="db-btn db-btn--danger db-btn--sm" onClick={() => del(p)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -581,8 +587,10 @@ function SalesTab() {
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
                 <td>{p.discountPercent ? <span className="db-badge db-badge--green">{p.discountPercent}% off</span> : '—'}</td>
-                <td className="db-actions-cell">
-                  <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openSale(p)}>Set Sale</button>
+                <td>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openSale(p)}>Set Sale</button>
+                  </div>
                 </td>
               </tr>
             ))}
