@@ -1,10 +1,14 @@
+using Maia.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace WomensSection.Migrations
 {
-    /// <inheritdoc />
+    [DbContext(typeof(DataContext))]
+    [Migration("20260606000001_AddDiscountAndSaleItems")]
     public partial class AddDiscountAndSaleItems : Migration
     {
         /// <inheritdoc />
