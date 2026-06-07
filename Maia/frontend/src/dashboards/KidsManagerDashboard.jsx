@@ -40,8 +40,10 @@ function Modal({ title, onClose, children, actions }) {
 }
 
 const FALLBACK_KIDS_CATS = [
-  { id: 1, name: 'T-Shirts' }, { id: 2, name: 'Dresses' },
-  { id: 3, name: 'Jeans' },    { id: 4, name: 'Shorts' },
+  { id: 1, name: 'Baby' },       { id: 2, name: 'Girls' },
+  { id: 3, name: 'Boys' },       { id: 4, name: 'Sleepwear' },
+  { id: 5, name: 'Swimwear' },   { id: 6, name: 'Footwear' },
+  { id: 7, name: 'Accessories' },{ id: 8, name: 'Sale' },
 ]
 const FALLBACK_KIDS_TYPES = [
   { id: 1, name: 'Boys' }, { id: 2, name: 'Girls' },
