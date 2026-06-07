@@ -136,27 +136,29 @@ namespace Auth.Controllers
         // ================= HELPER =================
         private void AppendAuthCookies(string accessToken, string refreshToken)
         {
-            bool isDev = _env.IsDevelopment();
-            var cookieOptions = new CookieOptions
+            // Use Secure=false and SameSite=Lax so cookies work over HTTP in local dev.
+            // The auth service runs without HTTPS in development, so Secure=true would
+            // cause the browser to silently drop the cookie on every HTTP request.
+            var shared = new CookieOptions
             {
                 HttpOnly = true,
-                Secure   = !isDev,
-                SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None,
+                Secure   = Request.IsHttps,
+                SameSite = Request.IsHttps ? SameSiteMode.None : SameSiteMode.Lax,
             };
 
             Response.Cookies.Append("jwt", accessToken, new CookieOptions
             {
-                HttpOnly = cookieOptions.HttpOnly,
-                Secure   = cookieOptions.Secure,
-                SameSite = cookieOptions.SameSite,
+                HttpOnly = shared.HttpOnly,
+                Secure   = shared.Secure,
+                SameSite = shared.SameSite,
                 Expires  = DateTime.UtcNow.AddMinutes(30)
             });
 
             Response.Cookies.Append("refresh", refreshToken, new CookieOptions
             {
-                HttpOnly = cookieOptions.HttpOnly,
-                Secure   = cookieOptions.Secure,
-                SameSite = cookieOptions.SameSite,
+                HttpOnly = shared.HttpOnly,
+                Secure   = shared.Secure,
+                SameSite = shared.SameSite,
                 Expires  = DateTime.UtcNow.AddDays(7)
             });
         }
