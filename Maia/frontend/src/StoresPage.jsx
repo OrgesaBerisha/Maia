@@ -5,32 +5,32 @@ import './StoresPage.css'
 
 const STORES = [
   {
-    city: 'MILAN',
-    address: 'Via della Spiga 12',
-    postalCode: '20121 Milan, Italy',
-    hours: 'Mon–Sat  10:00–20:00   ·   Sun  11:00–18:00',
-    phone: '+39 02 7600 1234',
+    city: 'PRISHTINË',
+    address: 'Bulevardi Nënë Tereza 15',
+    postalCode: '10000 Prishtinë, Kosovë',
+    hours: 'Hën–Sht  09:00–20:00   ·   Die  10:00–18:00',
+    phone: '+383 38 200 300',
   },
   {
-    city: 'PARIS',
-    address: '8 Rue du Faubourg Saint-Honoré',
-    postalCode: '75008 Paris, France',
-    hours: 'Mon–Sat  10:00–20:00   ·   Sun  12:00–18:00',
-    phone: '+33 1 42 68 00 00',
+    city: 'PRIZREN',
+    address: 'Sheshi Shadërvan 4',
+    postalCode: '20000 Prizren, Kosovë',
+    hours: 'Hën–Sht  09:00–20:00   ·   Die  10:00–18:00',
+    phone: '+383 29 230 100',
   },
   {
-    city: 'NEW YORK',
-    address: '680 Madison Avenue',
-    postalCode: 'NY 10065 New York, USA',
-    hours: 'Mon–Sat  10:00–20:00   ·   Sun  12:00–18:00',
-    phone: '+1 212 940 0000',
+    city: 'GJAKOVË',
+    address: 'Rruga UÇK 22',
+    postalCode: '50000 Gjakovë, Kosovë',
+    hours: 'Hën–Sht  09:00–20:00   ·   Die  10:00–17:00',
+    phone: '+383 390 320 200',
   },
   {
-    city: 'LONDON',
-    address: '175 New Bond Street',
-    postalCode: 'W1S 4RQ London, UK',
-    hours: 'Mon–Sat  10:00–19:00   ·   Sun  12:00–17:00',
-    phone: '+44 20 7495 0000',
+    city: 'GJILAN',
+    address: 'Bulevardi Bill Clinton 8',
+    postalCode: '60000 Gjilan, Kosovë',
+    hours: 'Hën–Sht  09:00–20:00   ·   Die  10:00–17:00',
+    phone: '+383 280 320 400',
   },
 ]
 
@@ -63,7 +63,7 @@ function StoresPage() {
 
       <main className="stores-main">
         <h1 className="stores-heading">OUR STORES</h1>
-        <p className="stores-sub">Visit us in one of our boutiques around the world.</p>
+        <p className="stores-sub">Vizitoni njërin nga dyqanet tona në Kosovë.</p>
 
         <div className="stores-grid">
           {STORES.map(store => (
