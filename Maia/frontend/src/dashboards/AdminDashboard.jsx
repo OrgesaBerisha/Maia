@@ -474,12 +474,13 @@ function ProductsTab({ section }) {
 
 // ── Sales Tab ──────────────────────────────────────────────────────────────
 function SalesTab() {
-  const [section, setSection] = useState('kids')
+  const [section, setSection] = useState('women')
   const [q, setQ] = useState('')
   const [modal, setModal] = useState(null)
   const [selected, setSelected] = useState(null)
   const [discount, setDiscount] = useState('')
   const [saving, setSaving] = useState(false)
+  const [saveErr, setSaveErr] = useState('')
 
   const endpoint = { women: '/CardsWomen', men: '/MenCards', kids: '/KidsCards' }[section]
 
@@ -488,29 +489,65 @@ function SalesTab() {
     return r.data
   }, [section])
 
-  const filtered = products.filter(p =>
-    !q || p.title?.toLowerCase().includes(q.toLowerCase())
-  )
+  const filtered = products
+    .filter(p => !q || p.title?.toLowerCase().includes(q.toLowerCase()))
+    .sort((a, b) => ((b.discountPercent || 0) > 0 ? 1 : 0) - ((a.discountPercent || 0) > 0 ? 1 : 0))
 
   const openSale = (p) => {
     setSelected(p)
     setDiscount(p.discountPercent ?? '')
+    setSaveErr('')
     setModal('sale')
   }
 
-  const applyDiscount = async () => {
-    setSaving(true)
+  const applySale = async () => {
+    setSaving(true); setSaveErr('')
+    const pct = parseInt(discount) || 0
     try {
-      if (section === 'kids') {
-        await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: parseInt(discount) || 0 })
+      if (section === 'women') {
+        await api.patch(`/CardsWomen/${selected.id}/sale`, { discountPercent: pct })
+      } else if (section === 'kids') {
+        await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: pct })
       } else {
-        const newPrice = parseFloat(selected.originalPrice ?? selected.price) * (1 - (parseInt(discount) || 0) / 100)
-        await api.put(`${endpoint}/${selected.id}`, { ...selected, price: parseFloat(newPrice.toFixed(2)) })
+        await api.put(`/MenCards/${selected.id}`, {
+          title: selected.title,
+          imageUrl: selected.imageUrl || null,
+          price: selected.price,
+          menCategoryId: selected.menCategoryId,
+          description: selected.description || '',
+          color: selected.color || null,
+          discountPercent: pct,
+        })
       }
       setModal(null); reload()
-    } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
+    } catch (e) { setSaveErr(e?.response?.data?.message ?? 'Failed to apply sale.') }
     finally { setSaving(false) }
   }
+
+  const removeSale = async (p) => {
+    try {
+      if (section === 'women') {
+        await api.patch(`/CardsWomen/${p.id}/sale`, { discountPercent: 0 })
+      } else if (section === 'kids') {
+        await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
+      } else {
+        await api.put(`/MenCards/${p.id}`, {
+          title: p.title,
+          imageUrl: p.imageUrl || null,
+          price: p.price,
+          menCategoryId: p.menCategoryId,
+          description: p.description || '',
+          color: p.color || null,
+          discountPercent: 0,
+        })
+      }
+      reload()
+    } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
+  }
+
+  const discountedPrice = selected
+    ? (parseFloat(selected.price) * (1 - (parseInt(discount) || 0) / 100)).toFixed(2)
+    : ''
 
   return (
     <div className="db-section">
@@ -528,7 +565,7 @@ function SalesTab() {
       <div className="db-table-wrap">
         <table className="db-table">
           <thead><tr>
-            <th></th><th>TITLE</th><th>PRICE</th><th>DISCOUNT</th><th>ACTIONS</th>
+            <th></th><th>TITLE</th><th>ORIGINAL PRICE</th><th>SALE</th><th>ACTIONS</th>
           </tr></thead>
           <tbody>
             {loading ? (
@@ -540,10 +577,19 @@ function SalesTab() {
                 <td><img className="db-img-preview" src={p.imageUrl || 'https://placehold.co/56x56?text=No+Img'} alt={p.title} /></td>
                 <td>{p.title}</td>
                 <td>€{Number(p.price).toFixed(2)}</td>
-                <td>{p.discountPercent ? <span className="db-badge db-badge--green">{p.discountPercent}% off</span> : '—'}</td>
+                <td>
+                  {p.discountPercent > 0
+                    ? <span className="db-badge db-badge--green">{p.discountPercent}% OFF</span>
+                    : <span className="db-badge db-badge--grey">No sale</span>}
+                </td>
                 <td>
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => openSale(p)}>Set Sale</button>
+                    <button className="db-btn db-btn--primary db-btn--sm" onClick={() => openSale(p)}>
+                      {p.discountPercent > 0 ? 'Edit Sale' : 'Set Sale'}
+                    </button>
+                    {p.discountPercent > 0 && (
+                      <button className="db-btn db-btn--ghost db-btn--sm" onClick={() => removeSale(p)}>Remove</button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -553,21 +599,30 @@ function SalesTab() {
       </div>
 
       {modal === 'sale' && (
-        <Modal title="Set Discount" onClose={() => setModal(null)}
+        <Modal
+          title={selected?.discountPercent > 0 ? 'Edit Sale Price' : 'Apply Sale Price'}
+          onClose={() => setModal(null)}
           actions={<>
             <button className="db-btn db-btn--ghost" onClick={() => setModal(null)}>Cancel</button>
-            <button className="db-btn db-btn--primary" onClick={applyDiscount} disabled={saving}>{saving ? 'Applying…' : 'Apply'}</button>
+            <button className="db-btn db-btn--primary" onClick={applySale} disabled={saving}>{saving ? 'Applying…' : 'Apply Sale'}</button>
           </>}>
+          {saveErr && <div className="db-error">{saveErr}</div>}
           <div className="db-form">
             <div className="db-field">
               <label className="db-label">Product</label>
               <input className="db-input" value={selected?.title} disabled />
             </div>
             <div className="db-field">
-              <label className="db-label">Discount % (0 = remove sale)</label>
-              <input className="db-input" type="number" min="0" max="100" value={discount}
+              <label className="db-label">Discount Percentage</label>
+              <input className="db-input" type="number" min="0" max="90" value={discount}
                 onChange={e => setDiscount(e.target.value)} placeholder="e.g. 20" />
             </div>
+            {discount > 0 && (
+              <div className="db-field">
+                <label className="db-label">Sale Price Preview</label>
+                <input className="db-input" value={`€${discountedPrice}`} disabled />
+              </div>
+            )}
           </div>
         </Modal>
       )}
