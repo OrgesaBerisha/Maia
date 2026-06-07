@@ -163,8 +163,8 @@ function SearchPage() {
 
       <header className="search-header">
         <div className="search-header-left">
-          <button className="collection-menu-btn" onClick={() => navigate('/shop')} aria-label="Collection menu">
-            <span /><span /><span />
+          <button className="collection-menu-btn" onClick={() => navigate(`/shop?section=${section}`)} aria-label="Go back">
+            ←
           </button>
           <nav className="section-tabs">
             {SECTIONS.map(sec => (

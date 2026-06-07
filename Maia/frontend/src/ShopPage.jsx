@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import BottomNav from './BottomNav.jsx'
 import SiteLogo from './SiteLogo.jsx'
 import './ShopPage.css'
@@ -20,7 +20,8 @@ const FOOTER_CATS = {
 const SECTION_KEY = { WOMAN: 'WOMAN', MAN: 'MAN', KIDS: 'KIDS' }
 
 function ShopPage() {
-  const [activeSection, setActiveSection] = useState('WOMAN')
+  const [searchParams] = useSearchParams()
+  const [activeSection, setActiveSection] = useState(searchParams.get('section') ?? 'WOMAN')
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
 
