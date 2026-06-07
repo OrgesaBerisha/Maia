@@ -260,7 +260,7 @@ function SearchPage() {
                   {product.color && (
                     <span className="product-color-dot" style={{ background: COLOR_HEX[product.color] ?? '#ccc' }} title={product.color} />
                   )}
-                  {isLoggedIn && product.source === 'WOMAN' && (
+                  {isLoggedIn && (
                     <button
                       className={`product-wishlist${isWishlisted(product.id) ? ' product-wishlist--active' : ''}`}
                       aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
