@@ -504,7 +504,7 @@ function OrdersTab() {
       <div className="db-table-wrap">
         <table className="db-table">
           <thead><tr>
-            <th>ORDER</th><th>CUSTOMER</th><th>DELIVERY</th><th>PRODUCTS</th><th>TOTAL</th><th>STATUS</th><th>DATE</th>
+            <th>ORDER</th><th>CUSTOMER</th><th>DELIVERY</th><th>PRODUCTS</th><th>TOTAL</th><th>PAYMENT</th><th>STATUS</th><th>DATE</th>
           </tr></thead>
           <tbody>
             {loading ? (
@@ -545,6 +545,11 @@ function OrdersTab() {
                   </div>
                 </td>
                 <td><strong>€{Number(o.totalPrice).toFixed(2)}</strong></td>
+                <td>
+                  <span className={`db-badge ${o.paymentMethod === 'card' ? 'db-badge--blue' : 'db-badge--grey'}`}>
+                    {o.paymentMethod === 'card' ? '💳 Card' : '💵 Cash'}
+                  </span>
+                </td>
                 <td>
                   <select className="db-select" value={o.status}
                     onChange={e => updateStatus(o.id, e.target.value)}

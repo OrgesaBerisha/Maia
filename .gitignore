@@ -5,6 +5,7 @@
 
 # Secrets
 .env
+OrderService/appsettings.json
 
 # User-specific files
 *.rsuser

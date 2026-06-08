@@ -5,7 +5,11 @@ import { useAuth } from './AuthContext.jsx'
 import BottomNav from './BottomNav.jsx'
 import SiteLogo from './SiteLogo.jsx'
 import api from './api/axios.js'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import './CheckoutPage.css'
+
+const stripePromise = loadStripe('pk_test_51Tg2UTPBPDUscnmcwtrhNL4ouBabMh2BndZ2KqRgrIvEXAbaklr9a22eetlbsSSjFBjSCmY7IyteCpM9UiCvpXA700djlbmtYY')
 
 const SHIPPING_COST = 4.99
 
@@ -32,7 +36,9 @@ function Field({ label, name, type = 'text', value, onChange, required }) {
   )
 }
 
-function CheckoutPage() {
+function CheckoutForm() {
+  const stripe = useStripe()
+  const elements = useElements()
   const { bag, removeFromBag } = useCart()
   const { user } = useAuth()
 
@@ -45,6 +51,7 @@ function CheckoutPage() {
     fullName,
     email: user?.email ?? '',
   })
+  const [paymentMethod, setPaymentMethod] = useState('cash')
   const [errors, setErrors]       = useState({})
   const [submitting, setSubmit]   = useState(false)
   const [confirmed, setConfirmed] = useState(false)
@@ -77,6 +84,29 @@ function CheckoutPage() {
 
     setSubmit(true)
     setOrderError('')
+
+    if (paymentMethod === 'card') {
+      try {
+        const { data } = await api.post('/payment/create-intent', { amount: total })
+        const cardElement = elements.getElement(CardElement)
+        const result = await stripe.confirmCardPayment(data.clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name: form.fullName, email: form.email },
+          },
+        })
+        if (result.error) {
+          setOrderError(result.error.message)
+          setSubmit(false)
+          return
+        }
+      } catch (err) {
+        setOrderError('Payment failed. Please try again.')
+        setSubmit(false)
+        return
+      }
+    }
+
     try {
       const shippingAddress = `${form.address}, ${form.city} ${form.postalCode}, ${form.country}`
       await api.post('/Order', {
@@ -88,6 +118,7 @@ function CheckoutPage() {
         postalCode:     form.postalCode,
         country:        form.country,
         shippingAddress,
+        paymentMethod,
       })
     } catch (err) {
       const msg = err?.response?.data?.message ?? err?.response?.data ?? err.message
@@ -178,6 +209,29 @@ function CheckoutPage() {
             <Field label="Country"     name="country"    value={form.country}    onChange={handleChange} required />
           </div>
 
+          <h3 className="form-section-title" style={{ marginTop: 24 }}>PAYMENT METHOD</h3>
+          <div className="payment-methods">
+            <label className={`payment-option${paymentMethod === 'cash' ? ' payment-option--active' : ''}`}>
+              <input type="radio" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
+              <span>💵 Cash on Delivery</span>
+            </label>
+            <label className={`payment-option${paymentMethod === 'card' ? ' payment-option--active' : ''}`}>
+              <input type="radio" value="card" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
+              <span>💳 Pay by Card</span>
+            </label>
+          </div>
+
+          {paymentMethod === 'card' && (
+            <div className="stripe-card-wrap">
+              <CardElement options={{
+                style: {
+                  base: { fontSize: '16px', color: '#1a1208', fontFamily: 'inherit', '::placeholder': { color: '#aaa' } },
+                  invalid: { color: '#e63946' },
+                }
+              }} />
+            </div>
+          )}
+
           {Object.values(errors).some(Boolean) && (
             <p className="form-error">Please fill in all required fields.</p>
           )}
@@ -188,9 +242,11 @@ function CheckoutPage() {
           <button
             type="submit"
             className={`checkout-submit${submitting ? ' checkout-submit--loading' : ''}`}
-            disabled={submitting}
+            disabled={submitting || (paymentMethod === 'card' && !stripe)}
           >
-            {submitting ? 'PLACING ORDER...' : `PLACE ORDER — ${total.toFixed(2)} EUR`}
+            {submitting
+              ? (paymentMethod === 'card' ? 'PROCESSING PAYMENT...' : 'PLACING ORDER...')
+              : `PLACE ORDER — ${total.toFixed(2)} EUR`}
           </button>
         </form>
 
@@ -230,4 +286,11 @@ function CheckoutPage() {
   )
 }
 
-export default CheckoutPage
+export default function CheckoutPage() {
+  return (
+    <Elements stripe={stripePromise}>
+      <CheckoutForm />
+    </Elements>
+  )
+}
+

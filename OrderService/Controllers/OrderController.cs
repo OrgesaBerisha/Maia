@@ -39,15 +39,16 @@ namespace OrderService.Controllers
 
             var order = new Order
             {
-                UserId      = userId,
-                Status      = "Pending",
-                FullName    = dto.FullName,
-                Email       = dto.Email,
-                Phone       = dto.Phone,
-                Address     = dto.Address,
-                City        = dto.City,
-                PostalCode  = dto.PostalCode,
-                Country     = dto.Country,
+                UserId        = userId,
+                Status        = "Pending",
+                FullName      = dto.FullName,
+                Email         = dto.Email,
+                Phone         = dto.Phone,
+                Address       = dto.Address,
+                City          = dto.City,
+                PostalCode    = dto.PostalCode,
+                Country       = dto.Country,
+                PaymentMethod = dto.PaymentMethod,
                 OrderItems  = cart.CartItems.Select(i => new OrderItem
                 {
                     ProductId = i.ProductId,
@@ -135,6 +136,7 @@ namespace OrderService.Controllers
                 o.City,
                 o.PostalCode,
                 o.Country,
+                o.PaymentMethod,
                 o.TotalPrice,
                 o.Status,
                 o.CreatedAt,

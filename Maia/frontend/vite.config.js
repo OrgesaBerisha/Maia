@@ -46,6 +46,9 @@ export default defineConfig({
       // Settings service
       '/api/settings': { target: 'http://localhost:5187', changeOrigin: true, secure: false },
 
+      // Payment
+      '/api/payment': { target: 'http://localhost:5200', changeOrigin: true, secure: false },
+
       // Maia main backend — catch-all for any remaining /api routes
       '/api': { target: 'http://localhost:5293', changeOrigin: true, secure: false },
     },

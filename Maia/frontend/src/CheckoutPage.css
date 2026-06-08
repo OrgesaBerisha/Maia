@@ -125,3 +125,39 @@
 }
 
 .confirmed-btn:hover { background: #3a2214; }
+
+.payment-methods {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.payment-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border: 1.5px solid #e0d8cf;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.payment-option input { display: none; }
+
+.payment-option--active {
+  border-color: #1a1208;
+  background: #faf8f5;
+  font-weight: 600;
+}
+
+.stripe-card-wrap {
+  border: 1.5px solid #e0d8cf;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  background: #faf8f5;
+}
