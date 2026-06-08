@@ -9,7 +9,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import './CheckoutPage.css'
 
-const stripePromise = loadStripe('pk_test_51Tg2UTPBPDUscnmcwtrhNL4ouBabMh2BndZ2KqRgrIvEXAbaklr9a22eetlbsSSjFBjSCmY7IyteCpM9UiCvpXA700djlbmtYY')
+const stripePromise = loadStripe('pk_test_51TgBG5HmjGOrfE76nrrnXW6zwpLyGVIpbUcYU7c0REaYv9jlibq0krf7habEF97pyb0R1kPaU1OCtpXLz2V1fX2z0028MxmTmC')
 
 const SHIPPING_COST = 4.99
 
