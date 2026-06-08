@@ -1,5 +1,6 @@
 using ClosedXML.Excel;
 using CsvHelper;
+using CsvHelper.Configuration;
 using KidsSection.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -97,5 +98,85 @@ public class ExportController : ControllerBase
             }).ToListAsync();
 
         return Ok(products);
+    }
+
+    [HttpPost("kids-products/import/csv")]
+    public async Task<IActionResult> ImportCsv(IFormFile file)
+    {
+        if (file == null || file.Length == 0) return BadRequest("No file provided.");
+        var categories = await _context.KidsCategories.ToListAsync();
+        var types = await _context.KidsProductTypes.ToListAsync();
+        int imported = 0;
+
+        using var reader = new StreamReader(file.OpenReadStream());
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture) { HeaderValidated = null, MissingFieldFound = null };
+        using var csv = new CsvReader(reader, config);
+        var records = csv.GetRecords<dynamic>().ToList();
+
+        foreach (var r in records)
+        {
+            var dict = (IDictionary<string, object>)r;
+            string Val(string k) => dict.ContainsKey(k) ? dict[k]?.ToString() ?? "" : "";
+            var title = Val("Title");
+            if (string.IsNullOrWhiteSpace(title)) continue;
+            var cat = categories.FirstOrDefault(c => c.Name.Equals(Val("Category"), StringComparison.OrdinalIgnoreCase));
+            var typ = types.FirstOrDefault(t => t.Name.Equals(Val("ProductType"), StringComparison.OrdinalIgnoreCase)) ?? types.First();
+            if (cat == null) continue;
+            decimal.TryParse(Val("Price"), NumberStyles.Any, CultureInfo.InvariantCulture, out var price);
+
+            _context.KidsCards.Add(new KidsCards
+            {
+                Title = title,
+                Price = price,
+                KidsCategoryId = cat.Id,
+                KidsProductTypeId = typ.Id,
+                Description = Val("Description"),
+                ImageUrl = Val("ImageUrl")
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
+    }
+
+    [HttpPost("kids-products/import/excel")]
+    public async Task<IActionResult> ImportExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0) return BadRequest("No file provided.");
+        var categories = await _context.KidsCategories.ToListAsync();
+        var types = await _context.KidsProductTypes.ToListAsync();
+        int imported = 0;
+
+        using var stream = new MemoryStream();
+        await file.CopyToAsync(stream);
+        using var workbook = new XLWorkbook(stream);
+        var sheet = workbook.Worksheets.First();
+        var headers = sheet.Row(1).CellsUsed().Select(c => c.Value.ToString()).ToList();
+
+        for (int row = 2; row <= sheet.LastRowUsed()?.RowNumber(); row++)
+        {
+            string Get(string col) { var idx = headers.IndexOf(col); return idx >= 0 ? sheet.Cell(row, idx + 1).Value.ToString() : ""; }
+            var title = Get("Title");
+            if (string.IsNullOrWhiteSpace(title)) continue;
+            var cat = categories.FirstOrDefault(c => c.Name.Equals(Get("Category"), StringComparison.OrdinalIgnoreCase));
+            var typ = types.FirstOrDefault(t => t.Name.Equals(Get("ProductType"), StringComparison.OrdinalIgnoreCase)) ?? types.First();
+            if (cat == null) continue;
+            decimal.TryParse(Get("Price"), NumberStyles.Any, CultureInfo.InvariantCulture, out var price);
+
+            _context.KidsCards.Add(new KidsCards
+            {
+                Title = title,
+                Price = price,
+                KidsCategoryId = cat.Id,
+                KidsProductTypeId = typ.Id,
+                Description = Get("Description"),
+                ImageUrl = Get("ImageUrl")
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
     }
 }
