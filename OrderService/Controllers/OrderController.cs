@@ -34,8 +34,36 @@ namespace OrderService.Controllers
                 .Include(c => c.CartItems)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            if (cart == null || !cart.CartItems.Any())
+            List<OrderItem> orderItems;
+
+            if (dto.Items != null && dto.Items.Any())
+            {
+                orderItems = dto.Items.Select(i => new OrderItem
+                {
+                    ProductId     = i.ProductId,
+                    ProductSource = i.ProductSource,
+                    ProductName   = i.ProductName,
+                    ImageUrl      = i.ImageUrl,
+                    Price         = i.Price,
+                    Quantity      = i.Quantity
+                }).ToList();
+            }
+            else if (cart != null && cart.CartItems.Any())
+            {
+                orderItems = cart.CartItems.Select(i => new OrderItem
+                {
+                    ProductId     = i.ProductId,
+                    ProductSource = i.ProductSource,
+                    ProductName   = i.ProductName,
+                    ImageUrl      = i.ImageUrl,
+                    Price         = i.Price,
+                    Quantity      = i.Quantity
+                }).ToList();
+            }
+            else
+            {
                 return BadRequest("Cart is empty");
+            }
 
             var order = new Order
             {
@@ -49,21 +77,13 @@ namespace OrderService.Controllers
                 PostalCode    = dto.PostalCode,
                 Country       = dto.Country,
                 PaymentMethod = dto.PaymentMethod,
-                OrderItems  = cart.CartItems.Select(i => new OrderItem
-                {
-                    ProductId = i.ProductId,
-                    ProductSource = i.ProductSource,
-                    ProductName = i.ProductName,
-                    ImageUrl = i.ImageUrl,
-                    Price = i.Price,
-                    Quantity = i.Quantity
-                }).ToList()
+                OrderItems    = orderItems
             };
 
             order.TotalPrice = order.OrderItems.Sum(i => i.Price * i.Quantity);
 
             _context.Orders.Add(order);
-            _context.CartItems.RemoveRange(cart.CartItems);
+            if (cart != null) _context.CartItems.RemoveRange(cart.CartItems);
             await _context.SaveChangesAsync();
 
             _ = SendNotification(userId.ToString(),

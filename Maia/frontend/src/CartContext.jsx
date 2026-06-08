@@ -31,6 +31,32 @@ export function CartProvider({ children }) {
       if (items.length > 0) {
         setBag(items)
         localStorage.setItem('maia_bag', JSON.stringify(items))
+      } else {
+        // backend cart is empty — sync from localStorage
+        const saved = JSON.parse(localStorage.getItem('maia_bag') ?? '[]')
+        if (saved.length > 0) {
+          for (const item of saved) {
+            try {
+              await api.post('/Cart', {
+                productId:     item.id,
+                productSource: item.productSource ?? 'women',
+                productName:   item.name,
+                imageUrl:      item.image ?? '',
+                price:         parseFloat(item.price) || 0,
+                quantity:      item.quantity ?? 1,
+              })
+            } catch { /* continue */ }
+          }
+          try {
+            const { data: synced } = await api.get('/Cart')
+            const syncedItems = (synced.items ?? []).map(mapItem)
+            if (syncedItems.length > 0) {
+              setBag(syncedItems)
+              localStorage.setItem('maia_bag', JSON.stringify(syncedItems))
+            }
+            // if sync failed, keep localStorage items already in state
+          } catch { /* keep localStorage items */ }
+        }
       }
     } catch {
       // keep existing bag from localStorage

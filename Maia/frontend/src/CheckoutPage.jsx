@@ -119,6 +119,14 @@ function CheckoutForm() {
         country:        form.country,
         shippingAddress,
         paymentMethod,
+        items: bag.map(i => ({
+          productId:     i.id,
+          productSource: i.productSource ?? 'women',
+          productName:   i.name,
+          imageUrl:      i.image ?? '',
+          price:         parseFloat(i.price) || 0,
+          quantity:      i.quantity ?? 1,
+        })),
       })
     } catch (err) {
       const msg = err?.response?.data?.message ?? err?.response?.data ?? err.message
