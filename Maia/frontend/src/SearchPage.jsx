@@ -33,7 +33,9 @@ function mapProduct(p, source) {
     discountPercent: discount > 0 ? discount : null,
     category:       (p.womanCategory ?? p.menCategoryName ?? p.kidsCategoryName ?? p.category ?? '').toUpperCase(),
     categoryId:     p.womanCategoryId ?? p.menCategoryId ?? p.kidsCategoryId,
-    image:          p.imageUrl ?? p.image,
+    image:          source === 'KIDS' && (p.imageUrl ?? p.image)
+                      ? `/api/imageproxy?url=${encodeURIComponent(p.imageUrl ?? p.image)}`
+                      : (p.imageUrl ?? p.image),
     color:          p.color ?? null,
     source,
     productSource:  source.toLowerCase(),
