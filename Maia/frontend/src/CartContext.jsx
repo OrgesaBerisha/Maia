@@ -17,7 +17,9 @@ function mapItem(i) {
 }
 
 export function CartProvider({ children }) {
-  const [bag, setBag] = useState([])
+  const [bag, setBag] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('maia_bag') ?? '[]') } catch { return [] }
+  })
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem('maia_favs') ?? '[]') } catch { return [] }
   })
@@ -25,9 +27,13 @@ export function CartProvider({ children }) {
   const fetchCart = useCallback(async () => {
     try {
       const { data } = await api.get('/Cart')
-      setBag((data.items ?? []).map(mapItem))
+      const items = (data.items ?? []).map(mapItem)
+      if (items.length > 0) {
+        setBag(items)
+        localStorage.setItem('maia_bag', JSON.stringify(items))
+      }
     } catch {
-      setBag([])
+      // keep existing bag from localStorage
     }
   }, [])
 
@@ -49,7 +55,11 @@ export function CartProvider({ children }) {
       })
       await fetchCart()
     } catch {
-      setBag(prev => prev.find(i => i.id === item.id) ? prev : [...prev, item])
+      setBag(prev => {
+        const next = prev.find(i => i.id === item.id) ? prev : [...prev, item]
+        localStorage.setItem('maia_bag', JSON.stringify(next))
+        return next
+      })
     }
   }
 
@@ -58,7 +68,11 @@ export function CartProvider({ children }) {
     if (idToRemove) {
       try { await api.delete(`/Cart/${idToRemove}`) } catch { /* continue */ }
     }
-    setBag(prev => prev.filter(i => !(i.id === id && i.size === size)))
+    setBag(prev => {
+      const next = prev.filter(i => !(i.id === id && i.size === size))
+      localStorage.setItem('maia_bag', JSON.stringify(next))
+      return next
+    })
   }
 
   const saveForLater = async (id, size, cartItemId) => {
