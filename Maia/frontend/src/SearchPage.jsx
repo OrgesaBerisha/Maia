@@ -36,6 +36,7 @@ function mapProduct(p, source) {
     image:          p.imageUrl ?? p.image,
     color:          p.color ?? null,
     source,
+    productSource:  source.toLowerCase(),
   }
 }
 
@@ -262,11 +263,11 @@ function SearchPage() {
                   )}
                   {isLoggedIn && (
                     <button
-                      className={`product-wishlist${isWishlisted(product.id) ? ' product-wishlist--active' : ''}`}
-                      aria-label={isWishlisted(product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                      className={`product-wishlist${isWishlisted(product.id, product.source) ? ' product-wishlist--active' : ''}`}
+                      aria-label={isWishlisted(product.id, product.source) ? 'Remove from wishlist' : 'Add to wishlist'}
                       onClick={e => { e.preventDefault(); toggleWishlist(product) }}
                     >
-                      {isWishlisted(product.id) ? '♥' : '♡'}
+                      {isWishlisted(product.id, product.source) ? '♥' : '♡'}
                     </button>
                   )}
                   <button className="product-add" aria-label={`Add ${product.name} to bag`} onClick={e => { e.preventDefault(); setModal(product) }}>+</button>

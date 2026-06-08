@@ -37,7 +37,8 @@ namespace KidsSection.Services
                 KidsProductTypeName = p.KidsProductType?.Name,
 
                 Description = p.Description,
-                DiscountPercent = p.DiscountPercent
+                DiscountPercent = p.DiscountPercent,
+                Color = p.Color
             });
         }
 
@@ -64,7 +65,8 @@ namespace KidsSection.Services
                 KidsProductTypeName = p.KidsProductType?.Name,
 
                 Description = p.Description,
-                DiscountPercent = p.DiscountPercent
+                DiscountPercent = p.DiscountPercent,
+                Color = p.Color
             });
         }
 

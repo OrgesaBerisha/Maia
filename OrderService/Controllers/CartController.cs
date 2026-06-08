@@ -44,6 +44,7 @@ namespace OrderService.Controllers
                     i.ImageUrl,
                     i.Price,
                     i.Quantity,
+                    i.Size,
                     Subtotal = i.Price * i.Quantity
                 }),
                 Total = cart.CartItems.Sum(i => i.Price * i.Quantity)
@@ -77,7 +78,8 @@ namespace OrderService.Controllers
                     ProductName = dto.ProductName,
                     ImageUrl = dto.ImageUrl,
                     Price = dto.Price,
-                    Quantity = dto.Quantity
+                    Quantity = dto.Quantity,
+                    Size = dto.Size
                 });
 
             await _context.SaveChangesAsync();

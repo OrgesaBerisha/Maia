@@ -16,6 +16,7 @@ export function WishlistProvider({ children }) {
       setItems(list.map(i => ({
         wishlistItemId: i.Id ?? i.id,
         productId:      i.ProductId ?? i.productId,
+        source:         i.Source ?? i.source ?? 'WOMAN',
         name:           (i.ProductName ?? i.productName ?? '').toUpperCase(),
         image:          i.ProductImage ?? i.productImage ?? '',
         price:          i.Price ?? i.price ?? 0,
@@ -31,13 +32,16 @@ export function WishlistProvider({ children }) {
   }, [isLoggedIn, fetchWishlist])
 
   const isWishlisted = useCallback(
-    (productId) => items.some(i => i.productId === productId),
+    (productId, source) => items.some(i =>
+      i.productId === productId && (i.source ?? 'WOMAN') === (source ?? 'WOMAN')
+    ),
     [items]
   )
 
   const toggleWishlist = useCallback(async (product) => {
     if (!isLoggedIn) return
-    const existing = items.find(i => i.productId === product.id)
+    const source = product.source ?? 'WOMAN'
+    const existing = items.find(i => i.productId === product.id && (i.source ?? 'WOMAN') === source)
     if (existing) {
       try {
         await api.delete(`/Wishlist/${existing.wishlistItemId}`)
@@ -46,6 +50,14 @@ export function WishlistProvider({ children }) {
     } else {
       try {
         await api.post('/Wishlist', { productId: product.id })
+        setItems(prev => [...prev, {
+          wishlistItemId: null,
+          productId: product.id,
+          source,
+          name: product.name,
+          image: product.image,
+          price: product.price,
+        }])
         await fetchWishlist()
       } catch {}
     }
