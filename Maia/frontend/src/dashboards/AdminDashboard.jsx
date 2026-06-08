@@ -96,6 +96,10 @@ function CustomersTab() {
     <div className="db-section">
       <div className="db-toolbar">
         <input className="db-search" placeholder="Search customers…" value={q} onChange={e => setQ(e.target.value)} />
+        <div style={{ display: 'flex', gap: 6 }}>
+          <a className="db-btn db-btn--ghost" href="http://localhost:5000/api/export/users/csv" target="_blank" rel="noreferrer">↓ CSV</a>
+          <a className="db-btn db-btn--ghost" href="http://localhost:5000/api/export/users/excel" target="_blank" rel="noreferrer">↓ Excel</a>
+        </div>
         <span className="db-stat-label" style={{ flexShrink: 0 }}>{filtered.length} customers</span>
       </div>
       {error && <div className="db-error">{error}</div>}
@@ -387,11 +391,43 @@ function ProductsTab({ section }) {
     return '—'
   }
 
+  const exportUrls = {
+    women: { csv: 'http://localhost:5182/api/export/women-products/csv', excel: 'http://localhost:5182/api/export/women-products/excel', importCsv: 'http://localhost:5182/api/export/women-products/import/csv', importExcel: 'http://localhost:5182/api/export/women-products/import/excel' },
+    men:   { csv: 'http://localhost:5018/api/export/men-products/csv',   excel: 'http://localhost:5018/api/export/men-products/excel',   importCsv: 'http://localhost:5018/api/export/men-products/import/csv',   importExcel: 'http://localhost:5018/api/export/men-products/import/excel' },
+    kids:  { csv: 'http://localhost:5062/api/export/kids-products/csv',  excel: 'http://localhost:5062/api/export/kids-products/excel',  importCsv: 'http://localhost:5062/api/export/kids-products/import/csv',  importExcel: 'http://localhost:5062/api/export/kids-products/import/excel' },
+  }[section]
+
+  const handleImport = async (type) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = type === 'csv' ? '.csv' : '.xlsx'
+    input.onchange = async (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const url = type === 'csv' ? exportUrls?.importCsv : exportUrls?.importExcel
+      const formData = new FormData()
+      formData.append('file', file)
+      try {
+        const res = await fetch(url, { method: 'POST', body: formData })
+        const data = await res.json()
+        alert(`✅ Imported ${data.imported} products successfully!`)
+        reload()
+      } catch { alert('Import failed.') }
+    }
+    input.click()
+  }
+
   return (
     <div className="db-section">
       <div className="db-toolbar">
         <input className="db-search" placeholder="Search products…" value={q} onChange={e => setQ(e.target.value)} />
-        <button className="db-btn db-btn--primary" onClick={openAdd}>+ Add Product</button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <a className="db-btn db-btn--ghost" href={exportUrls?.csv} target="_blank" rel="noreferrer">↓ CSV</a>
+          <a className="db-btn db-btn--ghost" href={exportUrls?.excel} target="_blank" rel="noreferrer">↓ Excel</a>
+          <button className="db-btn db-btn--ghost" onClick={() => handleImport('csv')}>↑ Import CSV</button>
+          <button className="db-btn db-btn--ghost" onClick={() => handleImport('excel')}>↑ Import Excel</button>
+          <button className="db-btn db-btn--primary" onClick={openAdd}>+ Add Product</button>
+        </div>
       </div>
       {error && <div className="db-error">{error}</div>}
       <div className="db-table-wrap">
@@ -501,6 +537,10 @@ function OrdersTab() {
         <span className="db-stat-label" style={{ flexShrink: 0 }}>{filtered.length} orders</span>
       </div>
       {error && <div className="db-error">{error}</div>}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+        <a className="db-btn db-btn--ghost" href="http://localhost:5182/api/export/orders/csv" target="_blank" rel="noreferrer">↓ CSV</a>
+        <a className="db-btn db-btn--ghost" href="http://localhost:5182/api/export/orders/excel" target="_blank" rel="noreferrer">↓ Excel</a>
+      </div>
       <div className="db-table-wrap">
         <table className="db-table">
           <thead><tr>
