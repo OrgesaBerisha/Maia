@@ -16,6 +16,7 @@ Full-stack e-commerce aplikacion i ndërtuar me arkitekturë mikroshërbimesh.
 | **KidsSection** | `5062` | http://localhost:5062/swagger | Produkte fëmijë, Kategori, Lloje |
 | **NotificationService** | `5151` | http://localhost:5151/swagger | Email, SignalR njoftimet |
 | **FileUploadService** | `5270` | http://localhost:5270/swagger | Azure Blob Storage |
+| **OrderService** | `5200` | http://localhost:5200/swagger | Cart, Orders, Stripe Payment |
 | **SettingsService** | `5187` | http://localhost:5187/swagger | Konfigurime globale/user |
 
 ---
@@ -95,37 +96,65 @@ Hap terminal të veçantë për secilin shërbim:
 
 ```bash
 # Terminal 1
-cd Maia/Maia && dotnet run
+cd Auth/Auth && dotnet run --launch-profile http
 
 # Terminal 2
-cd Auth/Auth && dotnet run
+cd WomensSection/WomensSection && dotnet run --launch-profile http
 
 # Terminal 3
-cd WomensSection/WomensSection && dotnet run
+cd MenSection && dotnet run --launch-profile http
 
 # Terminal 4
-cd MenSection && dotnet run
+cd KidsSection && dotnet run --launch-profile http
 
 # Terminal 5
-cd KidsSection && dotnet run
+cd OrderService && dotnet run --launch-profile http
 
 # Terminal 6
-cd NotificationService && dotnet run
-
-# Terminal 7
-cd FileUploadService && dotnet run
-
-# Terminal 8
-cd SettingsService && dotnet run
+cd NotificationService && dotnet run --launch-profile http
 ```
 
 ### Frontend
 
 ```bash
-cd WomensSection/WomensSection/frontend && npm run dev
+cd Maia/frontend && npm run dev
 ```
 
-Frontend hapet te: `http://localhost:5173`
+Frontend hapet te: `http://localhost:5173` (ose portin që Vite zgjedh)
+
+---
+
+## Llogaritë e paracaktuara
+
+| Roli | Email | Fjalëkalimi |
+|------|-------|-------------|
+| Admin | admin@admin.com | Admin123! |
+| Sales Manager | sales@manager.com | Sales123! |
+| Women Manager | women@manager.com | Women123! |
+| Men Manager | men@manager.com | Men123! |
+| Kids Manager | kids@manager.com | Kids123! |
+
+---
+
+## Pagesa me Stripe (Test Mode)
+
+Konfiguro çelësat Stripe te `OrderService/appsettings.json` (nuk commit-ohet):
+
+```json
+"Stripe": {
+  "SecretKey": "sk_test_YOUR_KEY",
+  "PublishableKey": "pk_test_YOUR_KEY"
+}
+```
+
+**Kartë testimi:**
+
+| Fusha | Vlera |
+|-------|-------|
+| Numri i kartës | 4242 4242 4242 4242 |
+| Expiry | 12/28 |
+| CVV | 123 |
+| Postal code | 10001 |
 
 ---
 
