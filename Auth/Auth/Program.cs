@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
+        policy.SetIsOriginAllowed(origin => origin.StartsWith("http://localhost") || origin.StartsWith("https://localhost"))
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
