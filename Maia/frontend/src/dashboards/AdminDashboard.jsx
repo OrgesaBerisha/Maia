@@ -487,7 +487,7 @@ function OrdersTab() {
 
   const updateStatus = async (id, status) => {
     try {
-      await api.patch(`/Order/${id}/status`, status, { headers: { 'Content-Type': 'application/json' } })
+      await api.patch(`/Order/${id}/status`, { status })
       reload()
     } catch { alert('Failed to update status.') }
   }
@@ -551,6 +551,7 @@ function OrdersTab() {
                   </span>
                 </td>
                 <td>
+                  <span className={`db-badge ${statusColor(o.status)}`} style={{ display: 'block', marginBottom: 6 }}>{o.status}</span>
                   <select className="db-select" value={o.status}
                     onChange={e => updateStatus(o.id, e.target.value)}
                     style={{ fontSize: 12, padding: '4px 6px' }}>
