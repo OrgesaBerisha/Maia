@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext.jsx'
 import api from '../api/axios.js'
+import LiveChatTab from './LiveChatTab.jsx'
 import './DashboardLayout.css'
 
 const TABS = [
@@ -9,6 +10,7 @@ const TABS = [
   { key: 'products',     label: 'Products',      icon: '◉' },
   { key: 'categories',   label: 'Categories',    icon: '◎' },
   { key: 'types',        label: 'Product Types', icon: '◇' },
+  { key: 'chat',         label: 'Live Chat',     icon: '💬' },
 ]
 
 function useApi(fetcher, deps = []) {
@@ -334,6 +336,7 @@ export default function KidsManagerDashboard() {
       case 'products':   return <ProductsTab categories={categories} types={types} />
       case 'categories': return <SimpleListTab label="Categories" endpoint="/KidsCategory" />
       case 'types':      return <SimpleListTab label="Product Types" endpoint="/KidsProductType" />
+      case 'chat':       return <LiveChatTab />
       default: return null
     }
   }
