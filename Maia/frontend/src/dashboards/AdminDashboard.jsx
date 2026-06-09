@@ -283,7 +283,7 @@ function StaffTab() {
 const ADMIN_FALLBACK_CATS = {
   women: [{id:1,name:'Tops'},{id:2,name:'Dresses'},{id:3,name:'Bottoms'},{id:4,name:'Outerwear'},{id:5,name:'Swimwear'},{id:6,name:'Matching Sets'},{id:7,name:'Footwear'},{id:8,name:'Accessories'}],
   men:   [{id:1,name:'Tops'},{id:2,name:'Bottoms'},{id:3,name:'Suits & Formalwear'},{id:4,name:'Outerwear'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'}],
-  kids:  [{id:1,name:'Baby'},{id:2,name:'Girls'},{id:3,name:'Boys'},{id:4,name:'Sleepwear'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'},{id:8,name:'Sale'}],
+  kids:  [{id:1,name:'Baby'},{id:2,name:'Girls'},{id:3,name:'Boys'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'},{id:8,name:'Sale'}],
 }
 const ADMIN_FALLBACK_TYPES = {
   kids: [{ id:1,name:'Boys'},{id:2,name:'Girls'}],

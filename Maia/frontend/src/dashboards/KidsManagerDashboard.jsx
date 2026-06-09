@@ -41,7 +41,7 @@ function Modal({ title, onClose, children, actions }) {
 
 const FALLBACK_KIDS_CATS = [
   { id: 1, name: 'Baby' },       { id: 2, name: 'Girls' },
-  { id: 3, name: 'Boys' },       { id: 4, name: 'Sleepwear' },
+  { id: 3, name: 'Boys' },
   { id: 5, name: 'Swimwear' },   { id: 6, name: 'Footwear' },
   { id: 7, name: 'Accessories' },{ id: 8, name: 'Sale' },
 ]
