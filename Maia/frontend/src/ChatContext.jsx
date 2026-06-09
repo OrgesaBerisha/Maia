@@ -106,6 +106,16 @@ export function ChatProvider({ children }) {
   }
 
   useEffect(() => {
+    // reset chat when user changes (logout/switch account)
+    connRef.current?.stop()
+    connRef.current = null
+    setConversation(null)
+    setMessages([])
+    setOpen(false)
+    setUnread(0)
+  }, [user?.email])
+
+  useEffect(() => {
     return () => { connRef.current?.stop() }
   }, [])
 
