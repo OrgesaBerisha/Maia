@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext.jsx'
 import api from '../api/axios.js'
+import LiveChatTab from './LiveChatTab.jsx'
 import './DashboardLayout.css'
 import './AdminDashboard.css'
 
@@ -14,6 +15,7 @@ const TABS = [
   { key: 'men',       label: 'Men Section',     icon: '◆' },
   { key: 'kids',      label: 'Kids Section',    icon: '◈' },
   { key: 'sales',     label: 'Sales',           icon: '◑' },
+  { key: 'chat',      label: 'Live Chat',       icon: '💬' },
 ]
 
 const ROLE_COLORS = {
@@ -281,7 +283,7 @@ function StaffTab() {
 const ADMIN_FALLBACK_CATS = {
   women: [{id:1,name:'Tops'},{id:2,name:'Dresses'},{id:3,name:'Bottoms'},{id:4,name:'Outerwear'},{id:5,name:'Swimwear'},{id:6,name:'Matching Sets'},{id:7,name:'Footwear'},{id:8,name:'Accessories'}],
   men:   [{id:1,name:'Tops'},{id:2,name:'Bottoms'},{id:3,name:'Suits & Formalwear'},{id:4,name:'Outerwear'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'}],
-  kids:  [{id:1,name:'Baby'},{id:2,name:'Girls'},{id:3,name:'Boys'},{id:4,name:'Sleepwear'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'},{id:8,name:'Sale'}],
+  kids:  [{id:1,name:'Baby'},{id:2,name:'Girls'},{id:3,name:'Boys'},{id:5,name:'Swimwear'},{id:6,name:'Footwear'},{id:7,name:'Accessories'},{id:8,name:'Sale'}],
 }
 const ADMIN_FALLBACK_TYPES = {
   kids: [{ id:1,name:'Boys'},{id:2,name:'Girls'}],
@@ -777,6 +779,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
 
   const { data: allUsers }  = useApi(async () => { const r = await api.get('/users');            return r.data }, [])
+
   const { data: customers } = useApi(async () => { const r = await api.get('/users/customers');  return r.data }, [])
   const { data: women }     = useApi(async () => { const r = await api.get('/CardsWomen');        return r.data }, [])
   const { data: men }       = useApi(async () => { const r = await api.get('/MenCards');          return r.data }, [])
@@ -804,6 +807,7 @@ export default function AdminDashboard() {
       case 'men':      return <ProductsTab section="men" />
       case 'kids':     return <ProductsTab section="kids" />
       case 'sales':    return <SalesTab />
+      case 'chat':     return <LiveChatTab />
       default: return null
     }
   }
