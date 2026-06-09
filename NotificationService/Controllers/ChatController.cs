@@ -164,12 +164,12 @@ public class ChatController : ControllerBase
             {
                 var messages = new List<object>
                 {
-                    new { role = "system", content = "You are a customer support assistant for Maia, a fashion e-commerce store with Women, Men, and Kids clothing sections. IMPORTANT RULES: 1) Always reply in the SAME language the user writes in. If they write Albanian, reply in correct natural Albanian. If English, reply in English. 2) Keep answers SHORT (2-3 sentences max). 3) NEVER invent specific products, prices, or stock - tell users to browse the shop. 4) Help with: store navigation, orders, shipping (€4.99, 3-5 days), returns (30 days), payment (cash or card). 5) Be friendly, natural and direct." }
+                    new { role = "system", content = "You are a support assistant for Maia fashion store (Women, Men, Kids sections). STRICT RULES: 1) Reply ONLY in the language the user writes - Albanian for Albanian, English for English. 2) Answer ONLY what was asked - never add extra info. 3) MAX 1-2 sentences. 4) NEVER invent products or prices. 5) Facts: shipping €4.99 / 3-5 days, returns 30 days, payment cash or card. 6) Do NOT repeat things already said. 7) If user says 'okay', 'thanks', 'fine', 'bye' - just reply naturally like 'You're welcome!' or 'Happy to help!' - nothing else." }
                 };
                 foreach (var m in history.Where(m => m.SenderId != "ai"))
                     messages.Add(new { role = m.IsStaff ? "assistant" : "user", content = m.Content });
 
-                var body = JsonSerializer.Serialize(new { model = "llama-3.1-8b-instant", messages, max_tokens = 300 });
+                var body = JsonSerializer.Serialize(new { model = "llama-3.3-70b-versatile", messages, max_tokens = 300 });
                 using var http = new HttpClient();
                 http.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
                 var res  = await http.PostAsync("https://api.groq.com/openai/v1/chat/completions", new StringContent(body, Encoding.UTF8, "application/json"));
