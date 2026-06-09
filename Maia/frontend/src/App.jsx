@@ -4,6 +4,8 @@ import { CartProvider } from './CartContext.jsx'
 import { AuthProvider } from './AuthContext.jsx'
 import { NotificationProvider } from './NotificationContext.jsx'
 import { WishlistProvider } from './WishlistContext.jsx'
+import { ChatProvider } from './ChatContext.jsx'
+import ChatWidget from './ChatWidget.jsx'
 import ProtectedRoute from './ProtectedRoute.jsx'
 
 const HomeScreen   = lazy(() => import('./HomeScreen.jsx'))
@@ -34,6 +36,7 @@ function App() {
       <NotificationProvider>
         <CartProvider>
           <WishlistProvider>
+          <ChatProvider>
           <BrowserRouter>
             <Suspense fallback={null}>
               <Routes>
@@ -79,7 +82,9 @@ function App() {
                 } />
               </Routes>
             </Suspense>
+            <ChatWidget />
           </BrowserRouter>
+          </ChatProvider>
           </WishlistProvider>
         </CartProvider>
       </NotificationProvider>

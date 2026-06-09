@@ -41,6 +41,7 @@ export default defineConfig({
 
       // Notification service
       '/api/notifications': { target: 'http://localhost:5151', changeOrigin: true, secure: false },
+      '/api/chat':          { target: 'http://localhost:5151', changeOrigin: true, secure: false, rewrite: (path) => path.replace('/api/chat', '') },
 
       // File upload service
       '/api/files': { target: 'http://localhost:5270', changeOrigin: true, secure: false },
