@@ -26,7 +26,7 @@ export default function ChatWidget() {
       {open && (
         <div className="chat-window">
           <div className="chat-header">
-            <span>💬 Support Chat</span>
+            <span>💬 MAIA</span>
             {isClosed && <span className="chat-closed-badge">Closed</span>}
             {conversation && (
               <button className="chat-delete-btn" onClick={deleteConversation} title="Delete conversation">🗑</button>
@@ -44,7 +44,7 @@ export default function ChatWidget() {
             )}
             {messages.map((m, i) => (
               <div key={m.id ?? i} className={`chat-msg ${m.isStaff ? 'chat-msg--staff' : 'chat-msg--user'}`}>
-                <span className="chat-msg-sender">{m.isStaff ? '🛍️ Support' : 'You'}</span>
+                <span className="chat-msg-sender">{m.isStaff ? 'MAIA' : 'You'}</span>
                 <span className="chat-msg-content">{m.content}</span>
                 <span className="chat-msg-time">
                   {new Date(m.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
