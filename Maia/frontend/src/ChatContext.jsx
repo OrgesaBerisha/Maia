@@ -12,6 +12,7 @@ export function ChatProvider({ children }) {
   const [open, setOpen] = useState(false)
   const [unread, setUnread] = useState(0)
   const [connecting, setConnecting] = useState(false)
+  const [typing, setTyping] = useState(false)
   const connRef = useRef(null)
   const openRef = useRef(false)
   openRef.current = open
@@ -72,13 +73,13 @@ export function ChatProvider({ children }) {
       sentAt: new Date().toISOString(),
     }
     setMessages(prev => [...prev, optimistic])
+    setTyping(true)
 
     try {
       const { data } = await api.post(
         `/chat/conversations/${conversation.id}/messages`,
         { content: content.trim(), senderName: user?.firstName ?? 'You' }
       )
-      // replace optimistic + add AI reply
       setMessages(prev => [
         ...prev.filter(m => m.id !== optimistic.id),
         data.userMessage,
@@ -86,7 +87,22 @@ export function ChatProvider({ children }) {
       ])
     } catch (err) {
       console.error('Send failed:', err)
+    } finally {
+      setTyping(false)
     }
+  }
+
+  const deleteConversation = async () => {
+    if (!conversation) return
+    try {
+      await api.delete(`/chat/conversations/${conversation.id}`)
+    } catch { /* continue */ }
+    connRef.current?.stop()
+    connRef.current = null
+    setConversation(null)
+    setMessages([])
+    setOpen(false)
+    setUnread(0)
   }
 
   useEffect(() => {
@@ -95,8 +111,8 @@ export function ChatProvider({ children }) {
 
   return (
     <ChatContext.Provider value={{
-      conversation, messages, open, unread, connecting,
-      toggleOpen, startChat, sendMessage
+      conversation, messages, open, unread, connecting, typing,
+      toggleOpen, startChat, sendMessage, deleteConversation
     }}>
       {children}
     </ChatContext.Provider>

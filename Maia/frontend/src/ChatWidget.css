@@ -66,14 +66,26 @@
   font-weight: 600;
 }
 
-.chat-close-btn {
+.chat-delete-btn {
   margin-left: auto;
   background: none;
   border: none;
   color: #fff;
   cursor: pointer;
   font-size: 14px;
+  opacity: 0.7;
+}
+
+.chat-delete-btn:hover { opacity: 1; }
+
+.chat-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
   opacity: 0.8;
+  margin-left: 6px;
 }
 
 .chat-closed-badge {
@@ -195,4 +207,14 @@
 
 .chat-start-btn:hover {
   opacity: 0.85;
+}
+
+.chat-typing {
+  letter-spacing: 3px;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }

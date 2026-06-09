@@ -3,7 +3,7 @@ import { useChat } from './ChatContext.jsx'
 import './ChatWidget.css'
 
 export default function ChatWidget() {
-  const { conversation, messages, open, unread, connecting, toggleOpen, sendMessage, startChat } = useChat()
+  const { conversation, messages, open, unread, connecting, typing, toggleOpen, sendMessage, startChat, deleteConversation } = useChat()
   const [input, setInput] = useState('')
   const bottomRef = useRef(null)
 
@@ -28,6 +28,9 @@ export default function ChatWidget() {
           <div className="chat-header">
             <span>💬 Support Chat</span>
             {isClosed && <span className="chat-closed-badge">Closed</span>}
+            {conversation && (
+              <button className="chat-delete-btn" onClick={deleteConversation} title="Delete conversation">🗑</button>
+            )}
             <button className="chat-close-btn" onClick={toggleOpen}>✕</button>
           </div>
 
@@ -48,6 +51,12 @@ export default function ChatWidget() {
                 </span>
               </div>
             ))}
+            {typing && (
+              <div className="chat-msg chat-msg--staff">
+                <span className="chat-msg-sender">🛍️ Support</span>
+                <span className="chat-msg-content chat-typing">● ● ●</span>
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
 

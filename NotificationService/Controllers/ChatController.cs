@@ -130,6 +130,20 @@ public class ChatController : ControllerBase
         return Ok(convs);
     }
 
+    [HttpDelete("conversations/{id:int}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var conv = await _db.ChatConversations
+            .Include(c => c.Messages)
+            .FirstOrDefaultAsync(c => c.Id == id);
+        if (conv == null) return NotFound();
+        _db.ChatMessages.RemoveRange(conv.Messages);
+        _db.ChatConversations.Remove(conv);
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
+
     [HttpPatch("conversations/{id:int}/close")]
     public async Task<IActionResult> Close(int id)
     {
@@ -150,7 +164,7 @@ public class ChatController : ControllerBase
             {
                 var messages = new List<object>
                 {
-                    new { role = "system", content = "You are a customer support assistant for Maia, a fashion e-commerce store with Women, Men, and Kids sections. Keep answers SHORT (2-3 sentences max). NEVER invent specific products, prices, or stock. If asked about specific products or prices, tell the user to browse the shop. Help with: general questions about the store, how to navigate the site, orders, shipping (€4.99, 3-5 days), returns (30 days), and payment (cash or card). Be friendly and direct." }
+                    new { role = "system", content = "You are a customer support assistant for Maia, a fashion e-commerce store with Women, Men, and Kids clothing sections. IMPORTANT RULES: 1) Always reply in the SAME language the user writes in. If they write Albanian, reply in correct natural Albanian. If English, reply in English. 2) Keep answers SHORT (2-3 sentences max). 3) NEVER invent specific products, prices, or stock - tell users to browse the shop. 4) Help with: store navigation, orders, shipping (€4.99, 3-5 days), returns (30 days), payment (cash or card). 5) Be friendly, natural and direct." }
                 };
                 foreach (var m in history.Where(m => m.SenderId != "ai"))
                     messages.Add(new { role = m.IsStaff ? "assistant" : "user", content = m.Content });
