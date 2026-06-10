@@ -114,7 +114,17 @@ export default function HomeScreen() {
   const { isLoggedIn } = useAuth()
   const [current, setCurrent] = useState(0)
   const [textVisible, setTextVisible] = useState(true)
+  const [navVisible, setNavVisible] = useState(false)
   const timerRef = useRef(null)
+
+  useEffect(() => {
+    const onScroll = () => {
+      const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80
+      setNavVisible(nearBottom)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   const goTo = (idx) => {
     setTextVisible(false)
@@ -264,7 +274,7 @@ export default function HomeScreen() {
       </section>
 
       {/* ── Bottom Nav ────────────────────────────────────────── */}
-      <div className="hs-bottom-nav">
+      <div className={`hs-bottom-nav${navVisible ? ' hs-bottom-nav--visible' : ''}`}>
         <BottomNav />
       </div>
     </div>

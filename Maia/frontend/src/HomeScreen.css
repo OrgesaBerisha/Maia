@@ -539,7 +539,15 @@
   color: #1a1a1a;
 }
 
-/* ── Bottom Nav (inline at page end) ─────────────────────── */
+/* ── Bottom Nav — only visible at page end ────────────────── */
 .hs-bottom-nav {
   position: static;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.hs-bottom-nav--visible {
+  opacity: 1;
+  pointer-events: auto;
 }
