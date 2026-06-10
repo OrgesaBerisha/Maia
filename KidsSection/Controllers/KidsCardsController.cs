@@ -2,6 +2,8 @@
 using KidsSection.Data.Interface;
 using KidsSection.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
 
 namespace KidsSection.Controllers
 {
@@ -10,11 +12,17 @@ namespace KidsSection.Controllers
     public class KidsCardsController : ControllerBase
     {
         private readonly IKidsCards _service;
+        private readonly IHttpClientFactory _http;
+        private readonly IConfiguration _config;
 
-        public KidsCardsController(IKidsCards service)
+        public KidsCardsController(IKidsCards service, IHttpClientFactory http, IConfiguration config)
         {
             _service = service;
+            _http = http;
+            _config = config;
         }
+
+        private string WomensUrl => (_config["Services:Womens"] ?? "http://localhost:5182") + "/api/wishlist/notify-sale";
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -83,7 +91,28 @@ namespace KidsSection.Controllers
         {
             var result = await _service.SetDiscountAsync(id, dto.DiscountPercent);
             if (result == null) return NotFound();
+
+            if (dto.DiscountPercent > 0)
+                _ = NotifyWishlistUsers(id, result.Title ?? "Kids' item", dto.DiscountPercent.Value);
+
             return Ok(result);
+        }
+
+        private async Task NotifyWishlistUsers(int productId, string title, int discount)
+        {
+            try
+            {
+                var client = _http.CreateClient();
+                var payload = JsonSerializer.Serialize(new
+                {
+                    productId,
+                    source = "KIDS",
+                    title = "Item on Sale!",
+                    message = $"{title} is now {discount}% off — check it out!"
+                });
+                await client.PostAsync(WomensUrl, new StringContent(payload, Encoding.UTF8, "application/json"));
+            }
+            catch { }
         }
     }
 }
