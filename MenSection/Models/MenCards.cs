@@ -18,4 +18,5 @@ public class MenCards
 
     public string? Color { get; set; }
     public int? DiscountPercent { get; set; }
+    public int? OriginalCategoryId { get; set; }
 }

@@ -122,15 +122,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: pct })
       } else {
-        await api.put(`/MenCards/${selected.id}`, {
-          title: selected.title,
-          imageUrl: selected.imageUrl || null,
-          price: selected.price,
-          menCategoryId: selected.menCategoryId,
-          description: selected.description || '',
-          color: selected.color || null,
-          discountPercent: pct,
-        })
+        await api.patch(`/MenCards/${selected.id}/sale`, { discountPercent: pct })
       }
       setModal(null); reload()
     } catch (e) {
@@ -145,15 +137,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
       } else {
-        await api.put(`/MenCards/${p.id}`, {
-          title: p.title,
-          imageUrl: p.imageUrl || null,
-          price: p.price,
-          menCategoryId: p.menCategoryId,
-          description: p.description || '',
-          color: p.color || null,
-          discountPercent: 0,
-        })
+        await api.patch(`/MenCards/${p.id}/sale`, { discountPercent: 0 })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }

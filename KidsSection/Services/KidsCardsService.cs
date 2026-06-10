@@ -255,8 +255,26 @@ namespace KidsSection.Services
 
         public async Task<KidsCardsDto?> SetDiscountAsync(int id, int? discountPercent)
         {
+            const int SaleCategoryId = 8;
+
             var entity = await _context.KidsCards.FindAsync(id);
             if (entity == null) return null;
+
+            if (discountPercent > 0)
+            {
+                if (entity.KidsCategoryId != SaleCategoryId)
+                    entity.OriginalCategoryId = entity.KidsCategoryId;
+                entity.KidsCategoryId = SaleCategoryId;
+            }
+            else
+            {
+                if (entity.OriginalCategoryId.HasValue)
+                {
+                    entity.KidsCategoryId = entity.OriginalCategoryId.Value;
+                    entity.OriginalCategoryId = null;
+                }
+                discountPercent = null;
+            }
 
             entity.DiscountPercent = discountPercent;
             await _context.SaveChangesAsync();
