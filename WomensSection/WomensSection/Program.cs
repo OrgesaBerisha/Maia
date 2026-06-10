@@ -39,6 +39,7 @@ var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = true;
         // Read token from the "jwt" cookie set by the Auth project
         options.Events = new JwtBearerEvents
         {
@@ -87,6 +88,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<Maia.Data.DataContext>();
+    await db.Database.MigrateAsync();
 }
 
 if (!app.Environment.IsDevelopment())

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import api from './api/axios.js'
 import { useAuth } from './AuthContext.jsx'
 import BottomNav from './BottomNav.jsx'
@@ -24,6 +25,7 @@ function Stars({ value, size = 20, interactive = false, onChange }) {
 }
 
 function ReviewsPage() {
+  const navigate = useNavigate()
   const { isLoggedIn, user } = useAuth()
   const [data, setData]         = useState({ average: 0, count: 0, reviews: [] })
   const [loading, setLoading]   = useState(true)
@@ -54,8 +56,10 @@ function ReviewsPage() {
       setRating(0)
       setComment('')
       await load()
-    } catch {
-      setError('Diçka shkoi keq. Provo sërish.')
+    } catch (err) {
+      const status = err?.response?.status
+      const msg = err?.response?.data?.message ?? err?.response?.data ?? err?.message ?? 'Unknown error'
+      setError(`Error ${status}: ${typeof msg === 'string' ? msg : JSON.stringify(msg)}`)
     }
     setSub(false)
   }
@@ -67,11 +71,23 @@ function ReviewsPage() {
       </svg>
 
       <header className="rp-header">
+        <button className="rp-back-btn" onClick={() => navigate(-1)}>← BACK</button>
         <SiteLogo />
       </header>
 
       <main className="rp-main">
         <h1 className="rp-title">REVIEWS</h1>
+
+        {/* Summary */}
+        {!loading && data.count > 0 && (
+          <div className="rp-summary">
+            <span className="rp-avg-num">{data.average}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <Stars value={Math.round(data.average)} size={18} />
+              <span className="rp-count">{data.count} VLERËSIM{data.count !== 1 ? 'E' : ''}</span>
+            </div>
+          </div>
+        )}
 
         {/* Form */}
         {isLoggedIn ? (
@@ -103,6 +119,30 @@ function ReviewsPage() {
             <p>Kyçu për të lënë një vlerësim.</p>
             <a href="/login" className="rp-btn">KYÇU</a>
           </div>
+        )}
+
+        {/* Reviews list */}
+        {!loading && (
+          <>
+            <div className="rp-divider" />
+            <div className="rp-list">
+              {data.reviews.length === 0
+                ? <p className="rp-empty">Bëhu i pari që lë një vlerësim.</p>
+                : data.reviews.map(r => (
+                    <div key={r.id} className="rp-item">
+                      <div className="rp-item-top">
+                        <Stars value={r.rating} size={14} />
+                        <span className="rp-item-user">{r.userName}</span>
+                        <span className="rp-item-date">
+                          {new Date(r.createdAt).toLocaleDateString('sq-AL', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </span>
+                      </div>
+                      {r.comment && <p className="rp-item-comment">{r.comment}</p>}
+                    </div>
+                  ))
+              }
+            </div>
+          </>
         )}
 
       </main>

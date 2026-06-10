@@ -1,0 +1,245 @@
+version: '3.9'
+
+services:
+
+  # ── Databases ─────────────────────────────────────────────────────────────
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Maia@2026Strong!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Maia@2026Strong!", "-Q", "SELECT 1", "-No"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # ── Backend Services ───────────────────────────────────────────────────────
+
+  auth:
+    build:
+      context: ./Auth/Auth
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthService;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+      - Email__From=${EMAIL_FROM}
+      - Email__Host=${EMAIL_HOST:-smtp.gmail.com}
+      - Email__Port=${EMAIL_PORT:-587}
+      - Email__User=${EMAIL_USER}
+      - Email__Pass=${EMAIL_PASS}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  womens:
+    build:
+      context: ./WomensSection/WomensSection
+      dockerfile: Dockerfile
+    ports:
+      - "5182:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=WomenPage;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  mens:
+    build:
+      context: ./MenSection
+      dockerfile: Dockerfile
+    ports:
+      - "5018:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MenSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  kids:
+    build:
+      context: ./KidsSection
+      dockerfile: Dockerfile
+    ports:
+      - "5062:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=KidsSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  orders:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "5200:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+      - Stripe__SecretKey=${STRIPE_SECRET_KEY}
+      - Stripe__PublishableKey=${STRIPE_PUBLISHABLE_KEY}
+      - Email__From=${EMAIL_FROM}
+      - Email__Host=${EMAIL_HOST:-smtp.gmail.com}
+      - Email__Port=${EMAIL_PORT:-587}
+      - Email__User=${EMAIL_USER}
+      - Email__Pass=${EMAIL_PASS}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  notifications:
+    build:
+      context: ./NotificationService
+      dockerfile: Dockerfile
+    ports:
+      - "5151:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=NotificationDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+      - Groq__ApiKey=${GROQ_API_KEY}
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  maia:
+    build:
+      context: ./Maia
+      dockerfile: Dockerfile
+    ports:
+      - "5293:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Maya;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - MongoDB__ConnectionString=mongodb://mongodb:27017
+      - MongoDB__DatabaseName=MaiaDB
+      - Redis__ConnectionString=redis:6379
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  gateway:
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5100:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - auth
+      - womens
+      - mens
+      - kids
+      - orders
+      - notifications
+      - maia
+
+  fileupload:
+    build:
+      context: ./FileUploadService
+      dockerfile: Dockerfile
+    ports:
+      - "5270:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=FileUploadDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  settings:
+    build:
+      context: ./SettingsService
+      dockerfile: Dockerfile
+    ports:
+      - "5187:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SettingsDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./Maia/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - SVC_AUTH=http://auth:80
+      - SVC_WOMENS=http://womens:80
+      - SVC_MENS=http://mens:80
+      - SVC_KIDS=http://kids:80
+      - SVC_ORDERS=http://orders:80
+      - SVC_NOTIFS=http://notifications:80
+      - SVC_FILES=http://fileupload:80
+      - SVC_SETTINGS=http://settings:80
+      - SVC_MAIA=http://maia:80
+    depends_on:
+      - auth
+      - womens
+      - mens
+      - kids
+      - orders
+      - notifications
+
+volumes:
+  sqlserver_data:
+  mongo_data:

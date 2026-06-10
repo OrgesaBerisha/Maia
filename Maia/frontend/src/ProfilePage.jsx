@@ -53,14 +53,6 @@ function ProfilePage() {
       </svg>
 
       <header className="profile-header">
-        <button className="profile-qr-btn">
-          <span className="profile-qr-label">MAIA QR</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-            <rect x="3" y="14" width="7" height="7"/>
-            <path d="M14 14h.01M14 18h.01M18 14h.01M18 18h.01M18 21h.01M21 18h.01M21 14h.01"/>
-          </svg>
-        </button>
         <SiteLogo />
         <span className="profile-settings-link">
           {user?.firstName && user?.lastName

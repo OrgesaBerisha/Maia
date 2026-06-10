@@ -58,9 +58,9 @@ namespace KidsSection.Controllers
         }
         //SEARCH
         [HttpGet("search")]
-        public async Task<IActionResult> Search(string name)
+        public async Task<IActionResult> Search(string query)
         {
-            var result = await _service.SearchAsync(name);
+            var result = await _service.SearchAsync(query);
             return Ok(result);
         }
 

@@ -97,7 +97,8 @@ namespace KidsSection.Services
                 KidsCategoryId = card.KidsCategoryId,
                 KidsProductTypeId = card.KidsProductTypeId,
                 Description = card.Description,
-                DiscountPercent = card.DiscountPercent
+                DiscountPercent = card.DiscountPercent,
+                Color = card.Color
             };
         }
 
@@ -129,7 +130,8 @@ namespace KidsSection.Services
                 KidsCategoryId = entity.KidsCategoryId,
                 KidsProductTypeId = entity.KidsProductTypeId,
                 Description = entity.Description,
-                DiscountPercent = entity.DiscountPercent
+                DiscountPercent = entity.DiscountPercent,
+                Color = entity.Color
             };
         }
 
@@ -147,10 +149,10 @@ namespace KidsSection.Services
         }
 
         // SEARCH
-        public async Task<IEnumerable<KidsCardsDto>> SearchAsync(string name)
+        public async Task<IEnumerable<KidsCardsDto>> SearchAsync(string query)
         {
             var data = await _context.KidsCards
-                .Where(x => x.Title.ToLower().Contains(name.ToLower()))
+                .Where(x => x.Title.ToLower().Contains(query.ToLower()))
                 .Include(x => x.KidsCategory)
                 .Include(x => x.KidsProductType)
                 .ToListAsync();
@@ -288,7 +290,8 @@ namespace KidsSection.Services
                 KidsCategoryId = entity.KidsCategoryId,
                 KidsProductTypeId = entity.KidsProductTypeId,
                 Description = entity.Description,
-                DiscountPercent = entity.DiscountPercent
+                DiscountPercent = entity.DiscountPercent,
+                Color = entity.Color
             };
         }
     }
