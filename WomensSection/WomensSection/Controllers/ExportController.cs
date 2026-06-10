@@ -173,6 +173,35 @@ public class ExportController : ControllerBase
         return Ok(orders);
     }
 
+    [HttpPost("women-products/import/json")]
+    public async Task<IActionResult> ImportJson([FromBody] List<ImportProductDto> items)
+    {
+        if (items == null || items.Count == 0) return BadRequest("No items provided.");
+        var categories = await _context.WomanCategories.ToListAsync();
+        int imported = 0;
+
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.Title)) continue;
+            var cat = categories.FirstOrDefault(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase));
+            if (cat == null) continue;
+
+            _context.CardsWoman.Add(new CardsWomen
+            {
+                Title = item.Title,
+                Price = item.Price,
+                WomanCategoryId = cat.Id,
+                Description = item.Description ?? "",
+                ImageUrl = item.ImageUrl ?? "",
+                CreatedAt = DateTime.UtcNow
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
+    }
+
     [HttpPost("women-products/import/csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
@@ -202,6 +231,27 @@ public class ExportController : ControllerBase
                 WomanCategoryId = cat.Id,
                 Description = Val("Description"),
                 ImageUrl = Val("ImageUrl"),
+                CreatedAt = DateTime.UtcNow
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
+    }
+
+    [HttpPost("orders/import/json")]
+    public async Task<IActionResult> ImportOrdersJson([FromBody] List<ImportOrderDto> items)
+    {
+        if (items == null || items.Count == 0) return BadRequest("No items provided.");
+        int imported = 0;
+
+        foreach (var item in items)
+        {
+            _context.Orders.Add(new Order
+            {
+                UserId = item.UserId,
+                TotalPrice = item.TotalPrice,
                 CreatedAt = DateTime.UtcNow
             });
             imported++;
@@ -248,4 +298,19 @@ public class ExportController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(new { imported });
     }
+}
+
+public class ImportProductDto
+{
+    public string Title { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Category { get; set; } = "";
+    public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
+}
+
+public class ImportOrderDto
+{
+    public int UserId { get; set; }
+    public decimal TotalPrice { get; set; }
 }

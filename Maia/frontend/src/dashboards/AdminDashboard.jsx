@@ -15,6 +15,7 @@ const TABS = [
   { key: 'men',       label: 'Men Section',     icon: '◆' },
   { key: 'kids',      label: 'Kids Section',    icon: '◈' },
   { key: 'sales',     label: 'Sales',           icon: '◑' },
+  { key: 'reviews',   label: 'Reviews',          icon: '★' },
   { key: 'chat',      label: 'Live Chat',       icon: '💬' },
 ]
 
@@ -402,17 +403,30 @@ function ProductsTab({ section }) {
   const handleImport = async (type) => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = type === 'csv' ? '.csv' : '.xlsx'
+    input.accept = type === 'csv' ? '.csv' : type === 'json' ? '.json' : '.xlsx'
     input.onchange = async (e) => {
       const file = e.target.files[0]
       if (!file) return
-      const url = type === 'csv' ? exportUrls?.importCsv : exportUrls?.importExcel
-      const formData = new FormData()
-      formData.append('file', file)
       try {
-        const res = await fetch(url, { method: 'POST', body: formData })
-        const data = await res.json()
-        alert(`✅ Imported ${data.imported} products successfully!`)
+        if (type === 'json') {
+          const text = await file.text()
+          const items = JSON.parse(text)
+          const importUrl = exportUrls?.importCsv?.replace('/import/csv', '/import/json')
+          const res = await fetch(importUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(items)
+          })
+          const data = await res.json()
+          alert(`✅ Imported ${data.imported} products successfully!`)
+        } else {
+          const url = type === 'csv' ? exportUrls?.importCsv : exportUrls?.importExcel
+          const formData = new FormData()
+          formData.append('file', file)
+          const res = await fetch(url, { method: 'POST', body: formData })
+          const data = await res.json()
+          alert(`✅ Imported ${data.imported} products successfully!`)
+        }
         reload()
       } catch { alert('Import failed.') }
     }
@@ -428,6 +442,7 @@ function ProductsTab({ section }) {
           <a className="db-btn db-btn--ghost" href={exportUrls?.excel} target="_blank" rel="noreferrer">↓ Excel</a>
           <button className="db-btn db-btn--ghost" onClick={() => handleImport('csv')}>↑ Import CSV</button>
           <button className="db-btn db-btn--ghost" onClick={() => handleImport('excel')}>↑ Import Excel</button>
+          <button className="db-btn db-btn--ghost" onClick={() => handleImport('json')}>↑ Import JSON</button>
           <button className="db-btn db-btn--primary" onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
@@ -606,6 +621,85 @@ function OrdersTab() {
                   </select>
                 </td>
                 <td style={{ whiteSpace: 'nowrap' }}>{new Date(o.createdAt).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+// ── Reviews Tab ────────────────────────────────────────────────────────────
+function StarsDisplay({ value, size = 14 }) {
+  return (
+    <span style={{ display: 'inline-flex', gap: 2, fontSize: size }}>
+      {[1,2,3,4,5].map(n => (
+        <span key={n} style={{ color: n <= value ? '#c8921a' : '#d4c5b3' }}>★</span>
+      ))}
+    </span>
+  )
+}
+
+function ReviewsTab() {
+  const [storeData, setStoreData] = useState({ average: 0, count: 0, reviews: [] })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const reload = async () => {
+    setLoading(true); setError('')
+    try {
+      const r = await api.get('/reviews/store')
+      setStoreData(r.data)
+    } catch (e) {
+      setError(e?.response?.data?.message ?? 'Failed to load reviews.')
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => { reload() }, [])
+
+  const { average: avg, count, reviews } = storeData
+
+  const deleteReview = async (rev) => {
+    if (!confirm(`Delete review by ${rev.userName}?`)) return
+    try {
+      await api.delete(`/reviews/${rev.id}`)
+      reload()
+    } catch (e) { alert(e?.response?.data?.message ?? 'Delete failed.') }
+  }
+
+  const formatDate = iso => new Date(iso).toLocaleDateString('sq-AL', { day: '2-digit', month: 'long', year: 'numeric' })
+
+  return (
+    <div className="db-section">
+      {error && <div className="db-error">{error}</div>}
+      {!loading && count > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, padding: '12px 16px', background: '#faf7f4', borderRadius: 4 }}>
+          <span style={{ fontSize: 28, fontWeight: 300, color: '#1a1208' }}>{avg.toFixed(1)}</span>
+          <StarsDisplay value={Math.round(avg)} size={18} />
+          <span style={{ fontSize: 11, color: '#9a8e82', letterSpacing: '0.1em' }}>{count} {count === 1 ? 'review' : 'reviews'}</span>
+        </div>
+      )}
+      <div className="db-table-wrap">
+        <table className="db-table">
+          <thead><tr>
+            <th>CUSTOMER</th><th>RATING</th><th>COMMENT</th><th>DATE</th><th>ACTIONS</th>
+          </tr></thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={5} className="db-empty">Loading…</td></tr>
+            ) : reviews.length === 0 ? (
+              <tr><td colSpan={5} className="db-empty">No reviews yet.</td></tr>
+            ) : reviews.map(rev => (
+              <tr key={rev.id}>
+                <td style={{ fontWeight: 600 }}>{rev.userName}</td>
+                <td><StarsDisplay value={rev.rating} size={14} /></td>
+                <td style={{ maxWidth: 320, fontSize: 12, color: '#4a3f35' }}>{rev.comment || <span style={{ color: '#b0a89e' }}>—</span>}</td>
+                <td style={{ whiteSpace: 'nowrap', fontSize: 12 }}>{formatDate(rev.createdAt)}</td>
+                <td>
+                  <button className="db-btn db-btn--danger db-btn--sm" onClick={() => deleteReview(rev)}>Delete</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -808,6 +902,7 @@ export default function AdminDashboard() {
       case 'men':      return <ProductsTab section="men" />
       case 'kids':     return <ProductsTab section="kids" />
       case 'sales':    return <SalesTab />
+      case 'reviews':  return <ReviewsTab />
       case 'chat':     return <LiveChatTab />
       default: return null
     }

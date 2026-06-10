@@ -94,6 +94,34 @@ public class ExportController : ControllerBase
         return Ok(products);
     }
 
+    [HttpPost("men-products/import/json")]
+    public async Task<IActionResult> ImportJson([FromBody] List<ImportMenProductDto> items)
+    {
+        if (items == null || items.Count == 0) return BadRequest("No items provided.");
+        var categories = await _context.MenCategories.ToListAsync();
+        int imported = 0;
+
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.Title)) continue;
+            var cat = categories.FirstOrDefault(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase));
+            if (cat == null) continue;
+
+            _context.MenCards.Add(new MenCards
+            {
+                Title = item.Title,
+                Price = item.Price,
+                MenCategoryId = cat.Id,
+                Description = item.Description ?? "",
+                ImageUrl = item.ImageUrl ?? ""
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
+    }
+
     [HttpPost("men-products/import/csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
@@ -167,4 +195,13 @@ public class ExportController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(new { imported });
     }
+}
+
+public class ImportMenProductDto
+{
+    public string Title { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Category { get; set; } = "";
+    public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
 }

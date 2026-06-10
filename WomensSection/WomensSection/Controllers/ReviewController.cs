@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Maia.Data;
 using Maia.Data.DTO;
 using Maia.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -96,6 +97,54 @@ namespace Maia.Controllers
 
             await _ctx.SaveChangesAsync();
             return Ok("Review saved");
+        }
+
+        // GET /api/reviews/store  — të gjitha reviews e përgjithshme
+        [HttpGet("store")]
+        public async Task<IActionResult> GetStore()
+        {
+            var reviews = await _ctx.ProductReviews
+                .Where(r => r.Source == "GENERAL")
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new { r.Id, r.UserId, r.UserName, r.Rating, r.Comment, r.CreatedAt })
+                .ToListAsync();
+
+            var avg = reviews.Count > 0 ? Math.Round(reviews.Average(r => r.Rating), 1) : 0.0;
+            return Ok(new { average = avg, count = reviews.Count, reviews });
+        }
+
+        // POST /api/reviews/store  — shto review të përgjithshme
+        [HttpPost("store")]
+        [Authorize]
+        public async Task<IActionResult> AddStore([FromBody] AddStoreReviewDto dto)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var existing = await _ctx.ProductReviews
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.Source == "GENERAL");
+
+            if (existing != null)
+            {
+                existing.Rating    = dto.Rating;
+                existing.Comment   = dto.Comment;
+                existing.CreatedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                _ctx.ProductReviews.Add(new ProductReview
+                {
+                    UserId    = userId.Value,
+                    UserName  = GetUserName(),
+                    ProductId = 0,
+                    Source    = "GENERAL",
+                    Rating    = dto.Rating,
+                    Comment   = dto.Comment,
+                });
+            }
+
+            await _ctx.SaveChangesAsync();
+            return Ok("Review u ruajt");
         }
 
         // DELETE /api/reviews/{id}

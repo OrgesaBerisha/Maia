@@ -42,8 +42,21 @@ function BagItem({ item, onDelete, onSave, onMoveToCart, isFav }) {
 
 function BagPage() {
   const [tab, setTab] = useState('bag')
-  const { bag, removeFromBag, saveForLater, addToBag } = useCart()
+  const { bag, removeFromBag, addToBag } = useCart()
   const { items: wishlistItems, toggleWishlist } = useWishlist()
+
+  const sourceMap = { women: 'WOMAN', men: 'MAN', kids: 'KIDS' }
+
+  const saveTofavorites = async (item) => {
+    const source = sourceMap[item.productSource?.toLowerCase()] ?? 'WOMAN'
+    await toggleWishlist({
+      id:    item.id,
+      source,
+      name:  item.name,
+      image: item.image,
+      price: parseFloat(item.price) || 0,
+    })
+  }
 
   const moveWishlistToCart = async (item) => {
     await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: (item.source ?? 'WOMAN').toLowerCase() })
@@ -109,7 +122,7 @@ function BagPage() {
                     item={item}
                     isFav={false}
                     onDelete={() => removeFromBag(item.id, item.size)}
-                    onSave={() => saveForLater(item.id, item.size)}
+                    onSave={() => saveTofavorites(item)}
                   />
                 ))}
                 <div className="bag-summary">
