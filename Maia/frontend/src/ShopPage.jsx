@@ -22,19 +22,11 @@ const SECTION_KEY = { WOMAN: 'WOMAN', MAN: 'MAN', KIDS: 'KIDS' }
 function ShopPage() {
   const [searchParams] = useSearchParams()
   const [activeSection, setActiveSection] = useState(searchParams.get('section') ?? 'WOMAN')
-  const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
 
   const goToSearch = (category) => {
     const params = new URLSearchParams({ section: SECTION_KEY[activeSection] })
     if (category !== 'VIEW ALL') params.set('category', category)
-    navigate(`/search?${params.toString()}`)
-  }
-
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) return
-    const params = new URLSearchParams({ section: SECTION_KEY[activeSection], q: searchQuery.trim() })
     navigate(`/search?${params.toString()}`)
   }
 
@@ -99,17 +91,6 @@ function ShopPage() {
             ))}
           </div>
         </div>
-
-        <form className="shop-search-form" onSubmit={handleSearch}>
-          <input
-            className="shop-search-input"
-            type="text"
-            placeholder="WHAT ARE YOU LOOKING FOR?"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            spellCheck={false}
-          />
-        </form>
 
       </main>
 

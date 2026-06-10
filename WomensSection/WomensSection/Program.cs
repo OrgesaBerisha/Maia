@@ -39,6 +39,7 @@ var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = true;
         // Read token from the "jwt" cookie set by the Auth project
         options.Events = new JwtBearerEvents
         {

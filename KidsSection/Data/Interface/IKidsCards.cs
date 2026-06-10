@@ -9,7 +9,7 @@ namespace KidsSection.Data.Interface
         Task<IEnumerable<KidsCardsDto>> GetByCategoryAsync(int categoryId);
         Task<KidsCardsDto> CreateAsync(CreateKidsCardsDto dto);
         Task<bool> DeleteAsync(int id);
-        Task<IEnumerable<KidsCardsDto>> SearchAsync(string name);
+        Task<IEnumerable<KidsCardsDto>> SearchAsync(string query);
         Task<IEnumerable<KidsCardsDto>> FilterAsync(string? name, int? categoryId, decimal? min, decimal? max);
         Task<IEnumerable<KidsCardsDto>> SortAsync(SortOptions sortBy);
         Task<KidsCardsDto> UpdateAsync(int id, CreateKidsCardsDto dto);

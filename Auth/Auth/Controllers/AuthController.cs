@@ -114,6 +114,28 @@ namespace Auth.Controllers
             return Ok(user);
         }
 
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> UpdateMe([FromBody] UpdateUserDTO request)
+        {
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdStr, out int userId)) return Unauthorized();
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserID == userId);
+            if (user == null) return NotFound(new { message = "User not found." });
+
+            var emailTaken = await _context.Users.AnyAsync(u => u.Email == request.Email && u.UserID != user.UserID);
+            if (emailTaken) return BadRequest(new { message = "Email is already in use." });
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.Email = request.Email;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { firstName = user.FirstName, lastName = user.LastName, email = user.Email });
+        }
+
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {

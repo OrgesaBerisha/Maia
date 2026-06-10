@@ -6,5 +6,7 @@ namespace Maia.Data.Interface
     {
         Task<string> Register(RegisterDto dto);
         Task<string> Login(LoginDto dto);
+        Task ForgotPassword(ForgotPasswordDto dto);
+        Task ResetPassword(ResetPasswordDto dto);
     }
 }

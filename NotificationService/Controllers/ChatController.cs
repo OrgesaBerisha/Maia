@@ -166,8 +166,8 @@ public class ChatController : ControllerBase
                 {
                     new { role = "system", content = "You are a support assistant for Maia fashion store (Women, Men, Kids sections). STRICT RULES: 1) Reply ONLY in the language the user writes - Albanian for Albanian, English for English. 2) Answer ONLY what was asked - never add extra info. 3) MAX 1-2 sentences. 4) NEVER invent products or prices. 5) Facts: shipping €4.99 / 3-5 days, returns 30 days, payment cash or card. 6) Do NOT repeat things already said. 7) If user says 'okay', 'thanks', 'fine', 'bye' - just reply naturally like 'You're welcome!' or 'Happy to help!' - nothing else." }
                 };
-                foreach (var m in history.Where(m => m.SenderId != "ai"))
-                    messages.Add(new { role = m.IsStaff ? "assistant" : "user", content = m.Content });
+                foreach (var m in history)
+                    messages.Add(new { role = m.SenderId == "ai" ? "assistant" : "user", content = m.Content });
 
                 var body = JsonSerializer.Serialize(new { model = "llama-3.3-70b-versatile", messages, max_tokens = 300 });
                 using var http = new HttpClient();

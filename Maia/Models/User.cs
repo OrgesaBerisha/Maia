@@ -9,6 +9,9 @@
         public string PasswordHash { get; set; }
         public bool IsActive { get; set; } = true;
 
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetExpiry { get; set; }
+
         public ICollection<UserRole> UserRoles { get; set; }
     }
 }
