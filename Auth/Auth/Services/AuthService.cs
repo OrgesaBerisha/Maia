@@ -141,7 +141,7 @@ namespace Auth.Services
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.RefreshTokenHash == hashedOld);
 
-            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
+            if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow || !user.IsActive)
                 return null;
 
             var newRefreshToken = GenerateRefreshToken();
