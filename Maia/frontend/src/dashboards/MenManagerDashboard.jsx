@@ -2,13 +2,11 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext.jsx'
 import api from '../api/axios.js'
-import LiveChatTab from './LiveChatTab.jsx'
 import './DashboardLayout.css'
 
 const TABS = [
   { key: 'overview', label: 'Overview', icon: '◈' },
   { key: 'products', label: 'Products', icon: '◆' },
-  { key: 'chat',     label: 'Live Chat', icon: '💬' },
 ]
 
 function useApi(fetcher, deps = []) {
@@ -324,7 +322,6 @@ export default function MenManagerDashboard() {
         </div>
       )
       case 'products': return <ProductsTab categories={categories} />
-      case 'chat':     return <LiveChatTab />
       default: return null
     }
   }
