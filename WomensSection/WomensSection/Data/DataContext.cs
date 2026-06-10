@@ -61,6 +61,14 @@ namespace Maia.Data
                 .HasForeignKey(wi => wi.WishlistId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<WishlistItem>()
+                .Property(w => w.Source)
+                .HasDefaultValue("WOMAN");
+
+            modelBuilder.Entity<WishlistItem>()
+                .Property(w => w.ProductPrice)
+                .HasPrecision(18, 2);
+
             modelBuilder.Entity<CardsWomen>()
                 .Property(x => x.Price)
                 .HasPrecision(18, 2);

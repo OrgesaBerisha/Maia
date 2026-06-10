@@ -88,6 +88,7 @@ function SearchPage() {
   const [selectedColors, setSelectedColors]     = useState([])
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ?? '')
   const [sortBy, setSortBy]                     = useState('')
+  const [searchInput, setSearchInput]           = useState(query)
 
   const { addToBag } = useCart()
   const { isWishlisted, toggleWishlist } = useWishlist()
@@ -110,6 +111,10 @@ function SearchPage() {
   }, [section, query])
 
   useEffect(() => {
+    setSearchInput(query)
+  }, [query])
+
+  useEffect(() => {
     const t = setTimeout(load, 350)
     return () => clearTimeout(t)
   }, [load])
@@ -118,6 +123,16 @@ function SearchPage() {
     setSection(sec)
     setSelectedCategory('')
     setSearchParams(p => { p.set('section', sec); return p })
+  }
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const q = searchInput.trim()
+    setSearchParams(p => {
+      if (q) p.set('q', q)
+      else p.delete('q')
+      return p
+    })
   }
 
   const toggleColor = (color) => {
@@ -186,6 +201,23 @@ function SearchPage() {
       </header>
 
       <main className="search-main">
+        <form className="search-input-wrap" onSubmit={handleSearch}>
+          <input
+            className="search-input"
+            type="text"
+            placeholder="WHAT ARE YOU LOOKING FOR?"
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+            spellCheck={false}
+          />
+          <button type="submit" className="search-submit-btn" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        </form>
+
         <div className="filter-bar">
           <button className={`filter-toggle${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(v => !v)}>
             FILTERS {hasActiveFilters ? `(${(selectedColors.length > 0 ? 1 : 0) + (selectedCategory ? 1 : 0) + (sortBy ? 1 : 0)})` : ''}

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Maia.Models
 {
@@ -11,6 +12,12 @@ namespace Maia.Models
         public Wishlist Wishlist { get; set; } = null!;
 
         public int ProductId { get; set; }
-        public CardsWomen Product { get; set; } = null!;  // ← SHTUAR navigation
+        public string Source { get; set; } = "WOMAN";
+        public string? ProductName { get; set; }
+        public string? ProductImage { get; set; }
+        public decimal? ProductPrice { get; set; }
+
+        [NotMapped]
+        public CardsWomen? Product { get; set; }
     }
 }

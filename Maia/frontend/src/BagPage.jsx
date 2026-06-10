@@ -42,8 +42,8 @@ function BagPage() {
   const { items: wishlistItems, toggleWishlist } = useWishlist()
 
   const moveWishlistToCart = async (item) => {
-    await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: 'women' })
-    await toggleWishlist({ id: item.productId, source: 'WOMAN' })
+    await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: (item.source ?? 'WOMAN').toLowerCase() })
+    await toggleWishlist({ id: item.productId, source: item.source ?? 'WOMAN' })
   }
 
   const bagTotal = bag.reduce((sum, i) => {
@@ -131,7 +131,7 @@ function BagPage() {
                   key={`${item.wishlistItemId}-${i}`}
                   item={{ ...item, id: item.productId, size: '' }}
                   isFav={true}
-                  onDelete={() => toggleWishlist({ id: item.productId, source: 'WOMAN' })}
+                  onDelete={() => toggleWishlist({ id: item.productId, source: item.source ?? 'WOMAN' })}
                   onMoveToCart={() => moveWishlistToCart(item)}
                 />
               ))

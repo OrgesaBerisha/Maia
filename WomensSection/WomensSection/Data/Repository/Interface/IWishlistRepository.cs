@@ -6,7 +6,7 @@ namespace Maia.Data.Repository.Interface
     {
         Task<Wishlist?> GetByUserIdAsync(int userId);
         Task<Wishlist>  CreateAsync(int userId);
-        Task<bool>      ItemExistsAsync(int wishlistId, int productId);
+        Task<bool>      ItemExistsAsync(int wishlistId, int productId, string source);
         Task<WishlistItem?> GetItemByIdAsync(int itemId, int userId);
         Task AddItemAsync(WishlistItem item);
         Task RemoveItemAsync(WishlistItem item);

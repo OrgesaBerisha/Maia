@@ -16,7 +16,6 @@ namespace Maia.Data.Repository
         public async Task<Wishlist?> GetByUserIdAsync(int userId) =>
             await _context.Wishlists
                 .Include(x => x.WishlistItems)
-                    .ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
         public async Task<Wishlist> CreateAsync(int userId)
@@ -27,9 +26,9 @@ namespace Maia.Data.Repository
             return wishlist;
         }
 
-        public async Task<bool> ItemExistsAsync(int wishlistId, int productId) =>
+        public async Task<bool> ItemExistsAsync(int wishlistId, int productId, string source) =>
             await _context.WishlistItems
-                .AnyAsync(x => x.WishlistId == wishlistId && x.ProductId == productId);
+                .AnyAsync(x => x.WishlistId == wishlistId && x.ProductId == productId && x.Source == source);
 
         public async Task<WishlistItem?> GetItemByIdAsync(int itemId, int userId) =>
             await _context.WishlistItems
