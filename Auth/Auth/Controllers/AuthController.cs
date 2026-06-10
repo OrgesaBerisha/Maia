@@ -20,16 +20,19 @@ namespace Auth.Controllers
         private readonly IEmailService _email;
         private readonly IWebHostEnvironment _env;
         private readonly IHttpClientFactory _http;
-        private const string NotifUrl = "http://localhost:5151/api/notifications/send";
+        private readonly IConfiguration _config;
 
-        public AuthController(IAuthService service, DataContext context, IEmailService email, IWebHostEnvironment env, IHttpClientFactory http)
+        public AuthController(IAuthService service, DataContext context, IEmailService email, IWebHostEnvironment env, IHttpClientFactory http, IConfiguration config)
         {
             _context = context;
             _email = email;
             _service = service;
             _env = env;
             _http = http;
+            _config = config;
         }
+
+        private string NotifUrl => (_config["Services:Notifications"] ?? "http://localhost:5151") + "/api/notifications/send";
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDTO request)
