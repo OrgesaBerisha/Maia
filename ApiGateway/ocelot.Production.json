@@ -1,0 +1,105 @@
+{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/gateway/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "auth", "Port": 80 } ],
+      "SwaggerKey": "auth"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/women/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "womens", "Port": 80 } ],
+      "SwaggerKey": "women"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/men/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "mens", "Port": 80 } ],
+      "SwaggerKey": "men"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/kids/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "kids", "Port": 80 } ],
+      "SwaggerKey": "kids"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/notifications/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "notifications", "Port": 80 } ],
+      "SwaggerKey": "notifications"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/files/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "fileupload", "Port": 80 } ],
+      "SwaggerKey": "files"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/settings/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "settings", "Port": 80 } ],
+      "SwaggerKey": "settings"
+    },
+    {
+      "UpstreamPathTemplate": "/gateway/orders/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH" ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [ { "Host": "orders", "Port": 80 } ],
+      "SwaggerKey": "orders"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "auth",
+      "Config": [ { "Name": "Auth Service", "Version": "v1", "Url": "http://auth:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "women",
+      "Config": [ { "Name": "Womens Section", "Version": "v1", "Url": "http://womens:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "men",
+      "Config": [ { "Name": "Men Section", "Version": "v1", "Url": "http://mens:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "kids",
+      "Config": [ { "Name": "Kids Section", "Version": "v1", "Url": "http://kids:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "notifications",
+      "Config": [ { "Name": "Notification Service", "Version": "v1", "Url": "http://notifications:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "files",
+      "Config": [ { "Name": "File Upload Service", "Version": "v1", "Url": "http://fileupload:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "settings",
+      "Config": [ { "Name": "Settings Service", "Version": "v1", "Url": "http://settings:80/swagger/v1/swagger.json" } ]
+    },
+    {
+      "Key": "orders",
+      "Config": [ { "Name": "Order Service", "Version": "v1", "Url": "http://orders:80/swagger/v1/swagger.json" } ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5100"
+  }
+}

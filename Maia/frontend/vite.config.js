@@ -1,63 +1,57 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Service ports:
-// Maia (main)       → 5293
-// Auth              → 5000
-// KidsSection       → 5062
-// MenSection        → 5018
-// WomensSection     → 5182
-// NotificationSvc   → 5151
-// FileUploadSvc     → 5270
-// SettingsService   → 5187
+const e = process.env
+const auth     = e.SVC_AUTH     || 'http://localhost:5000'
+const womens   = e.SVC_WOMENS   || 'http://localhost:5182'
+const mens     = e.SVC_MENS     || 'http://localhost:5018'
+const kids     = e.SVC_KIDS     || 'http://localhost:5062'
+const orders   = e.SVC_ORDERS   || 'http://localhost:5200'
+const notifs   = e.SVC_NOTIFS   || 'http://localhost:5151'
+const files    = e.SVC_FILES    || 'http://localhost:5270'
+const settings = e.SVC_SETTINGS || 'http://localhost:5187'
+const maia     = e.SVC_MAIA     || 'http://localhost:5293'
+
+const p = (target, ws = false) => ({ target, changeOrigin: true, secure: false, ws })
 
 export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
     proxy: {
-      // Auth service
-      '/api/auth':  { target: 'http://localhost:5000', changeOrigin: true, secure: false },
-      '/api/users': { target: 'http://localhost:5000', changeOrigin: true, secure: false },
+      '/api/auth':  p(auth),
+      '/api/users': p(auth),
 
-      // Kids section
-      '/api/KidsCards':       { target: 'http://localhost:5062', changeOrigin: true, secure: false },
-      '/api/KidsCategory':    { target: 'http://localhost:5062', changeOrigin: true, secure: false },
-      '/api/KidsProductType': { target: 'http://localhost:5062', changeOrigin: true, secure: false },
-      '/api/imageproxy':      { target: 'http://localhost:5062', changeOrigin: true, secure: false },
+      '/api/KidsCards':       p(kids),
+      '/api/KidsCategory':    p(kids),
+      '/api/KidsProductType': p(kids),
+      '/api/imageproxy':      p(kids),
 
-      // Men section
-      '/api/MenCards':    { target: 'http://localhost:5018', changeOrigin: true, secure: false },
-      '/api/MenCategory': { target: 'http://localhost:5018', changeOrigin: true, secure: false },
+      '/api/MenCards':    p(mens),
+      '/api/MenCategory': p(mens),
 
-      // Women section
-      '/api/CardsWomen':             { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/WomanCategory':          { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/Wishlist':               { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/reviews':                { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/export/women-products':  { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/export/men-products':    { target: 'http://localhost:5018', changeOrigin: true, secure: false },
-      '/api/export/kids-products':   { target: 'http://localhost:5062', changeOrigin: true, secure: false },
+      '/api/CardsWomen':            p(womens),
+      '/api/WomanCategory':         p(womens),
+      '/api/Wishlist':              p(womens),
+      '/api/reviews':               p(womens),
+      '/api/export/women-products': p(womens),
+      '/api/export/men-products':   p(mens),
+      '/api/export/kids-products':  p(kids),
 
-      // Order Service — centralized cart + orders
-      '/api/Cart':  { target: 'http://localhost:5200', changeOrigin: true, secure: false },
-      '/api/Order': { target: 'http://localhost:5200', changeOrigin: true, secure: false },
+      '/api/Cart':    p(orders),
+      '/api/Order':   p(orders),
+      '/api/payment': p(orders),
 
-      // Notification service
-      '/api/notifications': { target: 'http://localhost:5151', changeOrigin: true, secure: false },
-      '/api/chat':          { target: 'http://localhost:5151', changeOrigin: true, secure: false },
+      '/api/notifications': p(notifs),
+      '/api/chat':          p(notifs),
 
-      // File upload service
-      '/api/files': { target: 'http://localhost:5270', changeOrigin: true, secure: false },
+      '/hubs/notifications': p(notifs, true),
+      '/hubs/chat':          p(notifs, true),
 
-      // Settings service
-      '/api/settings': { target: 'http://localhost:5187', changeOrigin: true, secure: false },
+      '/api/files':    p(files),
+      '/api/settings': p(settings),
 
-      // Payment
-      '/api/payment': { target: 'http://localhost:5200', changeOrigin: true, secure: false },
-
-      // Maia main backend — catch-all for any remaining /api routes
-      '/api': { target: 'http://localhost:5293', changeOrigin: true, secure: false },
+      '/api': p(maia),
     },
   },
 })

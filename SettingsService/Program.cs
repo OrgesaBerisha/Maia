@@ -54,6 +54,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<SettingsDbContext>();
+    await db.Database.MigrateAsync();
     await SeedData.SeedAsync(db);
 }
 
