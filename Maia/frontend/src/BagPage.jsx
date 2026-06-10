@@ -21,8 +21,12 @@ function BagItem({ item, onDelete, onSave, onMoveToCart, isFav }) {
       <img src={item.image} alt={item.name} className="bag-item-img" />
       <div className="bag-item-details">
         <span className="bag-item-name">{item.name}</span>
-        <span className="bag-item-size">{item.size} |</span>
-        <span className="bag-item-price">{item.price}</span>
+        {item.size && item.size !== 'ONE SIZE' && (
+          <span className="bag-item-size">SIZE: {item.size}</span>
+        )}
+        <span className="bag-item-price">
+          {parseFloat(item.price) ? `${parseFloat(item.price).toFixed(2)} EUR` : item.price}
+        </span>
         <div className="bag-item-actions">
           <button className="bag-action" onClick={onDelete}>DELETE</button>
           <span className="bag-action-sep">|</span>

@@ -126,6 +126,7 @@ function CheckoutForm() {
           imageUrl:      i.image ?? '',
           price:         parseFloat(i.price) || 0,
           quantity:      i.quantity ?? 1,
+          size:          i.size ?? '',
         })),
       })
     } catch (err) {

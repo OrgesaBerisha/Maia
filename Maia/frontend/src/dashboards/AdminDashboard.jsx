@@ -580,6 +580,7 @@ function OrdersTab() {
                         )}
                         <div style={{ fontSize: 12 }}>
                           <div style={{ fontWeight: 600 }}>{item.productName}</div>
+                          {item.size && <div style={{ color: '#555', letterSpacing: '0.05em' }}>SIZE: {item.size}</div>}
                           <div style={{ color: '#888' }}>€{Number(item.price).toFixed(2)} × {item.quantity}</div>
                         </div>
                       </div>
