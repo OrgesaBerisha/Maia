@@ -31,10 +31,13 @@ export default defineConfig({
       '/api/MenCategory': { target: 'http://localhost:5018', changeOrigin: true, secure: false },
 
       // Women section
-      '/api/CardsWomen':    { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/WomanCategory': { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/Wishlist':      { target: 'http://localhost:5182', changeOrigin: true, secure: false },
-      '/api/reviews':      { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/CardsWomen':             { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/WomanCategory':          { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/Wishlist':               { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/reviews':                { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/export/women-products':  { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/export/men-products':    { target: 'http://localhost:5018', changeOrigin: true, secure: false },
+      '/api/export/kids-products':   { target: 'http://localhost:5062', changeOrigin: true, secure: false },
 
       // Order Service — centralized cart + orders
       '/api/Cart':  { target: 'http://localhost:5200', changeOrigin: true, secure: false },

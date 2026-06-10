@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext.jsx'
 import api from '../api/axios.js'
-import LiveChatTab from './LiveChatTab.jsx'
 import './DashboardLayout.css'
 
 const TABS = [
@@ -12,7 +11,6 @@ const TABS = [
   { key: 'men',        label: 'Men Sales',     icon: '◆' },
   { key: 'kids',       label: 'Kids Sales',    icon: '◎' },
   { key: 'active',     label: 'Active Sales',  icon: '◑' },
-  { key: 'chat',       label: 'Live Chat',     icon: '💬' },
 ]
 
 function useApi(fetcher, deps = []) {
@@ -122,15 +120,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: pct })
       } else {
-        await api.put(`/MenCards/${selected.id}`, {
-          title: selected.title,
-          imageUrl: selected.imageUrl || null,
-          price: selected.price,
-          menCategoryId: selected.menCategoryId,
-          description: selected.description || '',
-          color: selected.color || null,
-          discountPercent: pct,
-        })
+        await api.patch(`/MenCards/${selected.id}/sale`, { discountPercent: pct })
       }
       setModal(null); reload()
     } catch (e) {
@@ -145,15 +135,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
       } else {
-        await api.put(`/MenCards/${p.id}`, {
-          title: p.title,
-          imageUrl: p.imageUrl || null,
-          price: p.price,
-          menCategoryId: p.menCategoryId,
-          description: p.description || '',
-          color: p.color || null,
-          discountPercent: 0,
-        })
+        await api.patch(`/MenCards/${p.id}/sale`, { discountPercent: 0 })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -316,7 +298,6 @@ export default function SalesManagerDashboard() {
       case 'men':       return <SectionSalesTab section="men" />
       case 'kids':      return <SectionSalesTab section="kids" />
       case 'active':    return <ActiveSalesTab />
-      case 'chat':      return <LiveChatTab />
       default: return null
     }
   }

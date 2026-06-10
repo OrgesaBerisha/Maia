@@ -53,14 +53,34 @@ namespace Maia.Data.Repository
 
         public async Task<CardsWomenDto?> SetDiscountAsync(int id, int? discountPercent)
         {
+            const int SaleCategoryId = 9;
+
             var product = await _context.CardsWoman
                 .Include(x => x.WomanCategory)
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (product == null) return null;
 
+            if (discountPercent > 0)
+            {
+                if (product.WomanCategoryId != SaleCategoryId)
+                    product.OriginalCategoryId = product.WomanCategoryId;
+                product.WomanCategoryId = SaleCategoryId;
+            }
+            else
+            {
+                if (product.OriginalCategoryId.HasValue)
+                {
+                    product.WomanCategoryId = product.OriginalCategoryId.Value;
+                    product.OriginalCategoryId = null;
+                }
+                discountPercent = null;
+            }
+
             product.DiscountPercent = discountPercent;
             product.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
+
+            await _context.Entry(product).Reference(x => x.WomanCategory).LoadAsync();
 
             return new CardsWomenDto
             {

@@ -395,10 +395,22 @@ function ProductsTab({ section }) {
   }
 
   const exportUrls = {
-    women: { csv: 'http://localhost:5182/api/export/women-products/csv', excel: 'http://localhost:5182/api/export/women-products/excel', importCsv: 'http://localhost:5182/api/export/women-products/import/csv', importExcel: 'http://localhost:5182/api/export/women-products/import/excel' },
-    men:   { csv: 'http://localhost:5018/api/export/men-products/csv',   excel: 'http://localhost:5018/api/export/men-products/excel',   importCsv: 'http://localhost:5018/api/export/men-products/import/csv',   importExcel: 'http://localhost:5018/api/export/men-products/import/excel' },
-    kids:  { csv: 'http://localhost:5062/api/export/kids-products/csv',  excel: 'http://localhost:5062/api/export/kids-products/excel',  importCsv: 'http://localhost:5062/api/export/kids-products/import/csv',  importExcel: 'http://localhost:5062/api/export/kids-products/import/excel' },
+    women: { csv: '/api/export/women-products/csv', excel: '/api/export/women-products/excel', importCsv: '/api/export/women-products/import/csv', importExcel: '/api/export/women-products/import/excel', importJson: '/api/export/women-products/import/json' },
+    men:   { csv: '/api/export/men-products/csv',   excel: '/api/export/men-products/excel',   importCsv: '/api/export/men-products/import/csv',   importExcel: '/api/export/men-products/import/excel',   importJson: '/api/export/men-products/import/json' },
+    kids:  { csv: '/api/export/kids-products/csv',  excel: '/api/export/kids-products/excel',  importCsv: '/api/export/kids-products/import/csv',  importExcel: '/api/export/kids-products/import/excel',  importJson: '/api/export/kids-products/import/json' },
   }[section]
+
+  const handleDownload = async (url, filename) => {
+    try {
+      const res = await fetch(url, { credentials: 'include' })
+      const blob = await res.blob()
+      const a = document.createElement('a')
+      a.href = URL.createObjectURL(blob)
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(a.href)
+    } catch { alert('Download failed.') }
+  }
 
   const handleImport = async (type) => {
     const input = document.createElement('input')
@@ -411,9 +423,9 @@ function ProductsTab({ section }) {
         if (type === 'json') {
           const text = await file.text()
           const items = JSON.parse(text)
-          const importUrl = exportUrls?.importCsv?.replace('/import/csv', '/import/json')
-          const res = await fetch(importUrl, {
+          const res = await fetch(exportUrls?.importJson, {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(items)
           })
@@ -423,7 +435,7 @@ function ProductsTab({ section }) {
           const url = type === 'csv' ? exportUrls?.importCsv : exportUrls?.importExcel
           const formData = new FormData()
           formData.append('file', file)
-          const res = await fetch(url, { method: 'POST', body: formData })
+          const res = await fetch(url, { method: 'POST', credentials: 'include', body: formData })
           const data = await res.json()
           alert(`✅ Imported ${data.imported} products successfully!`)
         }
@@ -438,8 +450,8 @@ function ProductsTab({ section }) {
       <div className="db-toolbar">
         <input className="db-search" placeholder="Search products…" value={q} onChange={e => setQ(e.target.value)} />
         <div style={{ display: 'flex', gap: 6 }}>
-          <a className="db-btn db-btn--ghost" href={exportUrls?.csv} target="_blank" rel="noreferrer">↓ CSV</a>
-          <a className="db-btn db-btn--ghost" href={exportUrls?.excel} target="_blank" rel="noreferrer">↓ Excel</a>
+          <button className="db-btn db-btn--ghost" onClick={() => handleDownload(exportUrls?.csv, `${section}_products.csv`)}>↓ CSV</button>
+          <button className="db-btn db-btn--ghost" onClick={() => handleDownload(exportUrls?.excel, `${section}_products.xlsx`)}>↓ Excel</button>
           <button className="db-btn db-btn--ghost" onClick={() => handleImport('csv')}>↑ Import CSV</button>
           <button className="db-btn db-btn--ghost" onClick={() => handleImport('excel')}>↑ Import Excel</button>
           <button className="db-btn db-btn--ghost" onClick={() => handleImport('json')}>↑ Import JSON</button>

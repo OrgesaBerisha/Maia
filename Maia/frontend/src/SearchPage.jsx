@@ -290,7 +290,12 @@ function SearchPage() {
         {!loading && filtered.length > 0 && (
           <div className="product-grid">
             {filtered.map(product => (
-              <div key={`${product.source}-${product.id}`} className="product-card">
+              <div
+                key={`${product.source}-${product.id}`}
+                className="product-card"
+                onClick={() => navigate(`/product/${product.productSource}/${product.id}`, { state: { product } })}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="product-img-wrap">
                   <img src={product.image} alt={product.name} className="product-img" loading="lazy" />
                   {product.color && (
@@ -300,12 +305,16 @@ function SearchPage() {
                     <button
                       className={`product-wishlist${isWishlisted(product.id, product.source) ? ' product-wishlist--active' : ''}`}
                       aria-label={isWishlisted(product.id, product.source) ? 'Remove from wishlist' : 'Add to wishlist'}
-                      onClick={e => { e.preventDefault(); toggleWishlist(product) }}
+                      onClick={e => { e.stopPropagation(); toggleWishlist(product) }}
                     >
                       {isWishlisted(product.id, product.source) ? '♥' : '♡'}
                     </button>
                   )}
-                  <button className="product-add" aria-label={`Add ${product.name} to bag`} onClick={e => { e.preventDefault(); setModal(product) }}>+</button>
+                  <button
+                    className="product-add"
+                    aria-label={`Add ${product.name} to bag`}
+                    onClick={e => { e.stopPropagation(); setModal(product) }}
+                  >+</button>
                 </div>
                 <div className="product-info">
                   <span className="product-name">{product.name}</span>

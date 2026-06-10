@@ -189,6 +189,51 @@ namespace MenSection.Services
             });
         }
 
+        // SET DISCOUNT / SALE
+        public async Task<MenCardsDto?> SetDiscountAsync(int id, int? discountPercent)
+        {
+            const int SaleCategoryId = 8;
+
+            var entity = await _context.MenCards
+                .Include(x => x.MenCategory)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null) return null;
+
+            if (discountPercent > 0)
+            {
+                if (entity.MenCategoryId != SaleCategoryId)
+                    entity.OriginalCategoryId = entity.MenCategoryId;
+                entity.MenCategoryId = SaleCategoryId;
+            }
+            else
+            {
+                if (entity.OriginalCategoryId.HasValue)
+                {
+                    entity.MenCategoryId = entity.OriginalCategoryId.Value;
+                    entity.OriginalCategoryId = null;
+                }
+                discountPercent = null;
+            }
+
+            entity.DiscountPercent = discountPercent;
+            await _context.SaveChangesAsync();
+
+            await _context.Entry(entity).Reference(x => x.MenCategory).LoadAsync();
+
+            return new MenCardsDto
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                ImageUrl = entity.ImageUrl,
+                Price = entity.Price,
+                MenCategoryId = entity.MenCategoryId,
+                MenCategoryName = entity.MenCategory?.Name,
+                Description = entity.Description,
+                Color = entity.Color,
+                DiscountPercent = entity.DiscountPercent
+            };
+        }
+
         // SORT
         public async Task<IEnumerable<MenCardsDto>> SortAsync(SortOptions sortBy)
         {

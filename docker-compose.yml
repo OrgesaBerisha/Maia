@@ -1,0 +1,211 @@
+version: '3.9'
+
+services:
+
+  # ── Databases ─────────────────────────────────────────────────────────────
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Maia@2026Strong!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Maia@2026Strong!", "-Q", "SELECT 1", "-No"]
+      interval: 10s
+      retries: 10
+      start_period: 30s
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # ── Backend Services ───────────────────────────────────────────────────────
+
+  auth:
+    build:
+      context: ./Auth/Auth
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthService;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  womens:
+    build:
+      context: ./WomensSection/WomensSection
+      dockerfile: Dockerfile
+    ports:
+      - "5182:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=WomenPage;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  mens:
+    build:
+      context: ./MenSection
+      dockerfile: Dockerfile
+    ports:
+      - "5018:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MenSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  kids:
+    build:
+      context: ./KidsSection
+      dockerfile: Dockerfile
+    ports:
+      - "5062:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=KidsSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  orders:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "5200:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  notifications:
+    build:
+      context: ./NotificationService
+      dockerfile: Dockerfile
+    ports:
+      - "5151:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+      - Groq__ApiKey=${GROQ_API_KEY}
+
+  maia:
+    build:
+      context: ./Maia
+      dockerfile: Dockerfile
+    ports:
+      - "5293:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Maya;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
+      - MongoDB__ConnectionString=mongodb://mongodb:27017
+      - MongoDB__DatabaseName=MaiaDB
+      - Redis__ConnectionString=redis:6379
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  gateway:
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5100:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    depends_on:
+      - auth
+      - womens
+      - mens
+      - kids
+      - orders
+      - notifications
+      - maia
+
+  fileupload:
+    build:
+      context: ./FileUploadService
+      dockerfile: Dockerfile
+    ports:
+      - "5270:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+
+  settings:
+    build:
+      context: ./SettingsService
+      dockerfile: Dockerfile
+    ports:
+      - "5187:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
+      - Jwt__Issuer=AuthService
+      - Jwt__Audience=AuthServiceUsers
+
+  # ── Frontend ───────────────────────────────────────────────────────────────
+
+  frontend:
+    build:
+      context: ./Maia/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - auth
+      - womens
+      - mens
+      - kids
+      - orders
+      - notifications
+
+volumes:
+  sqlserver_data:
+  mongo_data:

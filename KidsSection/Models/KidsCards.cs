@@ -21,4 +21,6 @@ public class KidsCards
     public int? DiscountPercent { get; set; }
 
     public string? Color { get; set; }
+
+    public int? OriginalCategoryId { get; set; }
 }
