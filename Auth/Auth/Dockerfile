@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["Auth.csproj", "."]
 RUN dotnet restore "Auth.csproj"
 COPY . .
-RUN dotnet publish "Auth.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "Auth.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

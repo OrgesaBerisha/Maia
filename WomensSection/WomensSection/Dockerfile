@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["WomensSection.csproj", "."]
 RUN dotnet restore "WomensSection.csproj"
 COPY . .
-RUN dotnet publish "WomensSection.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "WomensSection.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["Maia.csproj", "."]
 RUN dotnet restore "Maia.csproj"
 COPY . .
-RUN dotnet publish "Maia.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "Maia.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

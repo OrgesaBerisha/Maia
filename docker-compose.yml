@@ -41,6 +41,7 @@ services:
       - "5000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=AuthService;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -62,6 +63,7 @@ services:
       - "5182:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=WomenPage;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -78,6 +80,7 @@ services:
       - "5018:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MenSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -94,6 +97,7 @@ services:
       - "5062:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=KidsSection;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -110,6 +114,7 @@ services:
       - "5200:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -133,6 +138,7 @@ services:
       - "5151:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=NotificationDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -150,6 +156,7 @@ services:
       - "5293:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=Maya;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - MongoDB__ConnectionString=mongodb://mongodb:27017
       - MongoDB__DatabaseName=MaiaDB
@@ -173,6 +180,7 @@ services:
       - "5100:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
     depends_on:
       - auth
       - womens
@@ -190,6 +198,7 @@ services:
       - "5270:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=FileUploadDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
@@ -206,6 +215,7 @@ services:
       - "5187:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=80
       - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=SettingsDb;User Id=sa;Password=Maia@2026Strong!;TrustServerCertificate=True
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
