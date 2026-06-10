@@ -7,15 +7,15 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-[ApiController]
-[Route("api/chat")]
-[Authorize]
 public class SendMessageDto
 {
     public string Content { get; set; } = string.Empty;
     public string? SenderName { get; set; }
 }
 
+[ApiController]
+[Route("api/chat")]
+[Authorize]
 public class ChatController : ControllerBase
 {
     private readonly NotificationDbContext _db;

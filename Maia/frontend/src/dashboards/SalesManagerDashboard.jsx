@@ -5,11 +5,12 @@ import api from '../api/axios.js'
 import './DashboardLayout.css'
 
 const TABS = [
-  { key: 'overview', label: 'Overview',      icon: '◈' },
-  { key: 'women',    label: 'Women Sales',   icon: '◇' },
-  { key: 'men',      label: 'Men Sales',     icon: '◆' },
-  { key: 'kids',     label: 'Kids Sales',    icon: '◉' },
-  { key: 'active',   label: 'Active Sales',  icon: '◑' },
+  { key: 'overview',   label: 'Overview',      icon: '◈' },
+  { key: 'customers',  label: 'Customers',     icon: '◉' },
+  { key: 'women',      label: 'Women Sales',   icon: '◇' },
+  { key: 'men',        label: 'Men Sales',     icon: '◆' },
+  { key: 'kids',       label: 'Kids Sales',    icon: '◎' },
+  { key: 'active',     label: 'Active Sales',  icon: '◑' },
 ]
 
 function useApi(fetcher, deps = []) {
@@ -35,6 +36,48 @@ function Modal({ title, onClose, children, actions }) {
         <h2 className="db-modal-title">{title}</h2>
         {children}
         <div className="db-modal-actions">{actions}</div>
+      </div>
+    </div>
+  )
+}
+
+// ── Customers Tab ─────────────────────────────────────────────────────────
+function CustomersTab() {
+  const [q, setQ] = useState('')
+
+  const { data: customers, loading, error } = useApi(async () => {
+    const r = await api.get('/users/customers')
+    return r.data
+  }, [])
+
+  const filtered = customers.filter(u =>
+    !q || `${u.firstName} ${u.lastName} ${u.email}`.toLowerCase().includes(q.toLowerCase())
+  )
+
+  return (
+    <div className="db-section">
+      <div className="db-toolbar">
+        <input className="db-search" placeholder="Search customers…" value={q} onChange={e => setQ(e.target.value)} />
+        <span className="db-stat-label" style={{ flexShrink: 0 }}>{filtered.length} customers</span>
+      </div>
+      {error && <div className="db-error">{error}</div>}
+      <div className="db-table-wrap">
+        <table className="db-table">
+          <thead><tr><th>NAME</th><th>EMAIL</th><th>JOINED</th></tr></thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={3} className="db-empty">Loading…</td></tr>
+            ) : filtered.length === 0 ? (
+              <tr><td colSpan={3} className="db-empty">No customers found.</td></tr>
+            ) : filtered.map(u => (
+              <tr key={u.userID ?? u.email}>
+                <td>{u.firstName} {u.lastName}</td>
+                <td>{u.email}</td>
+                <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
@@ -77,15 +120,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${selected.id}/sale`, { discountPercent: pct })
       } else {
-        await api.put(`/MenCards/${selected.id}`, {
-          title: selected.title,
-          imageUrl: selected.imageUrl || null,
-          price: selected.price,
-          menCategoryId: selected.menCategoryId,
-          description: selected.description || '',
-          color: selected.color || null,
-          discountPercent: pct,
-        })
+        await api.patch(`/MenCards/${selected.id}/sale`, { discountPercent: pct })
       }
       setModal(null); reload()
     } catch (e) {
@@ -100,15 +135,7 @@ function SectionSalesTab({ section }) {
       } else if (section === 'kids') {
         await api.patch(`/KidsCards/${p.id}/sale`, { discountPercent: 0 })
       } else {
-        await api.put(`/MenCards/${p.id}`, {
-          title: p.title,
-          imageUrl: p.imageUrl || null,
-          price: p.price,
-          menCategoryId: p.menCategoryId,
-          description: p.description || '',
-          color: p.color || null,
-          discountPercent: 0,
-        })
+        await api.patch(`/MenCards/${p.id}/sale`, { discountPercent: 0 })
       }
       reload()
     } catch (e) { alert(e?.response?.data?.message ?? 'Failed.') }
@@ -266,10 +293,11 @@ export default function SalesManagerDashboard() {
           </div>
         </div>
       )
-      case 'women':  return <SectionSalesTab section="women" />
-      case 'men':    return <SectionSalesTab section="men" />
-      case 'kids':   return <SectionSalesTab section="kids" />
-      case 'active': return <ActiveSalesTab />
+      case 'customers': return <CustomersTab />
+      case 'women':     return <SectionSalesTab section="women" />
+      case 'men':       return <SectionSalesTab section="men" />
+      case 'kids':      return <SectionSalesTab section="kids" />
+      case 'active':    return <ActiveSalesTab />
       default: return null
     }
   }

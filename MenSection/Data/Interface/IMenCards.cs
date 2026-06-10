@@ -13,6 +13,6 @@ namespace MenSection.Data.Interface
         Task<IEnumerable<MenCardsDto>> FilterAsync(string? name, int? categoryId, decimal? min, decimal? max);
         Task<IEnumerable<MenCardsDto>> SortAsync(SortOptions sortBy);
         Task<MenCardsDto> UpdateAsync(int id, CreateMenCardsDto dto);
-
+        Task<MenCardsDto?> SetDiscountAsync(int id, int? discountPercent);
     }
 }
