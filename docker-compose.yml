@@ -51,6 +51,7 @@ services:
       - Email__Port=${EMAIL_PORT:-587}
       - Email__User=${EMAIL_USER}
       - Email__Pass=${EMAIL_PASS}
+      - Services__Notifications=http://notifications:80
     depends_on:
       sqlserver:
         condition: service_healthy
