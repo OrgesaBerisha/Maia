@@ -428,3 +428,16 @@
   color: #9a8e82;
   text-transform: uppercase;
 }
+
+.product-stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.product-stars-label {
+  font-size: 10px;
+  color: #9a8e82;
+  letter-spacing: 0.05em;
+}

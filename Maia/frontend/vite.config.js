@@ -34,6 +34,7 @@ export default defineConfig({
       '/api/CardsWomen':    { target: 'http://localhost:5182', changeOrigin: true, secure: false },
       '/api/WomanCategory': { target: 'http://localhost:5182', changeOrigin: true, secure: false },
       '/api/Wishlist':      { target: 'http://localhost:5182', changeOrigin: true, secure: false },
+      '/api/reviews':      { target: 'http://localhost:5182', changeOrigin: true, secure: false },
 
       // Order Service — centralized cart + orders
       '/api/Cart':  { target: 'http://localhost:5200', changeOrigin: true, secure: false },
@@ -41,7 +42,7 @@ export default defineConfig({
 
       // Notification service
       '/api/notifications': { target: 'http://localhost:5151', changeOrigin: true, secure: false },
-      '/api/chat':          { target: 'http://localhost:5151', changeOrigin: true, secure: false, rewrite: (path) => path.replace('/api/chat', '') },
+      '/api/chat':          { target: 'http://localhost:5151', changeOrigin: true, secure: false },
 
       // File upload service
       '/api/files': { target: 'http://localhost:5270', changeOrigin: true, secure: false },

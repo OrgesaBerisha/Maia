@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import BottomNav from './BottomNav.jsx'
 import SizeModal from './SizeModal.jsx'
 import SiteLogo from './SiteLogo.jsx'
+import ReviewModal, { Stars } from './ReviewModal.jsx'
 import { useCart } from './CartContext.jsx'
 import { useWishlist } from './WishlistContext.jsx'
 import { useAuth } from './AuthContext.jsx'
@@ -82,7 +83,9 @@ function SearchPage() {
   const [products, setProducts]   = useState([])
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState(null)
-  const [modalProduct, setModal]  = useState(null)
+  const [modalProduct, setModal]      = useState(null)
+  const [reviewProduct, setReview]    = useState(null)
+  const [summaries, setSummaries]     = useState({})
   const [showFilters, setShowFilters] = useState(false)
 
   const [selectedColors, setSelectedColors]     = useState([])
@@ -113,6 +116,24 @@ function SearchPage() {
   useEffect(() => {
     setSearchInput(query)
   }, [query])
+
+  useEffect(() => {
+    if (products.length === 0) return
+    const fetchSummaries = async () => {
+      const entries = await Promise.allSettled(
+        products.map(p =>
+          api.get('/reviews/summary', { params: { productId: p.id, source: p.source } })
+            .then(r => ({ key: `${p.source}-${p.id}`, ...r.data }))
+        )
+      )
+      const map = {}
+      entries.forEach(e => {
+        if (e.status === 'fulfilled') map[e.value.key] = e.value
+      })
+      setSummaries(map)
+    }
+    fetchSummaries()
+  }, [products])
 
   useEffect(() => {
     const t = setTimeout(load, 350)
@@ -290,7 +311,7 @@ function SearchPage() {
           <div className="product-grid">
             {filtered.map(product => (
               <div key={`${product.source}-${product.id}`} className="product-card">
-                <div className="product-img-wrap">
+                <div className="product-img-wrap" onClick={() => setReview(product)} style={{ cursor: 'pointer' }}>
                   <img src={product.image} alt={product.name} className="product-img" loading="lazy" />
                   {product.color && (
                     <span className="product-color-dot" style={{ background: COLOR_HEX[product.color] ?? '#ccc' }} title={product.color} />
@@ -299,15 +320,15 @@ function SearchPage() {
                     <button
                       className={`product-wishlist${isWishlisted(product.id, product.source) ? ' product-wishlist--active' : ''}`}
                       aria-label={isWishlisted(product.id, product.source) ? 'Remove from wishlist' : 'Add to wishlist'}
-                      onClick={e => { e.preventDefault(); toggleWishlist(product) }}
+                      onClick={e => { e.stopPropagation(); e.preventDefault(); toggleWishlist(product) }}
                     >
                       {isWishlisted(product.id, product.source) ? '♥' : '♡'}
                     </button>
                   )}
-                  <button className="product-add" aria-label={`Add ${product.name} to bag`} onClick={e => { e.preventDefault(); setModal(product) }}>+</button>
+                  <button className="product-add" aria-label={`Add ${product.name} to bag`} onClick={e => { e.stopPropagation(); e.preventDefault(); setModal(product) }}>+</button>
                 </div>
                 <div className="product-info">
-                  <span className="product-name">{product.name}</span>
+                  <span className="product-name" onClick={() => setReview(product)} style={{ cursor: 'pointer' }}>{product.name}</span>
                   {product.salePrice ? (
                     <div className="product-price-block">
                       <span className="product-price product-price--original">{product.priceLabel}</span>
@@ -317,6 +338,15 @@ function SearchPage() {
                     <span className="product-price">{product.priceLabel}</span>
                   )}
                   {product.color && <span className="product-color-label">{product.color}</span>}
+                  {(() => {
+                    const s = summaries[`${product.source}-${product.id}`]
+                    return s && s.count > 0 ? (
+                      <div className="product-stars" onClick={() => setReview(product)} style={{ cursor: 'pointer' }}>
+                        <Stars value={Math.round(s.average)} size={11} />
+                        <span className="product-stars-label">{s.average.toFixed(1)} ({s.count})</span>
+                      </div>
+                    ) : null
+                  })()}
                 </div>
               </div>
             ))}
@@ -332,6 +362,10 @@ function SearchPage() {
 
       {modalProduct && (
         <SizeModal product={modalProduct} onClose={() => setModal(null)} onAddToBag={addToBag} />
+      )}
+
+      {reviewProduct && (
+        <ReviewModal product={reviewProduct} onClose={() => setReview(null)} />
       )}
     </div>
   )
