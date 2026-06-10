@@ -2,43 +2,48 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
-  background: #ffffff;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #1a1208;
+  background: #faf9f7;
+  font-family: 'Jost', sans-serif;
+  color: #1a1a1a;
 }
 
-.purchases-blob { display: block; width: 100%; height: 200px; flex-shrink: 0; }
+.purchases-blob { display: none; }
 
 .purchases-header {
-  margin-top: -158px;
-  padding: 0 80px;
-  position: relative;
-  z-index: 1;
+  margin-top: 0;
+  padding: 18px clamp(20px, 5vw, 80px);
+  background: #faf9f7;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .purchases-back {
-  font-size: 11px;
+  font-family: 'Jost', sans-serif;
+  font-size: 10.5px;
   font-weight: 400;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #9a8e82;
   text-decoration: none;
   transition: color 0.2s;
 }
-.purchases-back:hover { color: #1a1208; }
+
+.purchases-back:hover { color: #1a1a1a; }
 
 .purchases-header-label {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.18em;
-  color: #1a1208;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1a1a1a;
 }
 
 .purchases-main {
   flex: 1;
-  padding: 48px 80px 80px;
+  padding: 48px clamp(20px, 5vw, 80px) 100px;
   display: flex;
   flex-direction: column;
 }
@@ -46,13 +51,15 @@
 .purchases-heading {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(32px, 4vw, 52px);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  color: #1a1208;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
   margin: 0 0 40px;
 }
 
 .purchases-empty {
+  font-family: 'Jost', sans-serif;
   font-size: 11px;
   letter-spacing: 0.2em;
   color: #9a8e82;
@@ -60,15 +67,9 @@
   margin: 40px 0 0;
 }
 
-.purchases-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
+.purchases-list { display: flex; flex-direction: column; gap: 0; }
 
-.order-card {
-  border-bottom: 1px solid #e8e0d8;
-}
+.order-card { border-bottom: 1px solid rgba(0, 0, 0, 0.07); }
 
 .order-card-header {
   width: 100%;
@@ -83,23 +84,22 @@
   text-align: left;
   transition: opacity 0.15s;
 }
-.order-card-header:hover { opacity: 0.7; }
 
-.order-card-left {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
+.order-card-header:hover { opacity: 0.65; }
+
+.order-card-left { display: flex; flex-direction: column; gap: 5px; }
 
 .order-id {
-  font-size: 11px;
+  font-family: 'Jost', sans-serif;
+  font-size: 10.5px;
   font-weight: 400;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #1a1208;
+  color: #1a1a1a;
 }
 
 .order-date {
+  font-family: 'Jost', sans-serif;
   font-size: 12px;
   font-weight: 300;
   letter-spacing: 0.06em;
@@ -113,25 +113,26 @@
 }
 
 .order-status {
+  font-family: 'Jost', sans-serif;
   font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 4px 10px;
-  border-radius: 2px;
 }
+
 .order-status--pending    { background: #faf2e4; color: #9a7020; }
 .order-status--processing { background: #e8f0fb; color: #2060a0; }
 .order-status--shipped    { background: #e8f5ef; color: #1a6040; }
-.order-status--delivered  { background: #f0f0f0; color: #4a4a4a; }
+.order-status--delivered  { background: #f0ece6; color: #4a4035; }
 .order-status--cancelled  { background: #fce8e8; color: #9b2020; }
 
 .order-total {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 22px;
+  font-weight: 300;
   letter-spacing: 0.04em;
-  color: #1a1208;
+  color: #1a1a1a;
   white-space: nowrap;
 }
 
@@ -144,43 +145,32 @@
   text-align: center;
 }
 
-.order-items {
-  padding: 0 0 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+.order-items { padding: 0 0 28px; display: flex; flex-direction: column; gap: 16px; }
 
-.order-item {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+.order-item { display: flex; align-items: center; gap: 20px; }
 
 .order-item-img {
-  width: 64px;
-  height: 80px;
+  width: 60px;
+  height: 76px;
   object-fit: cover;
   flex-shrink: 0;
-  background: #f5f0eb;
+  background: #ede8e2;
 }
 
-.order-item-details {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
+.order-item-details { display: flex; flex-direction: column; gap: 5px; }
 
 .order-item-name {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #1a1208;
+  color: #1a1a1a;
 }
 
 .order-item-meta {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   font-weight: 300;
   letter-spacing: 0.06em;
   color: #9a8e82;

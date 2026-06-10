@@ -2,9 +2,11 @@
 
 body {
   margin: 0;
-  background: #ffffff;
+  background: #faf9f7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  color: #1a1a1a;
 }
 
 #root {

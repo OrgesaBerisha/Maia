@@ -2,23 +2,18 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
-  background: #fff;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #1a1208;
+  background: #faf9f7;
+  font-family: 'Jost', sans-serif;
+  color: #1a1a1a;
 }
 
-.rp-blob {
-  display: block;
-  width: 100%;
-  height: 200px;
-  flex-shrink: 0;
-}
+.rp-blob { display: none; }
 
 .rp-header {
-  margin-top: -160px;
-  padding: 0 80px;
-  position: relative;
-  z-index: 1;
+  margin-top: 0;
+  padding: 18px clamp(20px, 5vw, 80px);
+  background: #faf9f7;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   justify-content: center;
 }
@@ -36,63 +31,63 @@
 
 .rp-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 42px;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  color: #1a1208;
+  font-size: clamp(32px, 5vw, 42px);
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  color: #1a1a1a;
   margin: 0;
   text-align: center;
 }
 
-/* Summary */
 .rp-summary {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #faf7f4;
-  border-radius: 4px;
+  background: #f0ece6;
   padding: 16px 24px;
 }
 
 .rp-avg-num {
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 36px;
   font-weight: 300;
-  color: #1a1208;
+  color: #1a1a1a;
   letter-spacing: -0.02em;
 }
 
 .rp-count {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   color: #9a8e82;
   letter-spacing: 0.1em;
 }
 
-/* Stars */
 .rp-stars { display: flex; gap: 3px; line-height: 1; }
 .rp-star { color: #d4c5b3; transition: color 0.15s; }
 .rp-star--on { color: #c8921a; }
 
-/* Form */
 .rp-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: #faf7f4;
-  border-radius: 4px;
+  background: #f0ece6;
   padding: 24px;
 }
 
 .rp-form-title {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #1a1208;
+  color: #1a1a1a;
   margin: 0;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .rp-hint {
+  font-family: 'Jost', sans-serif;
   font-size: 10px;
   color: #9a8e82;
   letter-spacing: 0.1em;
@@ -102,42 +97,39 @@
 .rp-textarea {
   width: 100%;
   border: 1px solid #d4c5b3;
-  border-radius: 2px;
   padding: 12px;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
-  color: #1a1208;
+  color: #1a1a1a;
   resize: none;
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
-  background: #fff;
+  background: #faf9f7;
 }
-.rp-textarea:focus { border-color: #1a1208; }
+
+.rp-textarea:focus { border-color: #1a1a1a; }
 .rp-textarea::placeholder { color: #b0a89e; }
 
-.rp-error {
-  font-size: 11px;
-  color: #e63946;
-  margin: 0;
-  letter-spacing: 0.05em;
-}
+.rp-error { font-family: 'Jost', sans-serif; font-size: 11px; color: #e63946; margin: 0; letter-spacing: 0.05em; }
 
 .rp-btn {
-  background: #1a1208;
-  color: #fff;
+  background: #1a1a1a;
+  color: #faf9f7;
   border: none;
   padding: 13px 28px;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 11px;
+  font-family: 'Jost', sans-serif;
+  font-size: 10.5px;
   letter-spacing: 0.22em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: background 0.2s;
   align-self: flex-start;
   text-decoration: none;
   display: inline-block;
 }
-.rp-btn:hover { background: #2e2010; }
+
+.rp-btn:hover { background: #3a2214; }
 .rp-btn--off { background: #c8bcb0; cursor: not-allowed; }
 
 .rp-login-box {
@@ -147,23 +139,20 @@
   align-items: center;
   gap: 14px;
   padding: 24px;
-  background: #faf7f4;
-  border-radius: 4px;
+  background: #f0ece6;
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
   color: #9a8e82;
   letter-spacing: 0.08em;
 }
 
-.rp-divider {
-  height: 1px;
-  background: #ede7df;
-}
+.rp-divider { height: 1px; background: rgba(0,0,0,0.07); }
 
-/* List */
 .rp-list { display: flex; flex-direction: column; gap: 20px; }
 
 .rp-empty {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   color: #b0a89e;
   letter-spacing: 0.1em;
   text-align: center;
@@ -175,25 +164,23 @@
   flex-direction: column;
   gap: 6px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #f5f0eb;
+  border-bottom: 1px solid rgba(0,0,0,0.07);
 }
+
 .rp-item:last-child { border-bottom: none; }
 
-.rp-item-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+.rp-item-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
 .rp-item-user {
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
-  font-weight: 600;
-  color: #1a1208;
+  font-weight: 500;
+  color: #1a1a1a;
   letter-spacing: 0.05em;
 }
 
 .rp-item-date {
+  font-family: 'Jost', sans-serif;
   font-size: 10px;
   color: #b0a89e;
   letter-spacing: 0.08em;
@@ -201,7 +188,9 @@
 }
 
 .rp-item-comment {
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
+  font-weight: 300;
   color: #4a3f35;
   line-height: 1.7;
   margin: 0;

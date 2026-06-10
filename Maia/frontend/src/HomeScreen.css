@@ -1,74 +1,545 @@
-.home-screen {
+/* ─────────────────────────────────────────────────────────────
+   HomeScreen — House of CB-inspired editorial layout
+   Font: Cormorant Garamond (already loaded in index.html)
+───────────────────────────────────────────────────────────── */
+
+/* ── Root ─────────────────────────────────────────────────── */
+.hs-root {
+  background: #faf9f7;
+  min-height: 100svh;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: #1a1a1a;
+}
+
+/* ── Top Navigation ───────────────────────────────────────── */
+.hs-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  background: rgba(250, 249, 247, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.hs-nav-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.hs-nav-left { justify-content: flex-start; gap: 18px; }
+.hs-nav-right { justify-content: flex-end; gap: 6px; }
+
+.hs-nav-logo {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
+  letter-spacing: 0.12em;
+  color: #1a1a1a;
+  text-decoration: none;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.hs-nav-link {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #1a1a1a;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+
+.hs-nav-link:hover { opacity: 0.55; }
+
+.hs-nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+  position: relative;
+}
+
+.hs-nav-icon-btn:hover { opacity: 0.55; }
+
+.hs-nav-bag { position: relative; }
+
+.hs-nav-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: #3a2214;
+  color: #fff;
+  font-family: 'Jost', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Hide nav links on small mobile */
+@media (max-width: 500px) {
+  .hs-nav-left { display: none; }
+  .hs-nav-logo { flex: 1; text-align: center; }
+}
+
+/* ── Hero Slider ──────────────────────────────────────────── */
+.hs-hero {
   position: relative;
   width: 100%;
   height: 100svh;
-  background: #ffffff;
   overflow: hidden;
+  margin-top: 58px;
+}
+
+.hs-slides-track {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.blob {
-  position: absolute;
-  left: 0;
   width: 100%;
-  pointer-events: none;
-  z-index: 0;
+  height: 100%;
+  transition: transform 0.85s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.blob-top    { top: 0;     height: 45%; }
-.blob-bottom { bottom: 60px; height: 26%; }
+.hs-slide {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+}
 
-.marquee-link {
-  position: relative;
+.hs-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.hs-slide-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.58) 0%,
+    rgba(0, 0, 0, 0.18) 45%,
+    transparent 100%
+  );
+  pointer-events: none;
   z-index: 1;
-  flex: 1;
+}
+
+/* Hero text */
+.hs-hero-text {
+  position: absolute;
+  bottom: 16%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  text-align: center;
+  width: 90%;
+  max-width: 520px;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.hs-hero-text--in {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hs-hero-tag {
+  display: block;
+  font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.78);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.hs-hero-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(52px, 13vw, 96px);
+  line-height: 0.92;
+  color: #ffffff;
+  margin: 0 0 30px;
+  white-space: pre-line;
+  letter-spacing: -0.01em;
+}
+
+.hs-hero-cta {
+  display: inline-block;
+  font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  padding: 14px 34px;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.hs-hero-cta:hover {
+  background: #ffffff;
+  color: #1a1a1a;
+  border-color: #ffffff;
+}
+
+/* Arrow buttons */
+.hs-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  text-decoration: none;
-  overflow: hidden;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.hs-arrow:hover { background: rgba(255, 255, 255, 0.28); }
+.hs-arrow--l { left: 18px; }
+.hs-arrow--r { right: 18px; }
+
+/* Dots */
+.hs-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.hs-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.38);
+  border: none;
   cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s;
 }
 
-.marquee-viewport {
-  display: flex;
+.hs-dot--on {
+  background: #fff;
+  transform: scale(1.55);
+}
+
+/* ── Category Tiles ───────────────────────────────────────── */
+.hs-cats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.hs-cat {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+}
+
+.hs-cat img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.7s ease;
+}
+
+.hs-cat:hover img { transform: scale(1.05); }
+
+.hs-cat-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, transparent 55%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 18px;
+  gap: 4px;
+}
+
+.hs-cat-sub {
+  font-family: 'Jost', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+}
+
+.hs-cat-label {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(13px, 3.5vw, 20px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* ── Section Base ─────────────────────────────────────────── */
+.hs-section {
+  padding: 52px 20px 0;
+}
+
+.hs-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.hs-section-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(28px, 5.5vw, 42px);
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1;
+}
+
+.hs-view-all {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #3a2214;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+  white-space: nowrap;
+  margin-left: 16px;
+  transition: opacity 0.2s;
+}
+
+.hs-view-all:hover { opacity: 0.55; }
+
+/* ── New Arrivals Horizontal Scroll ───────────────────────── */
+.hs-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hs-scroll::-webkit-scrollbar { display: none; }
+
+.hs-product-card {
+  flex-shrink: 0;
+  width: 56vw;
+  max-width: 240px;
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: inherit;
+}
+
+.hs-product-img-wrap {
+  overflow: hidden;
+  aspect-ratio: 2 / 3;
+}
+
+.hs-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.hs-product-card:hover .hs-product-img-wrap img {
+  transform: scale(1.04);
+}
+
+.hs-product-info {
+  padding: 10px 2px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hs-product-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 15px;
+  font-weight: 400;
+  color: #1a1a1a;
+}
+
+.hs-product-action {
+  font-family: 'Jost', sans-serif;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6b5847;
+}
+
+/* ── Men's Section ────────────────────────────────────────── */
+.hs-men-section {
+  padding: 52px 20px 0;
+}
+
+.hs-men-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.hs-men-tag {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8b6b4f;
+  margin: 0 0 6px;
+}
+
+.hs-men-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+}
+
+@media (min-width: 640px) {
+  .hs-men-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.hs-men-card {
+  display: block;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.hs-men-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.7s ease;
+}
+
+.hs-men-card:hover img { transform: scale(1.04); }
+
+/* ── Full-Width Banner ────────────────────────────────────── */
+.hs-banner {
+  position: relative;
+  margin-top: 52px;
+  width: 100%;
+  height: 56vw;
+  min-height: 260px;
+  max-height: 540px;
   overflow: hidden;
 }
 
-.marquee-track {
+.hs-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.hs-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
-  flex-shrink: 0;
-  align-items: baseline;
-  animation: marquee-scroll 10s linear infinite;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  gap: 0;
 }
 
-@keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
+.hs-banner-tag {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: block;
 }
 
-.marquee-link:hover .marquee-track { animation-duration: 22s; }
-
-.marquee-word {
+.hs-banner-title {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(100px, 16vw, 220px);
   font-style: italic;
-  font-weight: 600;
-  color: #3a2214;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  white-space: nowrap;
-  padding-right: 0.3em;
-  user-select: none;
+  font-weight: 300;
+  font-size: clamp(34px, 7vw, 66px);
+  color: #fff;
+  margin: 0 0 26px;
+  line-height: 1.05;
 }
 
-.marquee-sep {
-  font-style: normal;
-  font-weight: 300;
-  font-size: 0.45em;
-  vertical-align: middle;
-  opacity: 0.35;
-  padding-right: 0.2em;
+.hs-banner-cta {
+  display: inline-block;
+  font-family: 'Jost', 'Helvetica Neue', sans-serif;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  padding: 13px 30px;
+  transition: background 0.25s, color 0.25s;
+}
+
+.hs-banner-cta:hover {
+  background: #fff;
+  color: #1a1a1a;
+}
+
+/* ── Bottom Nav (inline at page end) ─────────────────────── */
+.hs-bottom-nav {
+  position: static;
 }

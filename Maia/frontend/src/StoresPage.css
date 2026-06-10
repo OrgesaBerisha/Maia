@@ -2,56 +2,62 @@
   display: flex;
   flex-direction: column;
   min-height: 100svh;
-  background: #ffffff;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #1a1208;
+  background: #faf9f7;
+  font-family: 'Jost', sans-serif;
+  color: #1a1a1a;
 }
 
-.stores-blob { display: block; width: 100%; height: 200px; flex-shrink: 0; }
+.stores-blob { display: none; }
 
 .stores-header {
-  margin-top: -158px;
-  padding: 0 80px;
-  position: relative;
-  z-index: 1;
+  margin-top: 0;
+  padding: 18px clamp(20px, 5vw, 80px);
+  background: #faf9f7;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .stores-back {
-  font-size: 11px;
+  font-family: 'Jost', sans-serif;
+  font-size: 10.5px;
   font-weight: 400;
   letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #9a8e82;
   text-decoration: none;
   transition: color 0.2s;
 }
-.stores-back:hover { color: #1a1208; }
+.stores-back:hover { color: #1a1a1a; }
 
 .stores-header-label {
-  font-size: 12px;
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.18em;
-  color: #1a1208;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1a1a1a;
 }
 
 .stores-main {
   flex: 1;
-  padding: 48px 80px 80px;
+  padding: 48px clamp(20px, 5vw, 80px) 100px;
   max-width: 960px;
 }
 
 .stores-heading {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(32px, 4vw, 52px);
-  font-weight: 400;
+  font-weight: 300;
+  font-style: italic;
   letter-spacing: 0.06em;
-  color: #1a1208;
+  color: #1a1a1a;
   margin: 0 0 10px;
 }
 
 .stores-sub {
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
   font-weight: 300;
   letter-spacing: 0.06em;
@@ -63,21 +69,21 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  border-top: 1px solid #e8e0d8;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 
 .store-card {
   padding: 40px 48px;
-  border-bottom: 1px solid #e8e0d8;
-  border-right: 1px solid #e8e0d8;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: background 0.2s;
 }
 
-.store-card:nth-child(even) {
-  border-right: none;
-}
+.store-card:hover { background: #f0ece6; }
+.store-card:nth-child(even) { border-right: none; }
 
 @media (max-width: 640px) {
   .stores-grid { grid-template-columns: 1fr; }
@@ -87,9 +93,10 @@
 .store-city {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 28px;
-  font-weight: 400;
+  font-weight: 300;
+  font-style: italic;
   letter-spacing: 0.06em;
-  color: #1a1208;
+  color: #1a1a1a;
   margin: 0;
 }
 
@@ -101,14 +108,16 @@
 }
 
 .store-address {
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.04em;
-  color: #1a1208;
+  color: #1a1a1a;
   margin: 0;
 }
 
 .store-postal {
+  font-family: 'Jost', sans-serif;
   font-size: 13px;
   font-weight: 300;
   letter-spacing: 0.04em;
@@ -117,6 +126,7 @@
 }
 
 .store-hours {
+  font-family: 'Jost', sans-serif;
   font-size: 12px;
   font-weight: 300;
   letter-spacing: 0.04em;
@@ -125,14 +135,14 @@
 }
 
 .store-phone {
+  font-family: 'Jost', sans-serif;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.1em;
-  color: #1a1208;
+  color: #1a1a1a;
   text-decoration: none;
   margin-top: 4px;
   width: fit-content;
-  position: relative;
   transition: opacity 0.2s;
 }
 .store-phone:hover { opacity: 0.5; }

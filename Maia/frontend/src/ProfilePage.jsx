@@ -20,10 +20,8 @@ const DASHBOARD_ROUTES = {
   KidsManager:   '/dashboard/kids',
 }
 
-const IMAGES = [
-  'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&q=80',
-  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80',
-]
+const HERO_IMG  = 'https://dsh6y5eym1jrl.cloudfront.net/_next/image?url=https%3A%2F%2Fd166chel5lrjm5.cloudfront.net%2Fimages%2Fhome%2Fimages%2Fdesktop%2F20260604_17.jpg&w=3840&q=100'
+const KIDS_IMG  = 'https://static.zara.net/assets/public/fbc9/255b/8da942ca84e9/cad7713c6a46/08350547500201-ult1/08350547500201-ult1.jpg?ts=1776932587261&w=1381'
 
 function ProfilePage() {
   const { user, logout } = useAuth()
@@ -89,8 +87,8 @@ function ProfilePage() {
         </nav>
 
         <div className="profile-images">
-          <img src={IMAGES[0]} alt="" className="profile-img profile-img--top" />
-          <img src={IMAGES[1]} alt="" className="profile-img profile-img--bottom" />
+          <img src={HERO_IMG} alt="" className="profile-img profile-img--top" />
+          <img src={KIDS_IMG} alt="" className="profile-img profile-img--bottom" />
         </div>
       </main>
 

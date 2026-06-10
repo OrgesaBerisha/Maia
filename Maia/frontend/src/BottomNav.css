@@ -2,9 +2,11 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 18px 80px;
-  border-top: 1px solid #e8e0d8;
-  background: #ffffff;
+  padding: 14px 60px;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  background: rgba(250, 249, 247, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   flex-shrink: 0;
 }
 
@@ -22,8 +24,8 @@
   border-radius: 4px;
 }
 
-.nav-icon:hover { color: #1a1208; }
-.nav-icon--active { color: #1a1208; }
+.nav-icon:hover { color: #1a1a1a; }
+.nav-icon--active { color: #1a1a1a; }
 
 .nav-icon--bag { position: relative; }
 
@@ -33,7 +35,7 @@
   right: 2px;
   background: #3a2214;
   color: #ffffff;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Jost', sans-serif;
   font-size: 9px;
   font-weight: 500;
   width: 15px;
