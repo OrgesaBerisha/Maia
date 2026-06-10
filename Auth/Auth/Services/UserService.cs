@@ -149,6 +149,12 @@ namespace Auth.Services
             user.IsActive = isActive;
             user.DisabledAt = isActive ? null : DateTime.UtcNow;
 
+            if (!isActive)
+            {
+                user.RefreshTokenHash = null;
+                user.RefreshTokenExpiry = null;
+            }
+
             await _dbContext.SaveChangesAsync();
 
             return MapToDTO(user);
