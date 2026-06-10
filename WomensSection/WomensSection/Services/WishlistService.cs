@@ -19,12 +19,18 @@ namespace Maia.Services
             var wishlist = await _repo.GetByUserIdAsync(userId)
                         ?? await _repo.CreateAsync(userId);
 
-            if (!await _repo.ItemExistsAsync(wishlist.Id, dto.ProductId))
+            var source = string.IsNullOrEmpty(dto.Source) ? "WOMAN" : dto.Source;
+
+            if (!await _repo.ItemExistsAsync(wishlist.Id, dto.ProductId, source))
             {
                 await _repo.AddItemAsync(new WishlistItem
                 {
-                    WishlistId = wishlist.Id,
-                    ProductId  = dto.ProductId
+                    WishlistId   = wishlist.Id,
+                    ProductId    = dto.ProductId,
+                    Source       = source,
+                    ProductName  = dto.ProductName,
+                    ProductImage = dto.ProductImage,
+                    ProductPrice = dto.ProductPrice
                 });
             }
         }
@@ -46,9 +52,10 @@ namespace Maia.Services
             {
                 i.Id,
                 i.ProductId,
-                ProductName  = i.Product?.Title,
-                ProductImage = i.Product?.ImageUrl,
-                Price        = i.Product?.Price
+                Source       = i.Source ?? "WOMAN",
+                ProductName  = i.ProductName,
+                ProductImage = i.ProductImage,
+                Price        = i.ProductPrice
             });
 
             return new { WishlistId = wishlist.Id, Items = items };

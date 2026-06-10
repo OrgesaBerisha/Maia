@@ -45,16 +45,22 @@ export function WishlistProvider({ children }) {
     if (existing) {
       try {
         await api.delete(`/Wishlist/${existing.wishlistItemId}`)
-        setItems(prev => prev.filter(i => i.productId !== product.id))
+        setItems(prev => prev.filter(i => !(i.productId === product.id && (i.source ?? 'WOMAN') === source)))
       } catch {}
     } else {
       try {
-        await api.post('/Wishlist', { productId: product.id })
+        await api.post('/Wishlist', {
+          productId:    product.id,
+          source:       source,
+          productName:  product.name,
+          productImage: product.image,
+          productPrice: product.price,
+        })
         setItems(prev => [...prev, {
           wishlistItemId: null,
           productId: product.id,
           source,
-          name: product.name,
+          name:  product.name,
           image: product.image,
           price: product.price,
         }])

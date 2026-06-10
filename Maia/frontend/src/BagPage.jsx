@@ -21,8 +21,12 @@ function BagItem({ item, onDelete, onSave, onMoveToCart, isFav }) {
       <img src={item.image} alt={item.name} className="bag-item-img" />
       <div className="bag-item-details">
         <span className="bag-item-name">{item.name}</span>
-        <span className="bag-item-size">{item.size} |</span>
-        <span className="bag-item-price">{item.price}</span>
+        {item.size && item.size !== 'ONE SIZE' && (
+          <span className="bag-item-size">SIZE: {item.size}</span>
+        )}
+        <span className="bag-item-price">
+          {parseFloat(item.price) ? `${parseFloat(item.price).toFixed(2)} EUR` : item.price}
+        </span>
         <div className="bag-item-actions">
           <button className="bag-action" onClick={onDelete}>DELETE</button>
           <span className="bag-action-sep">|</span>
@@ -38,12 +42,25 @@ function BagItem({ item, onDelete, onSave, onMoveToCart, isFav }) {
 
 function BagPage() {
   const [tab, setTab] = useState('bag')
-  const { bag, removeFromBag, saveForLater, addToBag } = useCart()
+  const { bag, removeFromBag, addToBag } = useCart()
   const { items: wishlistItems, toggleWishlist } = useWishlist()
 
+  const sourceMap = { women: 'WOMAN', men: 'MAN', kids: 'KIDS' }
+
+  const saveTofavorites = async (item) => {
+    const source = sourceMap[item.productSource?.toLowerCase()] ?? 'WOMAN'
+    await toggleWishlist({
+      id:    item.id,
+      source,
+      name:  item.name,
+      image: item.image,
+      price: parseFloat(item.price) || 0,
+    })
+  }
+
   const moveWishlistToCart = async (item) => {
-    await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: 'women' })
-    await toggleWishlist({ id: item.productId, source: 'WOMAN' })
+    await addToBag({ id: item.productId, name: item.name, image: item.image, price: item.price, productSource: (item.source ?? 'WOMAN').toLowerCase() })
+    await toggleWishlist({ id: item.productId, source: item.source ?? 'WOMAN' })
   }
 
   const bagTotal = bag.reduce((sum, i) => {
@@ -105,7 +122,7 @@ function BagPage() {
                     item={item}
                     isFav={false}
                     onDelete={() => removeFromBag(item.id, item.size)}
-                    onSave={() => saveForLater(item.id, item.size)}
+                    onSave={() => saveTofavorites(item)}
                   />
                 ))}
                 <div className="bag-summary">
@@ -131,7 +148,7 @@ function BagPage() {
                   key={`${item.wishlistItemId}-${i}`}
                   item={{ ...item, id: item.productId, size: '' }}
                   isFav={true}
-                  onDelete={() => toggleWishlist({ id: item.productId, source: 'WOMAN' })}
+                  onDelete={() => toggleWishlist({ id: item.productId, source: item.source ?? 'WOMAN' })}
                   onMoveToCart={() => moveWishlistToCart(item)}
                 />
               ))

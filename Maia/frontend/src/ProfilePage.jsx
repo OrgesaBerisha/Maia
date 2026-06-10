@@ -6,6 +6,7 @@ import './ProfilePage.css'
 
 const MENU_ITEMS = [
   { label: 'PURCHASES',     to: '/purchases' },
+  { label: 'REVIEWS',       to: '/reviews' },
   { label: 'CONTACT DATA',  to: '/contact' },
   { label: 'STORES',        to: '/stores' },
   { label: 'NOTIFICATIONS', to: '/notifications' },

@@ -20,6 +20,7 @@ const ForgotPasswordPage  = lazy(() => import('./ForgotPasswordPage.jsx'))
 const ResetPasswordPage   = lazy(() => import('./ResetPasswordPage.jsx'))
 
 const PurchasesPage      = lazy(() => import('./PurchasesPage.jsx'))
+const ReviewsPage        = lazy(() => import('./ReviewsPage.jsx'))
 const ContactDataPage    = lazy(() => import('./ContactDataPage.jsx'))
 const StoresPage         = lazy(() => import('./StoresPage.jsx'))
 const NotificationsPage  = lazy(() => import('./NotificationsPage.jsx'))
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/contact"      element={<ContactDataPage />} />
                 <Route path="/stores"       element={<StoresPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/reviews"       element={<ReviewsPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/login"           element={<LoginPage />} />
                 <Route path="/register"        element={<RegisterPage />} />

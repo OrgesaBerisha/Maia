@@ -44,6 +44,7 @@ export function CartProvider({ children }) {
                 imageUrl:      item.image ?? '',
                 price:         parseFloat(item.price) || 0,
                 quantity:      item.quantity ?? 1,
+                size:          item.size ?? '',
               })
             } catch { /* continue */ }
           }
@@ -78,6 +79,7 @@ export function CartProvider({ children }) {
         imageUrl:      item.image ?? '',
         price:         parseFloat(item.price) || 0,
         quantity:      1,
+        size:          item.size ?? '',
       })
       await fetchCart()
     } catch {

@@ -100,6 +100,37 @@ public class ExportController : ControllerBase
         return Ok(products);
     }
 
+    [HttpPost("kids-products/import/json")]
+    public async Task<IActionResult> ImportJson([FromBody] List<ImportKidsProductDto> items)
+    {
+        if (items == null || items.Count == 0) return BadRequest("No items provided.");
+        var categories = await _context.KidsCategories.ToListAsync();
+        var types = await _context.KidsProductTypes.ToListAsync();
+        int imported = 0;
+
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.Title)) continue;
+            var cat = categories.FirstOrDefault(c => c.Name.Equals(item.Category, StringComparison.OrdinalIgnoreCase));
+            if (cat == null) continue;
+            var typ = types.FirstOrDefault(t => t.Name.Equals(item.ProductType, StringComparison.OrdinalIgnoreCase)) ?? types.First();
+
+            _context.KidsCards.Add(new KidsCards
+            {
+                Title = item.Title,
+                Price = item.Price,
+                KidsCategoryId = cat.Id,
+                KidsProductTypeId = typ.Id,
+                Description = item.Description ?? "",
+                ImageUrl = item.ImageUrl ?? ""
+            });
+            imported++;
+        }
+
+        await _context.SaveChangesAsync();
+        return Ok(new { imported });
+    }
+
     [HttpPost("kids-products/import/csv")]
     public async Task<IActionResult> ImportCsv(IFormFile file)
     {
@@ -179,4 +210,14 @@ public class ExportController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(new { imported });
     }
+}
+
+public class ImportKidsProductDto
+{
+    public string Title { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Category { get; set; } = "";
+    public string? ProductType { get; set; }
+    public string? Description { get; set; }
+    public string? ImageUrl { get; set; }
 }

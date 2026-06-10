@@ -48,7 +48,8 @@ namespace OrderService.Controllers
                     ProductName   = i.ProductName,
                     ImageUrl      = i.ImageUrl,
                     Price         = i.Price,
-                    Quantity      = i.Quantity
+                    Quantity      = i.Quantity,
+                    Size          = i.Size
                 }).ToList();
             }
             else if (cart != null && cart.CartItems.Any())
@@ -60,7 +61,8 @@ namespace OrderService.Controllers
                     ProductName   = i.ProductName,
                     ImageUrl      = i.ImageUrl,
                     Price         = i.Price,
-                    Quantity      = i.Quantity
+                    Quantity      = i.Quantity,
+                    Size          = i.Size
                 }).ToList();
             }
             else
@@ -138,7 +140,8 @@ namespace OrderService.Controllers
                     i.ProductName,
                     i.ImageUrl,
                     i.Price,
-                    i.Quantity
+                    i.Quantity,
+                    i.Size
                 })
             }));
         }
@@ -173,7 +176,8 @@ namespace OrderService.Controllers
                     i.ImageUrl,
                     i.Price,
                     i.Quantity,
-                    i.ProductSource
+                    i.ProductSource,
+                    i.Size
                 })
             }));
         }

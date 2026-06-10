@@ -20,6 +20,7 @@ namespace Maia.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<WishlistItem> WishlistItems { get; set; }
+        public DbSet<ProductReview> ProductReviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +61,14 @@ namespace Maia.Data
                 .WithOne(wi => wi.Wishlist)
                 .HasForeignKey(wi => wi.WishlistId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<WishlistItem>()
+                .Property(w => w.Source)
+                .HasDefaultValue("WOMAN");
+
+            modelBuilder.Entity<WishlistItem>()
+                .Property(w => w.ProductPrice)
+                .HasPrecision(18, 2);
 
             modelBuilder.Entity<CardsWomen>()
                 .Property(x => x.Price)
