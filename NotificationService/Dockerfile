@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["NotificationService.csproj", "."]
 RUN dotnet restore "NotificationService.csproj"
 COPY . .
-RUN dotnet publish "NotificationService.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "NotificationService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

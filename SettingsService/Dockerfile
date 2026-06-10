@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["SettingsService.csproj", "."]
 RUN dotnet restore "SettingsService.csproj"
 COPY . .
-RUN dotnet publish "SettingsService.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "SettingsService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

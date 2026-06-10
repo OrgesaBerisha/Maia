@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["FileUploadService.csproj", "."]
 RUN dotnet restore "FileUploadService.csproj"
 COPY . .
-RUN dotnet publish "FileUploadService.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "FileUploadService.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

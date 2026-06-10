@@ -7,7 +7,7 @@ WORKDIR /src
 COPY ["ApiGateway.csproj", "."]
 RUN dotnet restore "ApiGateway.csproj"
 COPY . .
-RUN dotnet publish "ApiGateway.csproj" -c Release -o /app/publish --no-restore
+RUN dotnet publish "ApiGateway.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
