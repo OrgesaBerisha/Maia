@@ -9,6 +9,7 @@ OrderService/appsettings.json
 NotificationService/appsettings.json
 appsettings.Development.json
 appsettings.Local.json
+NotificationService/appsettings.json
 
 # User-specific files
 *.rsuser

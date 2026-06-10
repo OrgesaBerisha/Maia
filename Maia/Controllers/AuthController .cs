@@ -2,6 +2,7 @@
 using Maia.Data.Interface;
 using Maia.Models.NoSQL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Maia.Controllers
 {
@@ -62,6 +63,27 @@ namespace Maia.Controllers
                 });
 
                 return Unauthorized("Invalid credentials");
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            await _auth.ForgotPassword(dto);
+            return Ok(new { message = "If that email exists, a reset link has been sent." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            try
+            {
+                await _auth.ResetPassword(dto);
+                return Ok(new { message = "Password reset successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

@@ -18,13 +18,18 @@ namespace Maia.Controllers
 
         private int? GetUserId()
         {
-            var claim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return claim == null ? null : int.Parse(claim);
+            var claim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? User.FindFirstValue("sub")
+                     ?? User.FindFirstValue("nameid");
+            if (claim == null) return null;
+            return int.TryParse(claim, out var id) ? id : (int?)null;
         }
 
         private string GetUserName() =>
             User.FindFirstValue(ClaimTypes.Name)
+            ?? User.FindFirstValue(ClaimTypes.GivenName)
             ?? User.FindFirstValue(ClaimTypes.Email)
+            ?? User.FindFirstValue("email")
             ?? "User";
 
         // GET /api/reviews?productId=5&source=WOMAN
