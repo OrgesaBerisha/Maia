@@ -36,12 +36,8 @@ function ProductDetailPage() {
 
   return (
     <div className="pd-page">
-      <svg className="pd-blob" viewBox="0 0 1440 220" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M0,0 L1440,0 L1440,140 C1340,162 1200,178 1060,164 C920,150 800,118 660,132 C520,146 380,178 240,188 C160,194 80,190 0,196 Z" fill="#d4c5b3" />
-      </svg>
-
       <header className="pd-header">
-        <button className="pd-back" onClick={() => navigate(-1)}>←</button>
+        <button className="pd-back" onClick={() => navigate(-1)}>← Back</button>
         <SiteLogo />
       </header>
 
