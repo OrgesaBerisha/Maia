@@ -214,6 +214,61 @@ function SearchPage() {
           <button type="submit" className="search-submit-btn" aria-label="Search">→</button>
         </form>
 
+        <div className="filter-bar">
+          <button className={`filter-toggle${showFilters ? ' active' : ''}`} onClick={() => setShowFilters(v => !v)}>
+            FILTERS {hasActiveFilters ? `(${(selectedColors.length > 0 ? 1 : 0) + (selectedCategory ? 1 : 0) + (sortBy ? 1 : 0)})` : ''}
+          </button>
+          <div className="sort-inline">
+            <button className={`sort-btn${sortBy === 'price_asc' ? ' active' : ''}`} onClick={() => setSortBy(s => s === 'price_asc' ? '' : 'price_asc')}>
+              PRICE ↑
+            </button>
+            <button className={`sort-btn${sortBy === 'price_desc' ? ' active' : ''}`} onClick={() => setSortBy(s => s === 'price_desc' ? '' : 'price_desc')}>
+              PRICE ↓
+            </button>
+          </div>
+          {hasActiveFilters && (
+            <button className="clear-filters" onClick={clearFilters}>CLEAR ALL</button>
+          )}
+        </div>
+
+        {showFilters && (
+          <div className="filter-panel">
+            <div className="filter-section">
+              <p className="filter-label">COLOR</p>
+              <div className="color-chips">
+                {COLORS.map(color => (
+                  <button
+                    key={color}
+                    className={`color-chip${selectedColors.includes(color) ? ' selected' : ''}`}
+                    onClick={() => toggleColor(color)}
+                    title={color}
+                    style={{ '--chip-color': COLOR_HEX[color] ?? '#ccc' }}
+                  />
+                ))}
+              </div>
+              {selectedColors.length > 0 && (
+                <p className="selected-colors">{selectedColors.join(', ')}</p>
+              )}
+            </div>
+            {categories.length > 0 && (
+              <div className="filter-section">
+                <p className="filter-label">CATEGORY</p>
+                <div className="category-chips">
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      className={`cat-chip${selectedCategory === cat ? ' selected' : ''}`}
+                      onClick={() => setSelectedCategory(s => s === cat ? '' : cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <p className="results-label">
           {loading
             ? 'LOADING...'
