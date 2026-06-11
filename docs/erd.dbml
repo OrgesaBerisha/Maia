@@ -1,0 +1,363 @@
+// MAIA - Entity Relationship Diagram
+// Import this file at https://dbdiagram.io/d
+// ================================================
+
+// ── AUTH SERVICE ─────────────────────────────────
+
+Table Roles {
+  RoleID     int         [pk, increment]
+  RoleType   varchar     [not null]
+}
+
+Table Users {
+  UserID              int         [pk, increment]
+  FirstName           varchar     [not null]
+  LastName            varchar     [not null]
+  Email               varchar     [not null, unique]
+  PasswordHash        varbinary   [not null]
+  PasswordSalt        varbinary   [not null]
+  RoleID              int         [not null, ref: > Roles.RoleID]
+  RefreshTokenHash    varchar
+  RefreshTokenExpiry  datetime
+  IsActive            bit         [default: 1]
+  DisabledAt          datetime
+  CreatedAt           datetime    [default: `now()`]
+}
+
+Table UserRoles {
+  Id          int     [pk, increment]
+  UserID      int     [not null, ref: > Users.UserID]
+  RoleID      int     [not null, ref: > Roles.RoleID]
+  AssignedAt  datetime [default: `now()`]
+}
+
+Table Permissions {
+  Id          int     [pk, increment]
+  Name        varchar [not null]
+  Description varchar
+}
+
+Table RolePermissions {
+  Id            int [pk, increment]
+  RoleID        int [not null, ref: > Roles.RoleID]
+  PermissionId  int [not null, ref: > Permissions.Id]
+}
+
+Table RefreshTokens {
+  Id          int       [pk, increment]
+  UserID      int       [not null, ref: > Users.UserID]
+  TokenHash   varchar   [not null]
+  ExpiresAt   datetime
+  RevokedAt   datetime
+  CreatedAt   datetime  [default: `now()`]
+}
+
+Table PasswordResetTokens {
+  Id        int       [pk, increment]
+  UserID    int       [not null, ref: > Users.UserID]
+  Token     varchar   [not null]
+  ExpiresAt datetime
+  IsUsed    bit       [default: 0]
+  CreatedAt datetime  [default: `now()`]
+}
+
+Table AuditLogs {
+  Id          int     [pk, increment]
+  UserID      int     [ref: > Users.UserID]
+  Action      varchar [not null]
+  Entity      varchar [not null]
+  EntityId    varchar
+  OldValue    varchar
+  NewValue    varchar
+  IpAddress   varchar
+  CreatedAt   datetime [default: `now()`]
+}
+
+// ── WOMEN'S SECTION ──────────────────────────────
+
+Table WomanCategories {
+  Id        int     [pk, increment]
+  Name      varchar [not null]
+  CreatedAt datetime [default: `now()`]
+  UpdatedAt datetime
+}
+
+Table CardsWomen {
+  Id                 int      [pk, increment]
+  Title              varchar  [not null]
+  ImageUrl           varchar
+  Price              decimal  [not null]
+  WomanCategoryId    int      [not null, ref: > WomanCategories.Id]
+  Description        varchar
+  Color              varchar
+  DiscountPercent    int
+  OriginalCategoryId int
+  CreatedAt          datetime [default: `now()`]
+  UpdatedAt          datetime
+}
+
+Table Women_Carts {
+  Id        int      [pk, increment]
+  UserId    int      [not null]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table Women_CartItems {
+  Id        int     [pk, increment]
+  CartId    int     [not null, ref: > Women_Carts.Id]
+  ProductId int     [not null, ref: > CardsWomen.Id]
+  Quantity  int     [not null]
+  Size      varchar
+}
+
+Table Women_Orders {
+  Id          int      [pk, increment]
+  UserId      int      [not null]
+  TotalPrice  decimal
+  Status      varchar  [default: 'Pending']
+  CreatedAt   datetime [default: `now()`]
+}
+
+Table Women_OrderItems {
+  Id        int     [pk, increment]
+  OrderId   int     [not null, ref: > Women_Orders.Id]
+  ProductId int     [not null, ref: > CardsWomen.Id]
+  Quantity  int
+  Price     decimal
+}
+
+Table Wishlists {
+  Id        int      [pk, increment]
+  UserId    int      [not null]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table WishlistItems {
+  Id           int     [pk, increment]
+  WishlistId   int     [not null, ref: > Wishlists.Id]
+  ProductId    int     [not null]
+  Source       varchar [default: 'WOMAN']
+  ProductName  varchar
+  ProductImage varchar
+  ProductPrice decimal
+}
+
+Table ProductReviews {
+  Id        int     [pk, increment]
+  UserId    int     [not null]
+  UserName  varchar
+  ProductId int     [not null]
+  Source    varchar [default: 'WOMAN']
+  Rating    int     [not null, note: '1-5']
+  Comment   varchar
+  CreatedAt datetime [default: `now()`]
+}
+
+// ── MEN'S SECTION ────────────────────────────────
+
+Table MenCategories {
+  Id    int     [pk, increment]
+  Name  varchar [not null]
+}
+
+Table MenCards {
+  Id                 int     [pk, increment]
+  Title              varchar [not null]
+  ImageUrl           varchar
+  Price              decimal [not null]
+  MenCategoryId      int     [not null, ref: > MenCategories.Id]
+  Description        varchar
+  Color              varchar
+  DiscountPercent    int
+  OriginalCategoryId int
+}
+
+Table Men_Carts {
+  Id        int      [pk, increment]
+  UserId    int      [not null]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table Men_CartItems {
+  Id        int     [pk, increment]
+  CartId    int     [not null, ref: > Men_Carts.Id]
+  ProductId int     [not null, ref: > MenCards.Id]
+  Quantity  int     [not null]
+  Size      varchar
+}
+
+Table Men_Orders {
+  Id         int      [pk, increment]
+  UserId     int      [not null]
+  TotalPrice decimal
+  Status     varchar  [default: 'Pending']
+  CreatedAt  datetime [default: `now()`]
+}
+
+Table Men_OrderItems {
+  Id        int     [pk, increment]
+  OrderId   int     [not null, ref: > Men_Orders.Id]
+  ProductId int     [not null, ref: > MenCards.Id]
+  Quantity  int
+  Price     decimal
+}
+
+// ── KIDS' SECTION ────────────────────────────────
+
+Table KidsCategories {
+  Id    int     [pk, increment]
+  Name  varchar [not null]
+}
+
+Table KidsProductTypes {
+  Id    int     [pk, increment]
+  Name  varchar [not null]
+}
+
+Table KidsCards {
+  Id                 int     [pk, increment]
+  Title              varchar [not null]
+  ImageUrl           varchar
+  Price              decimal [not null]
+  KidsCategoryId     int     [not null, ref: > KidsCategories.Id]
+  KidsProductTypeId  int     [not null, ref: > KidsProductTypes.Id]
+  Description        varchar
+  Color              varchar
+  DiscountPercent    int
+  OriginalCategoryId int
+}
+
+Table Kids_Carts {
+  Id        int      [pk, increment]
+  UserId    int      [not null]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table Kids_CartItems {
+  Id        int     [pk, increment]
+  CartId    int     [not null, ref: > Kids_Carts.Id]
+  ProductId int     [not null, ref: > KidsCards.Id]
+  Quantity  int     [not null]
+  Size      varchar
+}
+
+Table Kids_Orders {
+  Id         int      [pk, increment]
+  UserId     int      [not null]
+  TotalPrice decimal
+  Status     varchar  [default: 'Pending']
+  CreatedAt  datetime [default: `now()`]
+}
+
+Table Kids_OrderItems {
+  Id        int     [pk, increment]
+  OrderId   int     [not null, ref: > Kids_Orders.Id]
+  ProductId int     [not null, ref: > KidsCards.Id]
+  Quantity  int
+  Price     decimal
+}
+
+// ── ORDER SERVICE ────────────────────────────────
+
+Table Orders {
+  Id            int     [pk, increment]
+  UserId        int     [not null]
+  TotalPrice    decimal
+  Status        varchar [default: 'Pending']
+  FullName      varchar
+  Email         varchar
+  Phone         varchar
+  Address       varchar
+  City          varchar
+  PostalCode    varchar
+  Country       varchar
+  PaymentMethod varchar [default: 'cash']
+  CreatedAt     datetime [default: `now()`]
+}
+
+Table OrderItems {
+  Id            int     [pk, increment]
+  OrderId       int     [not null, ref: > Orders.Id]
+  ProductId     int     [not null]
+  ProductSource varchar [note: 'women/men/kids']
+  ProductName   varchar
+  ImageUrl      varchar
+  Price         decimal
+  Quantity      int
+  Size          varchar
+}
+
+Table Carts {
+  Id        int      [pk, increment]
+  UserId    int      [not null]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table CartItems {
+  Id            int     [pk, increment]
+  CartId        int     [not null, ref: > Carts.Id]
+  ProductId     int     [not null]
+  ProductSource varchar [note: 'women/men/kids']
+  ProductName   varchar
+  ImageUrl      varchar
+  Price         decimal
+  Quantity      int
+  Size          varchar
+}
+
+// ── NOTIFICATION SERVICE ─────────────────────────
+
+Table Notifications {
+  Id        int     [pk, increment]
+  UserId    varchar [not null]
+  Title     varchar [not null]
+  Message   varchar
+  Type      varchar [note: 'email/inapp/push']
+  IsRead    bit     [default: 0]
+  CreatedAt datetime [default: `now()`]
+}
+
+Table ChatConversations {
+  Id            int     [pk, increment]
+  UserId        varchar [not null]
+  UserName      varchar
+  UserEmail     varchar
+  Status        varchar [default: 'Open']
+  CreatedAt     datetime [default: `now()`]
+  LastMessageAt datetime [default: `now()`]
+}
+
+Table ChatMessages {
+  Id             int     [pk, increment]
+  ConversationId int     [not null, ref: > ChatConversations.Id]
+  SenderId       varchar
+  SenderName     varchar
+  IsStaff        bit
+  Content        varchar [not null]
+  SentAt         datetime [default: `now()`]
+  IsRead         bit     [default: 0]
+}
+
+// ── FILE UPLOAD SERVICE ──────────────────────────
+
+Table Files {
+  Id          int     [pk, increment]
+  FileName    varchar [not null]
+  ContentType varchar
+  Url         varchar
+  UploadedBy  varchar
+  Category    varchar [note: 'men/women/kids']
+  SizeInBytes bigint
+  UploadedAt  datetime [default: `now()`]
+}
+
+// ── SETTINGS SERVICE ─────────────────────────────
+
+Table Settings {
+  Id        int     [pk, increment]
+  Key       varchar [not null, unique]
+  Value     varchar
+  Scope     varchar [default: 'global']
+  OwnerId   varchar
+  UpdatedAt datetime [default: `now()`]
+}

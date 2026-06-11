@@ -51,6 +51,7 @@ services:
       - Email__Port=${EMAIL_PORT:-587}
       - Email__User=${EMAIL_USER}
       - Email__Pass=${EMAIL_PASS}
+      - Services__Notifications=http://notifications:80
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -68,6 +69,7 @@ services:
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthServiceUsers
+      - Services__Notifications=http://notifications:80
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -85,6 +87,7 @@ services:
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthServiceUsers
+      - Services__Womens=http://womens:80
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -102,6 +105,7 @@ services:
       - Jwt__Key=MaiaSharedSecretKey_2026_AuthAndWomens_MinLength64Chars_DoNotShare!!
       - Jwt__Issuer=AuthService
       - Jwt__Audience=AuthServiceUsers
+      - Services__Womens=http://womens:80
     depends_on:
       sqlserver:
         condition: service_healthy
@@ -126,6 +130,7 @@ services:
       - Email__Port=${EMAIL_PORT:-587}
       - Email__User=${EMAIL_USER}
       - Email__Pass=${EMAIL_PASS}
+      - Services__Notifications=http://notifications:80
     depends_on:
       sqlserver:
         condition: service_healthy

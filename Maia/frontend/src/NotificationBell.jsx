@@ -15,7 +15,7 @@ function IconBell() {
 
 function NotificationBell() {
   const { isLoggedIn } = useAuth()
-  const { notifications, unreadCount, markRead } = useNotifications()
+  const { notifications, unreadCount, markRead, fetchNotifications } = useNotifications()
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -33,7 +33,7 @@ function NotificationBell() {
     <div className="notif-wrap" ref={ref}>
       <button
         className={`nav-icon notif-btn${open ? ' nav-icon--active' : ''}`}
-        onClick={() => setOpen(o => !o)}
+        onClick={() => { setOpen(o => !o); fetchNotifications() }}
         title="Notifications"
       >
         <IconBell />

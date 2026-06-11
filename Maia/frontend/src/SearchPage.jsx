@@ -42,6 +42,13 @@ function mapProduct(p, source) {
   }
 }
 
+function extractList(data) {
+  if (Array.isArray(data)) return data
+  if (Array.isArray(data?.items)) return data.items
+  if (Array.isArray(data?.value)) return data.value
+  return []
+}
+
 async function fetchBySection(section, query) {
   const q = query.trim()
   switch (section) {
@@ -49,19 +56,19 @@ async function fetchBySection(section, query) {
       const params = { page: 1, pageSize: 500 }
       if (q) params.search = q
       const { data } = await api.get('/CardsWomen/browse', { params })
-      return (data.items ?? data ?? []).map(p => mapProduct(p, 'WOMAN'))
+      return extractList(data).map(p => mapProduct(p, 'WOMAN'))
     }
     case 'MAN': {
       const endpoint = q ? '/MenCards/search' : '/MenCards'
       const params = q ? { name: q } : {}
       const { data } = await api.get(endpoint, { params })
-      return (Array.isArray(data) ? data : data.items ?? []).map(p => mapProduct(p, 'MAN'))
+      return extractList(data).map(p => mapProduct(p, 'MAN'))
     }
     case 'KIDS': {
       const endpoint = q ? '/KidsCards/search' : '/KidsCards'
       const params = q ? { name: q } : {}
       const { data } = await api.get(endpoint, { params })
-      return (Array.isArray(data) ? data : data.items ?? []).map(p => mapProduct(p, 'KIDS'))
+      return extractList(data).map(p => mapProduct(p, 'KIDS'))
     }
     default: {
       const results = await Promise.allSettled([

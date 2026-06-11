@@ -15,14 +15,17 @@ namespace Maia.Controllers
         private readonly ICardsWomenService _service;
         private readonly DataContext _db;
         private readonly IHttpClientFactory _http;
-        private const string NotifUrl = "http://localhost:5151/api/notifications/send";
+        private readonly IConfiguration _config;
 
-        public CardsWomenController(ICardsWomenService service, DataContext db, IHttpClientFactory http)
+        public CardsWomenController(ICardsWomenService service, DataContext db, IHttpClientFactory http, IConfiguration config)
         {
             _service = service;
             _db = db;
             _http = http;
+            _config = config;
         }
+
+        private string NotifUrl => (_config["Services:Notifications"] ?? "http://localhost:5151") + "/api/notifications/send";
 
         [HttpGet]
         public async Task<IActionResult> GetAll()

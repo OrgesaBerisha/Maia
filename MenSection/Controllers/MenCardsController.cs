@@ -3,6 +3,8 @@ using MenSection.Data.Interface;
 using MenSection.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
+using System.Text.Json;
 
 namespace MenSection.Controllers
 {
@@ -11,11 +13,17 @@ namespace MenSection.Controllers
     public class MenCardsController : ControllerBase
     {
         private readonly IMenCards _service;
+        private readonly IHttpClientFactory _http;
+        private readonly IConfiguration _config;
 
-        public MenCardsController(IMenCards service)
+        public MenCardsController(IMenCards service, IHttpClientFactory http, IConfiguration config)
         {
             _service = service;
+            _http = http;
+            _config = config;
         }
+
+        private string WomensUrl => (_config["Services:Womens"] ?? "http://localhost:5182") + "/api/wishlist/notify-sale";
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -84,7 +92,28 @@ namespace MenSection.Controllers
         {
             var result = await _service.SetDiscountAsync(id, dto.DiscountPercent);
             if (result == null) return NotFound();
+
+            if (dto.DiscountPercent > 0)
+                _ = NotifyWishlistUsers(id, result.Title ?? "Men's item", dto.DiscountPercent.Value);
+
             return Ok(result);
+        }
+
+        private async Task NotifyWishlistUsers(int productId, string title, int discount)
+        {
+            try
+            {
+                var client = _http.CreateClient();
+                var payload = JsonSerializer.Serialize(new
+                {
+                    productId,
+                    source = "MEN",
+                    title = "Item on Sale!",
+                    message = $"{title} is now {discount}% off — check it out!"
+                });
+                await client.PostAsync(WomensUrl, new StringContent(payload, Encoding.UTF8, "application/json"));
+            }
+            catch { }
         }
     }
 }

@@ -17,14 +17,17 @@ namespace OrderService.Controllers
         private readonly OrderDbContext _context;
         private readonly IHttpClientFactory _http;
         private readonly IEmailService _email;
-        private const string NotifUrl = "http://localhost:5151/api/notifications/send";
+        private readonly IConfiguration _config;
 
-        public OrderController(OrderDbContext context, IHttpClientFactory http, IEmailService email)
+        public OrderController(OrderDbContext context, IHttpClientFactory http, IEmailService email, IConfiguration config)
         {
             _context = context;
             _http = http;
             _email = email;
+            _config = config;
         }
+
+        private string NotifUrl => (_config["Services:Notifications"] ?? "http://localhost:5151") + "/api/notifications/send";
 
         private int GetUserId() =>
             int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
