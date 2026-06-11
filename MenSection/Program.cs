@@ -19,6 +19,7 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IMenCards, MenCardsService>();
 
 builder.Services.AddCors(options =>

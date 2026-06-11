@@ -42,26 +42,34 @@ function ShopPage() {
   const [activeSection, setActiveSection] = useState(searchParams.get('section') ?? 'WOMAN')
   const [searchQuery, setSearchQuery] = useState('')
   const [editorialImages, setEditorialImages] = useState({
-    WOMAN: FALLBACK_IMAGES.WOMAN,
-    MAN:   FALLBACK_IMAGES.MAN,
-    KIDS:  FALLBACK_IMAGES.KIDS,
+    WOMAN: null,
+    MAN:   null,
+    KIDS:  null,
   })
   const navigate = useNavigate()
 
   useEffect(() => {
+    function extractList(data) {
+      if (Array.isArray(data)) return data
+      if (Array.isArray(data?.items)) return data.items
+      if (Array.isArray(data?.value)) return data.value
+      return []
+    }
+
     async function loadImages(section) {
       try {
         const r = await api.get(SECTION_ENDPOINT[section])
-        const products = r.data ?? []
+        const products = extractList(r.data)
         const imgs = products
           .filter(p => p.imageUrl)
           .map(p => p.imageUrl)
           .slice(0, 3)
-        if (imgs.length >= 3) {
-          setEditorialImages(prev => ({ ...prev, [section]: imgs }))
-        }
+        setEditorialImages(prev => ({
+          ...prev,
+          [section]: imgs.length >= 3 ? imgs : FALLBACK_IMAGES[section],
+        }))
       } catch {
-        // keep fallback
+        setEditorialImages(prev => ({ ...prev, [section]: FALLBACK_IMAGES[section] }))
       }
     }
     loadImages('WOMAN')
@@ -152,14 +160,14 @@ function ShopPage() {
             <span className="shop-editorial-tag">{SECTION_TAG[activeSection]}</span>
             <div className="shop-editorial-grid">
               <div className="shop-ed-main">
-                <img src={imgs[0]} alt="" loading="lazy" />
+                {imgs && <img key={imgs[0]} src={imgs[0]} alt="" className="shop-ed-img-fadein" />}
               </div>
               <div className="shop-ed-stack">
                 <div className="shop-ed-small">
-                  <img src={imgs[1]} alt="" loading="lazy" />
+                  {imgs && <img key={imgs[1]} src={imgs[1]} alt="" className="shop-ed-img-fadein" />}
                 </div>
                 <div className="shop-ed-small">
-                  <img src={imgs[2]} alt="" loading="lazy" />
+                  {imgs && <img key={imgs[2]} src={imgs[2]} alt="" className="shop-ed-img-fadein" />}
                   <div className="shop-ed-cta-wrap">
                     <button
                       className="shop-ed-cta"

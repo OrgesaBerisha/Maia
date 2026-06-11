@@ -446,7 +446,7 @@ export default function WomenManagerDashboard() {
             <span className="db-user-email">{user?.email}</span>
           </div>
           <button className="db-logout-btn" onClick={handleLogout}>LOG OUT</button>
-          <button className="db-home-btn" onClick={() => navigate('/')}>HOME PAGE</button>
+          <button className="db-home-btn" onClick={() => { navigate('/'); window.scrollTo(0, 0) }}>HOME PAGE</button>
         </div>
       </aside>
       <main className="db-main">

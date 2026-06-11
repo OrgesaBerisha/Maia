@@ -31,7 +31,7 @@ export function NotificationProvider({ children }) {
     if (!isLoggedIn) return
 
     const connection = new signalR.HubConnectionBuilder()
-      .withUrl('http://localhost:5151/hubs/notifications', {
+      .withUrl('/hubs/notifications', {
         withCredentials: true,
       })
       .withAutomaticReconnect()
