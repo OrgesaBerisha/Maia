@@ -81,11 +81,7 @@ function ReviewsPage() {
         {/* Summary */}
         {!loading && data.count > 0 && (
           <div className="rp-summary">
-            <span className="rp-avg-num">{data.average}</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <Stars value={Math.round(data.average)} size={18} />
-              <span className="rp-count">{data.count} VLERËSIM{data.count !== 1 ? 'E' : ''}</span>
-            </div>
+            <Stars value={Math.round(data.average)} size={22} />
           </div>
         )}
 
@@ -121,29 +117,6 @@ function ReviewsPage() {
           </div>
         )}
 
-        {/* Reviews list */}
-        {!loading && (
-          <>
-            <div className="rp-divider" />
-            <div className="rp-list">
-              {data.reviews.length === 0
-                ? <p className="rp-empty">Bëhu i pari që lë një vlerësim.</p>
-                : data.reviews.map(r => (
-                    <div key={r.id} className="rp-item">
-                      <div className="rp-item-top">
-                        <Stars value={r.rating} size={14} />
-                        <span className="rp-item-user">{r.userName}</span>
-                        <span className="rp-item-date">
-                          {new Date(r.createdAt).toLocaleDateString('sq-AL', { day: '2-digit', month: 'short', year: 'numeric' })}
-                        </span>
-                      </div>
-                      {r.comment && <p className="rp-item-comment">{r.comment}</p>}
-                    </div>
-                  ))
-              }
-            </div>
-          </>
-        )}
 
       </main>
 
